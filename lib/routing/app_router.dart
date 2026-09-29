@@ -1,0 +1,170 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:loquiris/features/sessions/presentation/session_library_screen.dart';
+import 'package:loquiris/l10n/app_localizations.dart';
+import 'package:loquiris/routing/app_navigation_shell.dart';
+import 'package:loquiris/routing/routes.dart';
+
+/// Provides the single application router.
+final appRouterProvider = Provider<GoRouter>((ref) {
+  final router = GoRouter(
+    initialLocation: AppRoutes.sessions,
+    errorBuilder: (context, state) => const AppRouteScreen(
+      destination: AppDestination.notFound,
+    ),
+    routes: [
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            AppNavigationShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.sessions,
+                builder: (context, state) => const SessionLibraryScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':meetingId',
+                    builder: (context, state) => AppRouteScreen(
+                      destination: AppDestination.sessionDetail,
+                      meetingId: state.pathParameters['meetingId'],
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'edit',
+                        builder: (context, state) => AppRouteScreen(
+                          destination: AppDestination.transcriptEditor,
+                          meetingId: state.pathParameters['meetingId'],
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'export',
+                        builder: (context, state) => AppRouteScreen(
+                          destination: AppDestination.export,
+                          meetingId: state.pathParameters['meetingId'],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.newRecording,
+                builder: (context, state) => const AppRouteScreen(
+                  destination: AppDestination.newRecording,
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.modelsPerformance,
+                builder: (context, state) => const AppRouteScreen(
+                  destination: AppDestination.modelsPerformance,
+                ),
+              ),
+              GoRoute(
+                path: AppRoutes.storagePrivacy,
+                builder: (context, state) => const AppRouteScreen(
+                  destination: AppDestination.storagePrivacy,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/recordings/:meetingId',
+        builder: (context, state) => AppRouteScreen(
+          destination: AppDestination.activeRecording,
+          meetingId: state.pathParameters['meetingId'],
+        ),
+      ),
+    ],
+  );
+  ref.onDispose(router.dispose);
+  return router;
+});
+
+/// Stable route identities for the initial navigation skeleton.
+enum AppDestination {
+  /// Meeting library.
+  sessions,
+
+  /// New-recording setup.
+  newRecording,
+
+  /// Active recording and live draft.
+  activeRecording,
+
+  /// Saved meeting detail.
+  sessionDetail,
+
+  /// Transcript editor.
+  transcriptEditor,
+
+  /// Export flow.
+  export,
+
+  /// Model and performance settings.
+  modelsPerformance,
+
+  /// Storage and privacy settings.
+  storagePrivacy,
+
+  /// Unknown location.
+  notFound,
+}
+
+/// Minimal destination used until feature screens replace the routing skeleton.
+final class AppRouteScreen extends StatelessWidget {
+  /// Creates a route destination from URL-derived identity.
+  const AppRouteScreen({required this.destination, this.meetingId, super.key});
+
+  /// Destination represented by this screen.
+  final AppDestination destination;
+
+  /// Meeting identity read from the URL, when applicable.
+  final String? meetingId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final title = switch (destination) {
+      AppDestination.sessions => l10n.sessionsTitle,
+      AppDestination.newRecording => l10n.newRecordingTitle,
+      AppDestination.activeRecording => l10n.activeRecordingTitle,
+      AppDestination.sessionDetail => l10n.sessionDetailTitle,
+      AppDestination.transcriptEditor => l10n.transcriptEditorTitle,
+      AppDestination.export => l10n.exportTitle,
+      AppDestination.modelsPerformance => l10n.modelsPerformanceTitle,
+      AppDestination.storagePrivacy => l10n.storagePrivacyTitle,
+      AppDestination.notFound => l10n.notFoundTitle,
+    };
+    final keySuffix = meetingId == null ? '' : ':$meetingId';
+    final keyName = '${_keyName(destination)}$keySuffix';
+    return Scaffold(
+      key: ValueKey<String>(keyName),
+      appBar: AppBar(title: Text(title)),
+      body: Center(child: Text(title)),
+    );
+  }
+}
+
+String _keyName(AppDestination destination) => switch (destination) {
+  AppDestination.sessions => 'sessions',
+  AppDestination.newRecording => 'new-recording',
+  AppDestination.activeRecording => 'active-recording',
+  AppDestination.sessionDetail => 'session-detail',
+  AppDestination.transcriptEditor => 'transcript-editor',
+  AppDestination.export => 'export',
+  AppDestination.modelsPerformance => 'models-performance',
+  AppDestination.storagePrivacy => 'storage-privacy',
+  AppDestination.notFound => 'not-found',
+};

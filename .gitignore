@@ -1,0 +1,30 @@
+.gitnexus
+
+# Flutter/Dart generated state
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+coverage/
+
+# Android local and generated state
+android/.gradle/
+android/local.properties
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+# IDE and operating-system state
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Local secrets, signing, models, and evidence payloads
+*.jks
+*.keystore
+key.properties
+models/local/
+evidence/private/

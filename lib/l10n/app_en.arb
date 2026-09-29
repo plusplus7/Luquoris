@@ -1,0 +1,95 @@
+{
+  "@@locale": "en",
+  "appTitle": "Loquiris",
+  "@appTitle": {
+    "description": "Product name shown in application chrome."
+  },
+  "appTagline": "Offline meeting recorder",
+  "@appTagline": {
+    "description": "Short description on the initial application shell."
+  },
+  "sessionsTitle": "Meetings",
+  "@sessionsTitle": {
+    "description": "Title of the meeting library."
+  },
+  "newRecordingTitle": "New recording",
+  "@newRecordingTitle": {
+    "description": "Title of the recording setup screen."
+  },
+  "activeRecordingTitle": "Recording",
+  "@activeRecordingTitle": {
+    "description": "Title of the active recording and live draft screen."
+  },
+  "sessionDetailTitle": "Meeting details",
+  "@sessionDetailTitle": {
+    "description": "Title of a saved meeting detail screen."
+  },
+  "transcriptEditorTitle": "Edit transcript",
+  "@transcriptEditorTitle": {
+    "description": "Title of the transcript and label editor."
+  },
+  "exportTitle": "Export",
+  "@exportTitle": {
+    "description": "Title of the local export flow."
+  },
+  "modelsPerformanceTitle": "Models and performance",
+  "@modelsPerformanceTitle": {
+    "description": "Title of model and performance settings."
+  },
+  "storagePrivacyTitle": "Storage and privacy",
+  "@storagePrivacyTitle": {
+    "description": "Title of storage and privacy settings."
+  },
+  "notFoundTitle": "Page not found",
+  "@notFoundTitle": {
+    "description": "Title shown for an unknown deep link."
+  },
+  "navMeetings": "Meetings",
+  "@navMeetings": {
+    "description": "Primary navigation label for the meeting library."
+  },
+  "navRecord": "Record",
+  "@navRecord": {
+    "description": "Primary navigation label for starting a recording."
+  },
+  "navSettings": "Settings",
+  "@navSettings": {
+    "description": "Primary navigation label for local app settings."
+  },
+  "sessionsEmptyTitle": "No meetings yet",
+  "@sessionsEmptyTitle": {
+    "description": "Heading shown when the local meeting library is empty."
+  },
+  "sessionsEmptyBody": "Record a conversation and it will stay safely on this device.",
+  "@sessionsEmptyBody": {
+    "description": "Privacy-oriented explanation shown in an empty meeting library."
+  },
+  "startRecordingAction": "Start a recording",
+  "@startRecordingAction": {
+    "description": "Primary action shown in an empty meeting library."
+  },
+  "sessionsLoadError": "Loquiris could not read the meetings saved on this device.",
+  "@sessionsLoadError": {
+    "description": "Safe user-facing message for a local meeting repository failure."
+  },
+  "retryAction": "Try again",
+  "@retryAction": {
+    "description": "Action label for retrying a failed local operation."
+  },
+  "recoveryTitle": "Interrupted recording found",
+  "@recoveryTitle": {
+    "description": "Heading for committed audio recovered after an interruption."
+  },
+  "recoveryBody": "Saved audio is intact. Review it before deciding whether to continue.",
+  "@recoveryBody": {
+    "description": "Recovery explanation that does not imply automatic microphone restart."
+  },
+  "reviewRecordingAction": "Review recording",
+  "@reviewRecordingAction": {
+    "description": "Action opening an interrupted meeting without restarting capture."
+  },
+  "sessionsLoadingLabel": "Loading meetings",
+  "@sessionsLoadingLabel": {
+    "description": "Live-region label announced while the local meeting library loads."
+  }
+}
