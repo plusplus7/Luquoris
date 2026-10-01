@@ -9,6 +9,8 @@ import 'package:loquiris/data/database/open_connection.dart';
 import 'package:loquiris/data/files/private_meeting_audio_store.dart';
 import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
+import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
+import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/services/service_providers.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -83,6 +85,9 @@ Future<AppDependencies> bootstrap({
     diagnosticLogSink: diagnosticLogSink,
     lifecycleActions: const _NoopAppLifecycleActions(),
     overrides: [
+      performanceBenchmarkRunnerProvider.overrideWith(
+        (ref) => const UnavailablePerformanceBenchmarkRunner(),
+      ),
       _applicationDatabaseProvider.overrideWith((ref) {
         ref.onDispose(database.close);
         return database;

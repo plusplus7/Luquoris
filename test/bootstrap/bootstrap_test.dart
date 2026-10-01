@@ -8,6 +8,8 @@ import 'package:loquiris/bootstrap/diagnostic_log.dart';
 import 'package:loquiris/data/database/app_database.dart';
 import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
+import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
+import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/services/service_providers.dart';
 
 import '../support/fakes/fake_services.dart';
@@ -32,8 +34,11 @@ void main() {
                     is DriftTranscriptRepository &&
                 ref.read(modelRepositoryProvider) is DriftModelRepository &&
                 ref.read(revisionRepositoryProvider) is DriftRevisionRepository;
+            final benchmarkInstalled =
+                ref.read(performanceBenchmarkRunnerProvider)
+                    is UnavailablePerformanceBenchmarkRunner;
             return Text(
-              installed ? 'installed' : 'missing',
+              installed && benchmarkInstalled ? 'installed' : 'missing',
               textDirection: TextDirection.ltr,
             );
           },
