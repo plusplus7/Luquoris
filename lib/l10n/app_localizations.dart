@@ -235,6 +235,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading meetings'**
   String get sessionsLoadingLabel;
+
+  /// Introduces the optional first-run performance benchmark.
+  ///
+  /// In en, this message translates to:
+  /// **'Run a short offline check to see which local processing mode this device can sustain.'**
+  String get benchmarkIntro;
+
+  /// Discloses the fixed benchmark input and guarantees microphone and settings isolation.
+  ///
+  /// In en, this message translates to:
+  /// **'The check uses a bundled 45-second Mandarin and English audio sample. It never turns on the microphone, saves a recording, or changes settings.'**
+  String get benchmarkFixedAudioDisclosure;
+
+  /// No description provided for @benchmarkUnavailableHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance check unavailable'**
+  String get benchmarkUnavailableHeading;
+
+  /// No description provided for @benchmarkUnavailableRuntimeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The local benchmark runtime is not installed in this build. Recording remains available.'**
+  String get benchmarkUnavailableRuntimeBody;
+
+  /// No description provided for @benchmarkReadyHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for the offline check'**
+  String get benchmarkReadyHeading;
+
+  /// No description provided for @benchmarkStartAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Start performance check'**
+  String get benchmarkStartAction;
+
+  /// No description provided for @benchmarkRunningHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance check running'**
+  String get benchmarkRunningHeading;
+
+  /// Visible normalized progress for the short performance benchmark.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% complete'**
+  String benchmarkProgressPercent(int percent);
+
+  /// No description provided for @benchmarkCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel performance check'**
+  String get benchmarkCancelAction;
+
+  /// No description provided for @benchmarkCancelledHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Check cancelled'**
+  String get benchmarkCancelledHeading;
+
+  /// No description provided for @benchmarkCancelledBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No result was saved and no setting was changed.'**
+  String get benchmarkCancelledBody;
+
+  /// No description provided for @benchmarkRecommendationHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended mode'**
+  String get benchmarkRecommendationHeading;
+
+  /// No description provided for @benchmarkShortCheckLimitation.
+  ///
+  /// In en, this message translates to:
+  /// **'This recommendation comes from a short check, not a long-session guarantee. Review it before choosing a mode.'**
+  String get benchmarkShortCheckLimitation;
+
+  /// No description provided for @benchmarkRerunAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Run the check again'**
+  String get benchmarkRerunAction;
+
+  /// No description provided for @benchmarkFailureHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Check could not finish'**
+  String get benchmarkFailureHeading;
+
+  /// No description provided for @benchmarkRetryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry performance check'**
+  String get benchmarkRetryAction;
+
+  /// No description provided for @benchmarkEvidenceHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode evidence'**
+  String get benchmarkEvidenceHeading;
+
+  /// No description provided for @benchmarkStatusPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed'**
+  String get benchmarkStatusPassed;
+
+  /// No description provided for @benchmarkStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get benchmarkStatusFailed;
+
+  /// No description provided for @benchmarkStatusUnmeasured.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmeasured'**
+  String get benchmarkStatusUnmeasured;
+
+  /// No description provided for @benchmarkStatusMeasured.
+  ///
+  /// In en, this message translates to:
+  /// **'Measured'**
+  String get benchmarkStatusMeasured;
+
+  /// No description provided for @benchmarkModeHighQuality.
+  ///
+  /// In en, this message translates to:
+  /// **'High quality'**
+  String get benchmarkModeHighQuality;
+
+  /// No description provided for @benchmarkModeBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get benchmarkModeBalanced;
+
+  /// No description provided for @benchmarkModePowerSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Power saving'**
+  String get benchmarkModePowerSaving;
+
+  /// No description provided for @benchmarkModeRecordingOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording only'**
+  String get benchmarkModeRecordingOnly;
+
+  /// No description provided for @benchmarkModePostSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Post-session processing'**
+  String get benchmarkModePostSession;
+
+  /// Measured processing-to-audio time ratio for one benchmark mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time factor: {value}×'**
+  String benchmarkRtfMetric(num value);
+
+  /// Measured time until the first non-empty local transcript text.
+  ///
+  /// In en, this message translates to:
+  /// **'First text latency: {milliseconds} ms'**
+  String benchmarkLatencyMetric(int milliseconds);
+
+  /// Screen-reader label combining a benchmark mode and its evidence status.
+  ///
+  /// In en, this message translates to:
+  /// **'{mode}: {status}'**
+  String benchmarkModeStatusSemantic(String mode, String status);
+
+  /// No description provided for @benchmarkRecommendationBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'This device sustained the balanced live-processing thresholds in the short check.'**
+  String get benchmarkRecommendationBalanced;
+
+  /// No description provided for @benchmarkRecommendationPowerSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Power-saving live processing met the short-check thresholds when balanced mode did not.'**
+  String get benchmarkRecommendationPowerSaving;
+
+  /// No description provided for @benchmarkRecommendationPostSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing after recording is the safest measured AI option for this device.'**
+  String get benchmarkRecommendationPostSession;
+
+  /// No description provided for @benchmarkRecommendationRecordingOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'No measured AI mode met every short-check threshold, so recording only is the safe fallback.'**
+  String get benchmarkRecommendationRecordingOnly;
+
+  /// No description provided for @benchmarkFailureInvalidAsset.
+  ///
+  /// In en, this message translates to:
+  /// **'The bundled benchmark audio is missing or failed its integrity check.'**
+  String get benchmarkFailureInvalidAsset;
+
+  /// No description provided for @benchmarkFailureInvalidOutput.
+  ///
+  /// In en, this message translates to:
+  /// **'The benchmark runtime returned invalid output. No recommendation was produced.'**
+  String get benchmarkFailureInvalidOutput;
+
+  /// No description provided for @benchmarkFailureEngine.
+  ///
+  /// In en, this message translates to:
+  /// **'The local inference engine stopped before the check completed.'**
+  String get benchmarkFailureEngine;
+
+  /// No description provided for @benchmarkFailureRuntimeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The local benchmark runtime is unavailable. Recording remains available.'**
+  String get benchmarkFailureRuntimeUnavailable;
+
+  /// No description provided for @benchmarkFailureGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'The local check stopped unexpectedly. No recommendation was saved.'**
+  String get benchmarkFailureGeneric;
+
+  /// No description provided for @benchmarkCompletedSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance check completed'**
+  String get benchmarkCompletedSemantic;
+
+  /// No description provided for @benchmarkFailedSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance check failed'**
+  String get benchmarkFailedSemantic;
 }
 
 class _AppLocalizationsDelegate

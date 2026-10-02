@@ -91,5 +91,70 @@
   "sessionsLoadingLabel": "Loading meetings",
   "@sessionsLoadingLabel": {
     "description": "Live-region label announced while the local meeting library loads."
-  }
+  },
+  "benchmarkIntro": "Run a short offline check to see which local processing mode this device can sustain.",
+  "@benchmarkIntro": {
+    "description": "Introduces the optional first-run performance benchmark."
+  },
+  "benchmarkFixedAudioDisclosure": "The check uses a bundled 45-second Mandarin and English audio sample. It never turns on the microphone, saves a recording, or changes settings.",
+  "@benchmarkFixedAudioDisclosure": {
+    "description": "Discloses the fixed benchmark input and guarantees microphone and settings isolation."
+  },
+  "benchmarkUnavailableHeading": "Performance check unavailable",
+  "benchmarkUnavailableRuntimeBody": "The local benchmark runtime is not installed in this build. Recording remains available.",
+  "benchmarkReadyHeading": "Ready for the offline check",
+  "benchmarkStartAction": "Start performance check",
+  "benchmarkRunningHeading": "Performance check running",
+  "benchmarkProgressPercent": "{percent}% complete",
+  "@benchmarkProgressPercent": {
+    "description": "Visible normalized progress for the short performance benchmark.",
+    "placeholders": {"percent": {"type": "int"}}
+  },
+  "benchmarkCancelAction": "Cancel performance check",
+  "benchmarkCancelledHeading": "Check cancelled",
+  "benchmarkCancelledBody": "No result was saved and no setting was changed.",
+  "benchmarkRecommendationHeading": "Recommended mode",
+  "benchmarkShortCheckLimitation": "This recommendation comes from a short check, not a long-session guarantee. Review it before choosing a mode.",
+  "benchmarkRerunAction": "Run the check again",
+  "benchmarkFailureHeading": "Check could not finish",
+  "benchmarkRetryAction": "Retry performance check",
+  "benchmarkEvidenceHeading": "Mode evidence",
+  "benchmarkStatusPassed": "Passed",
+  "benchmarkStatusFailed": "Failed",
+  "benchmarkStatusUnmeasured": "Unmeasured",
+  "benchmarkStatusMeasured": "Measured",
+  "benchmarkModeHighQuality": "High quality",
+  "benchmarkModeBalanced": "Balanced",
+  "benchmarkModePowerSaving": "Power saving",
+  "benchmarkModeRecordingOnly": "Recording only",
+  "benchmarkModePostSession": "Post-session processing",
+  "benchmarkRtfMetric": "Real-time factor: {value}×",
+  "@benchmarkRtfMetric": {
+    "description": "Measured processing-to-audio time ratio for one benchmark mode.",
+    "placeholders": {"value": {"type": "num"}}
+  },
+  "benchmarkLatencyMetric": "First text latency: {milliseconds} ms",
+  "@benchmarkLatencyMetric": {
+    "description": "Measured time until the first non-empty local transcript text.",
+    "placeholders": {"milliseconds": {"type": "int"}}
+  },
+  "benchmarkModeStatusSemantic": "{mode}: {status}",
+  "@benchmarkModeStatusSemantic": {
+    "description": "Screen-reader label combining a benchmark mode and its evidence status.",
+    "placeholders": {
+      "mode": {"type": "String"},
+      "status": {"type": "String"}
+    }
+  },
+  "benchmarkRecommendationBalanced": "This device sustained the balanced live-processing thresholds in the short check.",
+  "benchmarkRecommendationPowerSaving": "Power-saving live processing met the short-check thresholds when balanced mode did not.",
+  "benchmarkRecommendationPostSession": "Processing after recording is the safest measured AI option for this device.",
+  "benchmarkRecommendationRecordingOnly": "No measured AI mode met every short-check threshold, so recording only is the safe fallback.",
+  "benchmarkFailureInvalidAsset": "The bundled benchmark audio is missing or failed its integrity check.",
+  "benchmarkFailureInvalidOutput": "The benchmark runtime returned invalid output. No recommendation was produced.",
+  "benchmarkFailureEngine": "The local inference engine stopped before the check completed.",
+  "benchmarkFailureRuntimeUnavailable": "The local benchmark runtime is unavailable. Recording remains available.",
+  "benchmarkFailureGeneric": "The local check stopped unexpectedly. No recommendation was saved.",
+  "benchmarkCompletedSemantic": "Performance check completed",
+  "benchmarkFailedSemantic": "Performance check failed"
 }
