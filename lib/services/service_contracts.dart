@@ -469,16 +469,54 @@ enum ThermalState {
 /// A privacy-safe device performance sample.
 final class DevicePerformanceSnapshot {
   /// Creates a performance sample.
-  const DevicePerformanceSnapshot({
+  DevicePerformanceSnapshot({
+    required this.observedAtMonotonic,
+    required this.processCpuTime,
+    required this.processPssBytes,
     required this.thermalState,
-    required this.processMemoryBytes,
-  });
+    required this.isCharging,
+    this.remainingDeviceEnergyNanowattHours,
+  }) : assert(
+         !observedAtMonotonic.isNegative,
+         'observedAtMonotonic must be non-negative',
+       ),
+       assert(
+         !processCpuTime.isNegative,
+         'processCpuTime must be non-negative',
+       ),
+       assert(processPssBytes >= 0, 'processPssBytes must be non-negative'),
+       assert(
+         processPssBytes <= 9223372036854775807,
+         'processPssBytes must fit signed 64-bit',
+       ),
+       assert(
+         remainingDeviceEnergyNanowattHours == null ||
+             remainingDeviceEnergyNanowattHours >= 0,
+         'remainingDeviceEnergyNanowattHours must be non-negative',
+       ),
+       assert(
+         remainingDeviceEnergyNanowattHours == null ||
+             remainingDeviceEnergyNanowattHours <= 9223372036854775807,
+         'remainingDeviceEnergyNanowattHours must fit signed 64-bit',
+       );
+
+  /// Monotonic time at which the platform observed this sample.
+  final Duration observedAtMonotonic;
+
+  /// Cumulative CPU time consumed by this process.
+  final Duration processCpuTime;
+
+  /// Current process proportional-set-size sample in bytes.
+  final int processPssBytes;
 
   /// Current coarse thermal state.
   final ThermalState thermalState;
 
-  /// Current process memory estimate.
-  final int processMemoryBytes;
+  /// Remaining device energy in nanowatt-hours when the platform supports it.
+  final int? remainingDeviceEnergyNanowattHours;
+
+  /// Whether the device was charging when the sample was observed.
+  final bool isCharging;
 }
 
 /// Recoverable failures produced by [ThermalAndPerformanceMonitor].
@@ -496,11 +534,10 @@ final class PerformanceUnavailable extends PerformanceFailure {
 }
 
 /// Boundary for thermal and resource observations.
+// The interface keeps the platform read injectable and independently fakeable.
+// ignore: one_member_abstracts
 abstract interface class ThermalAndPerformanceMonitor {
-  /// Ongoing privacy-safe device performance samples.
-  Stream<DevicePerformanceSnapshot> get snapshots;
-
-  /// Reads the latest device performance sample.
+  /// Reads one current privacy-safe device performance sample.
   @useResult
   Future<Result<DevicePerformanceSnapshot, PerformanceFailure>> current();
 }

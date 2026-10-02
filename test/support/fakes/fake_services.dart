@@ -150,26 +150,23 @@ final class FakeModelManager implements ModelManager {
 
 final class FakeThermalAndPerformanceMonitor
     implements ThermalAndPerformanceMonitor {
-  final StreamController<DevicePerformanceSnapshot> _snapshots =
-      StreamController.broadcast(sync: true);
-  Result<DevicePerformanceSnapshot, PerformanceFailure> result = const Ok(
+  int currentCalls = 0;
+  Result<DevicePerformanceSnapshot, PerformanceFailure> result = Ok(
     DevicePerformanceSnapshot(
+      observedAtMonotonic: Duration.zero,
+      processCpuTime: Duration.zero,
+      processPssBytes: 0,
       thermalState: ThermalState.unknown,
-      processMemoryBytes: 0,
+      isCharging: false,
     ),
   );
 
   @override
-  Stream<DevicePerformanceSnapshot> get snapshots => _snapshots.stream;
-
-  void emitSnapshot(DevicePerformanceSnapshot snapshot) =>
-      _snapshots.add(snapshot);
-
-  Future<void> dispose() => _snapshots.close();
-
-  @override
   Future<Result<DevicePerformanceSnapshot, PerformanceFailure>>
-  current() async => result;
+  current() async {
+    currentCalls += 1;
+    return result;
+  }
 }
 
 final class FakeSessionRepository implements SessionRepository {

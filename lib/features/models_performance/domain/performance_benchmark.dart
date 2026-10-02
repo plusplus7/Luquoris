@@ -1,5 +1,6 @@
 import 'package:loquiris/core/domain/value_object.dart';
 import 'package:loquiris/core/failure.dart';
+import 'package:loquiris/features/models_performance/domain/benchmark_resource_metrics.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:meta/meta.dart';
 
@@ -91,6 +92,7 @@ final class BenchmarkModeMeasurement extends ValueObject {
     required this.status,
     this.realTimeFactor,
     this.firstTextLatency,
+    this.maximumBacklog,
     List<String> blockingReasonCodes = const <String>[],
   }) : blockingReasonCodes = List<String>.unmodifiable(blockingReasonCodes);
 
@@ -106,6 +108,9 @@ final class BenchmarkModeMeasurement extends ValueObject {
   /// Time from qualifying speech to first non-empty local draft.
   final Duration? firstTextLatency;
 
+  /// Largest runner-owned queued work count observed for this mode.
+  final int? maximumBacklog;
+
   /// Privacy-safe reasons that prevent this mode from being eligible.
   final List<String> blockingReasonCodes;
 
@@ -115,6 +120,7 @@ final class BenchmarkModeMeasurement extends ValueObject {
     status,
     realTimeFactor,
     firstTextLatency,
+    maximumBacklog,
     blockingReasonCodes.length,
     ...blockingReasonCodes,
   ];
@@ -134,6 +140,7 @@ final class PerformanceBenchmarkReport extends ValueObject {
     required this.modelVersion,
     required this.configurationId,
     required List<BenchmarkModeMeasurement> measurements,
+    this.resourceMetrics,
   }) : measurements = List<BenchmarkModeMeasurement>.unmodifiable(
          measurements,
        );
@@ -165,6 +172,26 @@ final class PerformanceBenchmarkReport extends ValueObject {
   /// Mode evidence emitted by the runner.
   final List<BenchmarkModeMeasurement> measurements;
 
+  /// Optional schema-v2 before/after resource observations.
+  final BenchmarkResourceMetrics? resourceMetrics;
+
+  /// Returns a report with selected resource-envelope fields replaced.
+  PerformanceBenchmarkReport copyWith({
+    int? schemaVersion,
+    BenchmarkResourceMetrics? resourceMetrics,
+  }) => PerformanceBenchmarkReport(
+    schemaVersion: schemaVersion ?? this.schemaVersion,
+    policyVersion: policyVersion,
+    definition: definition,
+    engineId: engineId,
+    engineVersion: engineVersion,
+    modelId: modelId,
+    modelVersion: modelVersion,
+    configurationId: configurationId,
+    measurements: measurements,
+    resourceMetrics: resourceMetrics ?? this.resourceMetrics,
+  );
+
   @override
   List<Object?> get equalityValues => <Object?>[
     schemaVersion,
@@ -177,6 +204,7 @@ final class PerformanceBenchmarkReport extends ValueObject {
     configurationId,
     measurements.length,
     ...measurements,
+    resourceMetrics,
   ];
 }
 

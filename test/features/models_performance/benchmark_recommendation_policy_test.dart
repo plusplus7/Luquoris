@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/models_performance/application/benchmark_recommendation_policy.dart';
+import 'package:loquiris/features/models_performance/domain/benchmark_resource_metrics.dart';
 import 'package:loquiris/features/models_performance/domain/performance_benchmark.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
+import 'package:loquiris/services/service_contracts.dart';
 
 void main() {
   const policy = BenchmarkRecommendationPolicy();
@@ -204,7 +206,7 @@ void main() {
     expect(_failure(result).code, 'benchmark_invalid_output');
   });
 
-  test('asset schema and policy mismatch are invalid', () {
+  test('asset and policy mismatch are invalid', () {
     final validMeasurement = BenchmarkModeMeasurement(
       mode: PerformanceMode.postSession,
       status: BenchmarkMeasurementStatus.measured,
@@ -218,7 +220,7 @@ void main() {
     );
 
     for (final report in [
-      _report([validMeasurement], schemaVersion: 2),
+      _report([validMeasurement], schemaVersion: 3),
       _report([validMeasurement], policyVersion: 2),
       _report([validMeasurement], definition: wrongDefinition),
     ]) {
@@ -227,6 +229,97 @@ void main() {
         'benchmark_invalid_output',
       );
     }
+  });
+
+  test(
+    'schema one stays valid and schema two rejects partial core metrics negative backlog and non finite rtf',
+    () {
+      final validMeasurement = BenchmarkModeMeasurement(
+        mode: PerformanceMode.balanced,
+        status: BenchmarkMeasurementStatus.measured,
+        realTimeFactor: 0.5,
+        firstTextLatency: const Duration(seconds: 2),
+        maximumBacklog: 3,
+      );
+      final validResources = BenchmarkResourceMetrics(
+        wallDuration: const Duration(milliseconds: 1500),
+        processCpuTime: const Duration(milliseconds: 450),
+        maxSampledPssBytes: 12000,
+        worstThermalState: ThermalState.hot,
+        deviceEnergyUsedNanowattHours: 600,
+      );
+
+      expect(
+        _ok(policy.recommend(_report([validMeasurement]))).mode,
+        PerformanceMode.balanced,
+      );
+      expect(
+        _ok(
+          policy.recommend(
+            _report(
+              [validMeasurement],
+              schemaVersion: 2,
+              resourceMetrics: validResources,
+            ),
+          ),
+        ).mode,
+        PerformanceMode.balanced,
+      );
+
+      final invalidReports = [
+        _report([validMeasurement], schemaVersion: 2),
+        _report(
+          [validMeasurement],
+          resourceMetrics: validResources,
+        ),
+        _report(
+          [validMeasurement],
+          schemaVersion: 2,
+          resourceMetrics: BenchmarkResourceMetrics(
+            wallDuration: const Duration(milliseconds: 1500),
+            unavailableReasonCodes: const ['performance_metrics_invalid_delta'],
+          ),
+        ),
+        _report([
+          BenchmarkModeMeasurement(
+            mode: PerformanceMode.balanced,
+            status: BenchmarkMeasurementStatus.measured,
+            realTimeFactor: 0.5,
+            firstTextLatency: const Duration(seconds: 2),
+            maximumBacklog: -1,
+          ),
+        ]),
+      ];
+
+      for (final report in invalidReports) {
+        expect(
+          _failure(policy.recommend(report)).code,
+          'benchmark_invalid_output',
+        );
+      }
+    },
+  );
+
+  test('schema two accepts unavailable resource metrics with a reason', () {
+    final result = policy.recommend(
+      _report(
+        [
+          BenchmarkModeMeasurement(
+            mode: PerformanceMode.postSession,
+            status: BenchmarkMeasurementStatus.measured,
+            realTimeFactor: 0.5,
+          ),
+        ],
+        schemaVersion: 2,
+        resourceMetrics: BenchmarkResourceMetrics(
+          unavailableReasonCodes: const [
+            'performance_metrics_start_unavailable',
+          ],
+        ),
+      ),
+    );
+
+    expect(_ok(result).mode, PerformanceMode.postSession);
   });
 }
 
@@ -240,6 +333,7 @@ PerformanceBenchmarkReport _report(
   String modelId = 'base-q5',
   String modelVersion = 'test-model',
   String configurationId = 'cpu-neon',
+  BenchmarkResourceMetrics? resourceMetrics,
 }) => PerformanceBenchmarkReport(
   schemaVersion: schemaVersion,
   policyVersion: policyVersion,
@@ -250,6 +344,7 @@ PerformanceBenchmarkReport _report(
   modelVersion: modelVersion,
   configurationId: configurationId,
   measurements: measurements,
+  resourceMetrics: resourceMetrics,
 );
 
 BenchmarkRecommendation _ok(

@@ -100,8 +100,6 @@ void main() {
         ..listResult = const Err(
           SessionRepositoryUnavailable('database_unavailable'),
         );
-      addTearDown(performance.dispose);
-
       expect(
         await language.identify(
           LanguageIdentificationRequest(
@@ -131,11 +129,9 @@ void main() {
       );
     });
 
-    test('capture and performance fakes emit live snapshots', () async {
+    test('capture fake emits live snapshots', () async {
       final capture = FakeAudioCaptureService();
-      final performance = FakeThermalAndPerformanceMonitor();
       addTearDown(capture.dispose);
-      addTearDown(performance.dispose);
       final captureExpectation = expectLater(
         capture.snapshots,
         emits(
@@ -146,17 +142,6 @@ void main() {
           ),
         ),
       );
-      final performanceExpectation = expectLater(
-        performance.snapshots,
-        emits(
-          isA<DevicePerformanceSnapshot>().having(
-            (snapshot) => snapshot.thermalState,
-            'thermal state',
-            ThermalState.hot,
-          ),
-        ),
-      );
-
       capture.emitSnapshot(
         const AudioCaptureSnapshot(
           state: AudioCaptureState.pausedByInterruption,
@@ -164,14 +149,7 @@ void main() {
           bytesWritten: 16,
         ),
       );
-      performance.emitSnapshot(
-        const DevicePerformanceSnapshot(
-          thermalState: ThermalState.hot,
-          processMemoryBytes: 32,
-        ),
-      );
-
-      await Future.wait([captureExpectation, performanceExpectation]);
+      await captureExpectation;
     });
 
     test(
@@ -208,7 +186,6 @@ void main() {
       final sessions = FakeSessionRepository();
       final exports = FakeExportService()
         ..result = const Err(ExportUnavailable('destination_unavailable'));
-      addTearDown(performance.dispose);
 
       expect(
         await models.listInstalled(),
@@ -218,6 +195,7 @@ void main() {
         await performance.current(),
         isA<Ok<DevicePerformanceSnapshot, PerformanceFailure>>(),
       );
+      expect(performance.currentCalls, 1);
       expect(
         await sessions.list(),
         isA<Ok<SessionCollection, SessionRepositoryFailure>>(),
@@ -230,6 +208,67 @@ void main() {
           ),
         ),
         isA<Err<ExportReceipt, ExportFailure>>(),
+      );
+    });
+
+    test(
+      'snapshot stores monotonic cpu pss thermal energy and charging values',
+      () {
+        final snapshot = DevicePerformanceSnapshot(
+          observedAtMonotonic: const Duration(milliseconds: 1000),
+          processCpuTime: const Duration(milliseconds: 400),
+          processPssBytes: 10000,
+          thermalState: ThermalState.warm,
+          remainingDeviceEnergyNanowattHours: 9000,
+          isCharging: false,
+        );
+
+        expect(snapshot.observedAtMonotonic, const Duration(seconds: 1));
+        expect(snapshot.processCpuTime, const Duration(milliseconds: 400));
+        expect(snapshot.processPssBytes, 10000);
+        expect(snapshot.thermalState, ThermalState.warm);
+        expect(snapshot.remainingDeviceEnergyNanowattHours, 9000);
+        expect(snapshot.isCharging, isFalse);
+      },
+    );
+
+    test('snapshot constructor rejects negative and accepts int64 bounds', () {
+      DevicePerformanceSnapshot build({
+        Duration observedAtMonotonic = Duration.zero,
+        Duration processCpuTime = Duration.zero,
+        int processPssBytes = 0,
+        int? remainingDeviceEnergyNanowattHours,
+      }) => DevicePerformanceSnapshot(
+        observedAtMonotonic: observedAtMonotonic,
+        processCpuTime: processCpuTime,
+        processPssBytes: processPssBytes,
+        thermalState: ThermalState.nominal,
+        remainingDeviceEnergyNanowattHours: remainingDeviceEnergyNanowattHours,
+        isCharging: false,
+      );
+
+      expect(
+        () => build(observedAtMonotonic: const Duration(microseconds: -1)),
+        throwsAssertionError,
+      );
+      expect(
+        () => build(processCpuTime: const Duration(microseconds: -1)),
+        throwsAssertionError,
+      );
+      expect(() => build(processPssBytes: -1), throwsAssertionError);
+      expect(
+        () => build(processPssBytes: 9223372036854775807),
+        returnsNormally,
+      );
+      expect(
+        () => build(remainingDeviceEnergyNanowattHours: -1),
+        throwsAssertionError,
+      );
+      expect(
+        () => build(
+          remainingDeviceEnergyNanowattHours: 9223372036854775807,
+        ),
+        returnsNormally,
       );
     });
   });

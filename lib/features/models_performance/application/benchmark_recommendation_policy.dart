@@ -1,4 +1,5 @@
 import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/models_performance/domain/benchmark_resource_metrics.dart';
 import 'package:loquiris/features/models_performance/domain/performance_benchmark.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 
@@ -68,7 +69,7 @@ final class BenchmarkRecommendationPolicy {
 }
 
 bool _validReport(PerformanceBenchmarkReport report) {
-  if (report.schemaVersion != 1 ||
+  if ((report.schemaVersion != 1 && report.schemaVersion != 2) ||
       report.policyVersion != 1 ||
       report.definition != firstRunBenchmarkDefinition ||
       report.engineId.trim().isEmpty ||
@@ -76,6 +77,14 @@ bool _validReport(PerformanceBenchmarkReport report) {
       report.modelId.trim().isEmpty ||
       report.modelVersion.trim().isEmpty ||
       report.configurationId.trim().isEmpty) {
+    return false;
+  }
+  if (report.schemaVersion == 1 && report.resourceMetrics != null) {
+    return false;
+  }
+  if (report.schemaVersion == 2 &&
+      (report.resourceMetrics == null ||
+          !_validResourceMetrics(report.resourceMetrics!))) {
     return false;
   }
   final modes = <PerformanceMode>{};
@@ -95,9 +104,47 @@ bool _validMeasurement(BenchmarkModeMeasurement measurement) {
   }
   final latency = measurement.firstTextLatency;
   if (latency != null && latency.isNegative) return false;
+  final maximumBacklog = measurement.maximumBacklog;
+  if (maximumBacklog != null &&
+      (maximumBacklog < 0 || maximumBacklog > 9223372036854775807)) {
+    return false;
+  }
   return measurement.blockingReasonCodes.every(
     (reason) => reason.trim().isNotEmpty,
   );
+}
+
+bool _validResourceMetrics(BenchmarkResourceMetrics metrics) {
+  final core = <Object?>[
+    metrics.wallDuration,
+    metrics.processCpuTime,
+    metrics.maxSampledPssBytes,
+    metrics.worstThermalState,
+  ];
+  final present = core.where((value) => value != null).length;
+  if (present != 0 && present != core.length) return false;
+  if (metrics.wallDuration case final value?) {
+    if (value <= Duration.zero) return false;
+  }
+  if (metrics.processCpuTime case final value?) {
+    if (value.isNegative) return false;
+  }
+  if (metrics.maxSampledPssBytes case final value?) {
+    if (value < 0 || value > 9223372036854775807) return false;
+  }
+  if (metrics.deviceEnergyUsedNanowattHours case final value?) {
+    if (present == 0 || value < 0 || value > 9223372036854775807) {
+      return false;
+    }
+  }
+  if (metrics.unavailableReasonCodes.any(
+    (reason) => reason.trim().isEmpty,
+  )) {
+    return false;
+  }
+  if (present == 0) return metrics.unavailableReasonCodes.isNotEmpty;
+  return metrics.deviceEnergyUsedNanowattHours != null ||
+      metrics.unavailableReasonCodes.isNotEmpty;
 }
 
 bool _baseEligible(BenchmarkModeMeasurement measurement) =>
