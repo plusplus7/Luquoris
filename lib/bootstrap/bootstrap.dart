@@ -11,6 +11,7 @@ import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
+import 'package:loquiris/native/method_channel_thermal_and_performance_monitor.dart';
 import 'package:loquiris/services/service_providers.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -85,6 +86,9 @@ Future<AppDependencies> bootstrap({
     diagnosticLogSink: diagnosticLogSink,
     lifecycleActions: const _NoopAppLifecycleActions(),
     overrides: [
+      thermalAndPerformanceMonitorProvider.overrideWith(
+        (ref) => const MethodChannelThermalAndPerformanceMonitor(),
+      ),
       performanceBenchmarkRunnerProvider.overrideWith(
         (ref) => const UnavailablePerformanceBenchmarkRunner(),
       ),

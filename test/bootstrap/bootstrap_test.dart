@@ -10,6 +10,7 @@ import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
+import 'package:loquiris/native/method_channel_thermal_and_performance_monitor.dart';
 import 'package:loquiris/services/service_providers.dart';
 
 import '../support/fakes/fake_services.dart';
@@ -37,8 +38,13 @@ void main() {
             final benchmarkInstalled =
                 ref.read(performanceBenchmarkRunnerProvider)
                     is UnavailablePerformanceBenchmarkRunner;
+            final performanceMonitorInstalled =
+                ref.read(thermalAndPerformanceMonitorProvider)
+                    is MethodChannelThermalAndPerformanceMonitor;
             return Text(
-              installed && benchmarkInstalled ? 'installed' : 'missing',
+              installed && benchmarkInstalled && performanceMonitorInstalled
+                  ? 'installed'
+                  : 'missing',
               textDirection: TextDirection.ltr,
             );
           },
