@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loquiris/app.dart';
+import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
+import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/routing/app_router.dart';
 import 'package:loquiris/routing/routes.dart';
 import 'package:loquiris/services/service_providers.dart';
@@ -22,6 +24,9 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         sessionRepositoryProvider.overrideWithValue(FakeSessionRepository()),
+        performanceBenchmarkRunnerProvider.overrideWithValue(
+          const UnavailablePerformanceBenchmarkRunner(),
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -49,6 +54,9 @@ void main() {
       router.go(location);
       await tester.pumpAndSettle();
       expect(find.byKey(ValueKey<String>(key)), findsOneWidget);
+      if (location == AppRoutes.modelsPerformance) {
+        expect(find.textContaining('runtime is not installed'), findsOneWidget);
+      }
     }
   });
 

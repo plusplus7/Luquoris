@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loquiris/features/models_performance/presentation/models_performance_screen.dart';
 import 'package:loquiris/features/sessions/presentation/session_library_screen.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
 import 'package:loquiris/routing/app_navigation_shell.dart';
@@ -65,9 +66,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutes.modelsPerformance,
-                builder: (context, state) => const AppRouteScreen(
-                  destination: AppDestination.modelsPerformance,
-                ),
+                builder: (context, state) => const ModelsPerformanceScreen(),
               ),
               GoRoute(
                 path: AppRoutes.storagePrivacy,
