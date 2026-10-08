@@ -97,7 +97,7 @@
 - [ ] 10.3 Implement runtime model integrity checks that disable dependent AI only and never block recording
 - [ ] 10.4 Add fixed redistributable Chinese/English/mixed benchmark audio and record its provenance, consent, license, and hashes
 - [x] 10.5 Implement the 30–60 second first-run benchmark and recommendation UI without microphone activation or automatic setting changes
-- [ ] 10.6 Implement CPU/memory/RTF/latency/thermal/energy/backlog metric capture and privacy-safe local result export
+- [x] 10.6 Implement CPU/memory/RTF/latency/thermal/energy/backlog metric capture and privacy-safe local result export
 - [ ] 10.7 Add high-quality, balanced, power-saving, recording-only, and post-session policy objects with explicit user-visible degradation
 - [ ] 10.8 Measure APK/AAB and installed footprints; fail production selection above 500 MiB release or 800 MiB installed targets
 - [ ] 10.9 Generate and review third-party notices from lock files, native dependencies, and model manifests; publish phase evidence
