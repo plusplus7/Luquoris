@@ -471,7 +471,8 @@ final class PerformanceDegradationPolicy {
       );
     }
 
-    if (input.currentMode == PerformanceMode.recordingOnly) {
+    if (input.requestedMode == PerformanceMode.recordingOnly &&
+        input.currentMode == PerformanceMode.recordingOnly) {
       return Ok<PerformancePolicyDecision, PerformancePolicyFailure>(
         _decision(
           input: input,
@@ -513,30 +514,6 @@ final class PerformanceDegradationPolicy {
       );
     }
 
-    if (_hasUnknownPressure(input)) {
-      final deferred = _supportedReachableMode(
-        mode,
-        input.supportedModes,
-        PerformanceMode.postSession,
-      );
-      final nextMode = deferred ?? PerformanceMode.recordingOnly;
-      return Ok<PerformancePolicyDecision, PerformancePolicyFailure>(
-        _decisionForMode(
-          catalog: _catalog,
-          input: input,
-          mode: nextMode,
-          reasons: reasons,
-          forcedDisposition: nextMode == PerformanceMode.recordingOnly
-              ? PerformanceAiDisposition.disabled
-              : PerformanceAiDisposition.deferred,
-          queued: nextMode != PerformanceMode.recordingOnly,
-          recovery: nextMode == PerformanceMode.recordingOnly
-              ? PerformanceRecoveryAction.continueRecordingOnly
-              : PerformanceRecoveryAction.continuePostSession,
-        ),
-      );
-    }
-
     if (input.thermalPressure == PerformanceThermalPressure.severe ||
         input.memoryPressure == PerformanceMemoryPressure.critical) {
       if (mode == PerformanceMode.recordingOnly) {
@@ -574,6 +551,30 @@ final class PerformanceDegradationPolicy {
       );
     }
 
+    if (_hasUnknownPressure(input)) {
+      final deferred = _supportedReachableMode(
+        mode,
+        input.supportedModes,
+        PerformanceMode.postSession,
+      );
+      final nextMode = deferred ?? PerformanceMode.recordingOnly;
+      return Ok<PerformancePolicyDecision, PerformancePolicyFailure>(
+        _decisionForMode(
+          catalog: _catalog,
+          input: input,
+          mode: nextMode,
+          reasons: reasons,
+          forcedDisposition: nextMode == PerformanceMode.recordingOnly
+              ? PerformanceAiDisposition.disabled
+              : PerformanceAiDisposition.deferred,
+          queued: nextMode != PerformanceMode.recordingOnly,
+          recovery: nextMode == PerformanceMode.recordingOnly
+              ? PerformanceRecoveryAction.continueRecordingOnly
+              : PerformanceRecoveryAction.continuePostSession,
+        ),
+      );
+    }
+
     if (input.backlogPressure ==
         PerformanceBacklogPressure.sustainedBeyondLimit) {
       final nextMode = _supportedReachableMode(
@@ -596,6 +597,10 @@ final class PerformanceDegradationPolicy {
               : PerformanceRecoveryAction.continuePostSession,
         ),
       );
+    }
+
+    if (input.accelerationState == PerformanceAccelerationState.unavailable) {
+      mode = _firstSupportedFallback(mode, input.supportedModes);
     }
 
     if (input.isLowPower) {
@@ -637,9 +642,6 @@ final class PerformanceDegradationPolicy {
       );
     }
 
-    if (input.accelerationState == PerformanceAccelerationState.unavailable) {
-      mode = _firstSupportedFallback(mode, input.supportedModes);
-    }
     final timing = _constrainTiming(
       input.currentTiming,
       _catalog.policyFor(mode).timing,
@@ -669,8 +671,11 @@ final class PerformanceDegradationPolicy {
 
   bool _validCurrentState(PerformancePolicyInput input) {
     if (!_isReachable(input.requestedMode, input.currentMode)) return false;
-    final allowed = _catalog.policyFor(input.currentMode).timing;
-    return _timingRank(input.currentTiming) >= _timingRank(allowed);
+    final currentRank = _timingRank(input.currentTiming);
+    final requestedTiming = _catalog.policyFor(input.requestedMode).timing;
+    final currentModeTiming = _catalog.policyFor(input.currentMode).timing;
+    return currentRank >= _timingRank(requestedTiming) &&
+        currentRank >= _timingRank(currentModeTiming);
   }
 
   bool _isReachable(PerformanceMode start, PerformanceMode target) {
@@ -835,17 +840,22 @@ PerformancePolicyDecision _decision({
   required bool queued,
   required List<PerformanceDegradationReason> reasons,
   required PerformanceRecoveryAction recovery,
-}) => PerformancePolicyDecision(
-  requestedMode: input.requestedMode,
-  effectiveMode: mode,
-  effectiveTiming: timing,
-  aiDisposition: disposition,
-  continueRecording: true,
-  postSessionQueued: queued,
-  reasons: reasons,
-  primaryReason: reasons.firstOrNull,
-  recoveryAction: recovery,
-);
+}) {
+  final disabled = timing == PerformanceExecutionTiming.disabled;
+  return PerformancePolicyDecision(
+    requestedMode: input.requestedMode,
+    effectiveMode: mode,
+    effectiveTiming: timing,
+    aiDisposition: disabled ? PerformanceAiDisposition.disabled : disposition,
+    continueRecording: true,
+    postSessionQueued:
+        queued &&
+        (!disabled || input.engineState == PerformanceEngineState.unavailable),
+    reasons: reasons,
+    primaryReason: reasons.firstOrNull,
+    recoveryAction: recovery,
+  );
+}
 
 PerformanceExecutionTiming _constrainTiming(
   PerformanceExecutionTiming current,

@@ -348,6 +348,38 @@ void main() {
     expect(postSession.postSessionQueued, isTrue);
   });
 
+  test('low power still requires an eligible execution path', () {
+    final decision = _ok(
+      _decide(
+        _input(
+          requestedMode: PerformanceMode.powerSaving,
+          currentMode: PerformanceMode.powerSaving,
+          supportedModes: const {
+            PerformanceMode.powerSaving,
+            PerformanceMode.postSession,
+          },
+          isLowPower: true,
+          accelerationState: PerformanceAccelerationState.unavailable,
+        ),
+      ),
+    );
+
+    expect(decision.effectiveMode, PerformanceMode.postSession);
+    expect(
+      decision.effectiveTiming,
+      PerformanceExecutionTiming.postSessionOnly,
+    );
+    expect(decision.aiDisposition, PerformanceAiDisposition.deferred);
+    expect(decision.postSessionQueued, isTrue);
+    expect(
+      decision.reasons,
+      orderedEquals(const [
+        PerformanceDegradationReason.lowPower,
+        PerformanceDegradationReason.accelerationUnavailable,
+      ]),
+    );
+  });
+
   test(
     'acceleration loss retains mode with CPU fallback and otherwise degrades',
     () {
@@ -410,6 +442,33 @@ void main() {
     },
   );
 
+  test('engine failure preserves queued retry work across observations', () {
+    final first = _ok(
+      _decide(_input(engineState: PerformanceEngineState.unavailable)),
+    );
+    final repeated = _ok(
+      _decide(
+        _input(
+          currentMode: first.effectiveMode,
+          currentTiming: first.effectiveTiming,
+          engineState: PerformanceEngineState.unavailable,
+        ),
+      ),
+    );
+
+    expect(repeated.effectiveMode, PerformanceMode.recordingOnly);
+    expect(repeated.aiDisposition, PerformanceAiDisposition.disabled);
+    expect(repeated.postSessionQueued, isTrue);
+    expect(
+      repeated.reasons,
+      orderedEquals(const [PerformanceDegradationReason.engineUnavailable]),
+    );
+    expect(
+      repeated.recoveryAction,
+      PerformanceRecoveryAction.retryEngineLater,
+    );
+  });
+
   test('simultaneous pressures use fixed priority and retain all reasons', () {
     final decision = _ok(
       _decide(
@@ -440,6 +499,51 @@ void main() {
       PerformanceDegradationReason.engineUnavailable,
     );
     expect(decision.effectiveMode, PerformanceMode.recordingOnly);
+  });
+
+  test('known severe pressure controls outcomes before unknown pressure', () {
+    final thermal = _ok(
+      _decide(
+        _input(
+          thermalPressure: PerformanceThermalPressure.severe,
+          memoryPressure: PerformanceMemoryPressure.unknown,
+        ),
+      ),
+    );
+    final memory = _ok(
+      _decide(
+        _input(
+          thermalPressure: PerformanceThermalPressure.unknown,
+          memoryPressure: PerformanceMemoryPressure.critical,
+        ),
+      ),
+    );
+
+    expect(thermal.effectiveMode, PerformanceMode.balanced);
+    expect(thermal.aiDisposition, PerformanceAiDisposition.paused);
+    expect(thermal.postSessionQueued, isTrue);
+    expect(thermal.recoveryAction, PerformanceRecoveryAction.coolDevice);
+    expect(
+      thermal.reasons,
+      orderedEquals(const [
+        PerformanceDegradationReason.thermalSevere,
+        PerformanceDegradationReason.pressureUnknown,
+      ]),
+    );
+    expect(memory.effectiveMode, PerformanceMode.balanced);
+    expect(memory.aiDisposition, PerformanceAiDisposition.paused);
+    expect(memory.postSessionQueued, isTrue);
+    expect(
+      memory.recoveryAction,
+      PerformanceRecoveryAction.continuePostSession,
+    );
+    expect(
+      memory.reasons,
+      orderedEquals(const [
+        PerformanceDegradationReason.memoryCritical,
+        PerformanceDegradationReason.pressureUnknown,
+      ]),
+    );
   });
 
   test('high quality degradation retains post session timing', () {
@@ -500,9 +604,28 @@ void main() {
         currentMode: PerformanceMode.highQuality,
       ),
     );
+    final liveBalancedFallback = _decide(
+      _input(
+        requestedMode: PerformanceMode.highQuality,
+      ),
+    );
+    final livePowerSavingFallback = _decide(
+      _input(
+        requestedMode: PerformanceMode.highQuality,
+        currentMode: PerformanceMode.powerSaving,
+      ),
+    );
 
     expect(_failure(upgradedCurrent), const PerformancePolicyInvalidInput());
     expect(_failure(liveHighQuality), const PerformancePolicyInvalidInput());
+    expect(
+      _failure(liveBalancedFallback),
+      const PerformancePolicyInvalidInput(),
+    );
+    expect(
+      _failure(livePowerSavingFallback),
+      const PerformancePolicyInvalidInput(),
+    );
   });
 
   test('automatic decisions never upgrade the current mode', () {
@@ -519,36 +642,53 @@ void main() {
     expect(decision.aiDisposition, PerformanceAiDisposition.running);
   });
 
-  test('every valid input in the cross product continues recording', () {
+  test('every valid input preserves recording and timing invariants', () {
     for (final mode in PerformanceMode.values) {
-      final timing = PerformancePolicyCatalog.standard.policyFor(mode).timing;
-      for (final thermal in PerformanceThermalPressure.values) {
-        for (final backlog in PerformanceBacklogPressure.values) {
-          for (final memory in PerformanceMemoryPressure.values) {
-            for (final lowPower in [false, true]) {
-              for (final acceleration in PerformanceAccelerationState.values) {
-                for (final engine in PerformanceEngineState.values) {
-                  final result = _decide(
-                    _input(
-                      requestedMode: mode,
-                      currentMode: mode,
-                      currentTiming: timing,
-                      thermalPressure: thermal,
-                      backlogPressure: backlog,
-                      memoryPressure: memory,
-                      isLowPower: lowPower,
-                      accelerationState: acceleration,
-                      engineState: engine,
-                    ),
-                  );
+      final allowedTiming = PerformancePolicyCatalog.standard
+          .policyFor(mode)
+          .timing;
+      for (final timing in PerformanceExecutionTiming.values) {
+        if (timing.index < allowedTiming.index) continue;
+        for (final thermal in PerformanceThermalPressure.values) {
+          for (final backlog in PerformanceBacklogPressure.values) {
+            for (final memory in PerformanceMemoryPressure.values) {
+              for (final lowPower in [false, true]) {
+                for (final acceleration
+                    in PerformanceAccelerationState.values) {
+                  for (final engine in PerformanceEngineState.values) {
+                    final result = _decide(
+                      _input(
+                        requestedMode: mode,
+                        currentMode: mode,
+                        currentTiming: timing,
+                        thermalPressure: thermal,
+                        backlogPressure: backlog,
+                        memoryPressure: memory,
+                        isLowPower: lowPower,
+                        accelerationState: acceleration,
+                        engineState: engine,
+                      ),
+                    );
 
-                  expect(
-                    result,
-                    isA<
-                      Ok<PerformancePolicyDecision, PerformancePolicyFailure>
-                    >(),
-                  );
-                  expect(_ok(result).continueRecording, isTrue);
+                    expect(
+                      result,
+                      isA<
+                        Ok<PerformancePolicyDecision, PerformancePolicyFailure>
+                      >(),
+                    );
+                    final decision = _ok(result);
+                    expect(decision.continueRecording, isTrue);
+                    if (decision.effectiveTiming ==
+                        PerformanceExecutionTiming.disabled) {
+                      expect(
+                        decision.aiDisposition,
+                        PerformanceAiDisposition.disabled,
+                      );
+                      if (engine == PerformanceEngineState.available) {
+                        expect(decision.postSessionQueued, isFalse);
+                      }
+                    }
+                  }
                 }
               }
             }
