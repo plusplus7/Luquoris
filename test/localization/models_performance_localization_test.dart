@@ -53,4 +53,82 @@ void main() {
     );
     expect(chinese.benchmarkExportFailed, '无法导出报告，请重试。');
   });
+
+  test('performance policy vocabulary exists in both locales', () {
+    final english = AppLocalizationsEn();
+    final chinese = AppLocalizationsZh();
+
+    expect(
+      english.performancePolicyHeading,
+      'Operating modes and recording protection',
+    );
+    expect(chinese.performancePolicyHeading, '运行模式与录音保护');
+    expect(
+      english.performancePolicyLockedBody,
+      'Modes remain informational until a compatible local inference runtime '
+      'and model pass validation. This screen never changes settings '
+      'automatically.',
+    );
+    expect(
+      chinese.performancePolicyLockedBody,
+      '在兼容的本地推理运行时和模型通过验证前，这些模式仅供说明。本页面绝不会自动更改设置。',
+    );
+    expect(
+      english.performancePolicyRecommendedLabel,
+      'Recommended by this check',
+    );
+    expect(chinese.performancePolicyRecommendedLabel, '本次检查推荐');
+    expect(
+      english.performancePolicyTimingLiveOrPostSession,
+      'During recording or after recording',
+    );
+    expect(
+      chinese.performancePolicyTimingLiveOrPostSession,
+      '录音期间或录音结束后',
+    );
+    expect(
+      english.performancePolicyTimingPostSessionOnly,
+      'After recording only',
+    );
+    expect(chinese.performancePolicyTimingPostSessionOnly, '仅在录音结束后');
+    expect(english.performancePolicyTimingDisabled, 'AI processing off');
+    expect(chinese.performancePolicyTimingDisabled, 'AI 处理已关闭');
+    expect(
+      english.performancePolicyProtectionHeading,
+      'How Loquiris protects recording',
+    );
+    expect(chinese.performancePolicyProtectionHeading, 'Loquiris 如何保护录音');
+    expect(
+      english.performancePolicyProtectionModerateThermal,
+      'Moderate heat reduces AI concurrency.',
+    );
+    expect(
+      chinese.performancePolicyProtectionModerateThermal,
+      '中度发热时会降低 AI 并发。',
+    );
+    expect(
+      english.performancePolicyProtectionSevereThermal,
+      'Severe heat pauses AI while recording continues.',
+    );
+    expect(
+      chinese.performancePolicyProtectionSevereThermal,
+      '严重发热时会暂停 AI，但录音继续。',
+    );
+    expect(
+      english.performancePolicyProtectionBacklog,
+      'Sustained backlog moves unfinished work to after recording.',
+    );
+    expect(
+      chinese.performancePolicyProtectionBacklog,
+      '持续积压会把未完成的工作移到录音结束后。',
+    );
+    expect(
+      english.performancePolicyProtectionRecordingFirst,
+      'Engine or resource failure never discards canonical recording audio.',
+    );
+    expect(
+      chinese.performancePolicyProtectionRecordingFirst,
+      '引擎或资源故障绝不会丢弃权威录音音频。',
+    );
+  });
 }

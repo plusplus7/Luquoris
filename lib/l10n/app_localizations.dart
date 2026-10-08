@@ -248,6 +248,132 @@ abstract class AppLocalizations {
   /// **'The check uses a bundled 45-second Mandarin and English audio sample. It never turns on the microphone, saves a recording, or changes settings.'**
   String get benchmarkFixedAudioDisclosure;
 
+  /// Heading above the read-only performance policy overview on the Models and Performance screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Operating modes and recording protection'**
+  String get performancePolicyHeading;
+
+  /// Locked-availability explanation repeated in each performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Modes remain informational until a compatible local inference runtime and model pass validation. This screen never changes settings automatically.'**
+  String get performancePolicyLockedBody;
+
+  /// Non-interactive marker on the policy card recommended by the completed benchmark.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended by this check'**
+  String get performancePolicyRecommendedLabel;
+
+  /// Timing label on performance policy cards that permit live or post-session processing.
+  ///
+  /// In en, this message translates to:
+  /// **'During recording or after recording'**
+  String get performancePolicyTimingLiveOrPostSession;
+
+  /// Timing label on performance policy cards restricted to post-session processing.
+  ///
+  /// In en, this message translates to:
+  /// **'After recording only'**
+  String get performancePolicyTimingPostSessionOnly;
+
+  /// Timing label on the recording-only policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'AI processing off'**
+  String get performancePolicyTimingDisabled;
+
+  /// Description on the high-quality performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses a validated higher-quality model after recording.'**
+  String get performancePolicyHighQualityDescription;
+
+  /// Fallback explanation on the high-quality performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Falls back to balanced post-session processing, then recording only.'**
+  String get performancePolicyHighQualityFallback;
+
+  /// Description on the balanced performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Balances transcript quality with device resources.'**
+  String get performancePolicyBalancedDescription;
+
+  /// Fallback explanation on the balanced performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduces resource use, defers work, or keeps recording only.'**
+  String get performancePolicyBalancedFallback;
+
+  /// Description on the power-saving performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses a smaller model or reduced concurrency when validated.'**
+  String get performancePolicyPowerSavingDescription;
+
+  /// Fallback explanation on the power-saving performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Defers work until after recording, then keeps recording only if needed.'**
+  String get performancePolicyPowerSavingFallback;
+
+  /// Description on the post-session performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserves capture-time resources and analyzes locally after recording.'**
+  String get performancePolicyPostSessionDescription;
+
+  /// Fallback explanation on the post-session performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording remains available if analysis cannot run.'**
+  String get performancePolicyPostSessionFallback;
+
+  /// Description on the recording-only performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Saves canonical audio without running AI.'**
+  String get performancePolicyRecordingOnlyDescription;
+
+  /// Fallback explanation on the recording-only performance policy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording continues without an AI fallback.'**
+  String get performancePolicyRecordingOnlyFallback;
+
+  /// Heading above recording-protection explanations in the performance policy overview.
+  ///
+  /// In en, this message translates to:
+  /// **'How Loquiris protects recording'**
+  String get performancePolicyProtectionHeading;
+
+  /// Moderate-thermal protection explanation in the performance policy overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate heat reduces AI concurrency.'**
+  String get performancePolicyProtectionModerateThermal;
+
+  /// Severe-thermal protection explanation in the performance policy overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Severe heat pauses AI while recording continues.'**
+  String get performancePolicyProtectionSevereThermal;
+
+  /// Backlog protection explanation in the performance policy overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Sustained backlog moves unfinished work to after recording.'**
+  String get performancePolicyProtectionBacklog;
+
+  /// Recording-first failure protection explanation in the performance policy overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine or resource failure never discards canonical recording audio.'**
+  String get performancePolicyProtectionRecordingFirst;
+
   /// No description provided for @benchmarkUnavailableHeading.
   ///
   /// In en, this message translates to:

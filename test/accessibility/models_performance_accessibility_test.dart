@@ -15,6 +15,103 @@ import '../support/fakes/fake_performance_benchmark_runner.dart';
 import '../support/harness.dart';
 
 void main() {
+  testWidgets(
+    'policy cards expose mode timing availability and fallback semantics',
+    (tester) async {
+      final runner = FakePerformanceBenchmarkRunner(
+        availability: const BenchmarkUnavailable(
+          'benchmark_runtime_not_installed',
+        ),
+      );
+      await tester.pumpWidget(_app(runner));
+      await tester.pump();
+
+      final expectations = <PerformanceMode, List<String>>{
+        PerformanceMode.highQuality: const [
+          'High quality',
+          'After recording only',
+          'Falls back to balanced post-session processing, then recording only.',
+        ],
+        PerformanceMode.balanced: const [
+          'Balanced',
+          'During recording or after recording',
+          'Reduces resource use, defers work, or keeps recording only.',
+        ],
+        PerformanceMode.powerSaving: const [
+          'Power saving',
+          'During recording or after recording',
+          'Defers work until after recording, then keeps recording only if needed.',
+        ],
+        PerformanceMode.postSession: const [
+          'Post-session processing',
+          'After recording only',
+          'Recording remains available if analysis cannot run.',
+        ],
+        PerformanceMode.recordingOnly: const [
+          'Recording only',
+          'AI processing off',
+          'Recording continues without an AI fallback.',
+        ],
+      };
+
+      for (final entry in expectations.entries) {
+        final card = find.byKey(
+          Key('performance-policy-${entry.key.name}'),
+        );
+        await tester.ensureVisible(card);
+        final semantics = tester.getSemantics(card);
+
+        for (final fragment in entry.value) {
+          expect(semantics.label, contains(fragment));
+        }
+        expect(
+          semantics.label,
+          contains('Modes remain informational until a compatible local'),
+        );
+        expect(
+          semantics,
+          isSemantics(
+            label: semantics.label,
+            isButton: false,
+            hasTapAction: false,
+          ),
+        );
+      }
+    },
+  );
+
+  testWidgets('policy overview survives compact width and 200 percent text', (
+    tester,
+  ) async {
+    tester.useDevice(TestDevice.compact);
+    final runner = FakePerformanceBenchmarkRunner(
+      availability: const BenchmarkUnavailable(
+        'benchmark_runtime_not_installed',
+      ),
+    );
+
+    await tester.pumpWidget(
+      _app(
+        runner,
+        textScaler: const TextScaler.linear(2),
+        boldText: true,
+      ),
+    );
+    await tester.pump();
+
+    final recordingOnly = find.byKey(
+      const Key('performance-policy-recordingOnly'),
+    );
+    await tester.ensureVisible(recordingOnly);
+    expect(tester.getSize(recordingOnly).width, lessThanOrEqualTo(320));
+    await tester.ensureVisible(
+      find.text('How Loquiris protects recording'),
+    );
+
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('compact 200 percent text stays scrollable and operable', (
     tester,
   ) async {

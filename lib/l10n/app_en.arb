@@ -100,6 +100,90 @@
   "@benchmarkFixedAudioDisclosure": {
     "description": "Discloses the fixed benchmark input and guarantees microphone and settings isolation."
   },
+  "performancePolicyHeading": "Operating modes and recording protection",
+  "@performancePolicyHeading": {
+    "description": "Heading above the read-only performance policy overview on the Models and Performance screen."
+  },
+  "performancePolicyLockedBody": "Modes remain informational until a compatible local inference runtime and model pass validation. This screen never changes settings automatically.",
+  "@performancePolicyLockedBody": {
+    "description": "Locked-availability explanation repeated in each performance policy card."
+  },
+  "performancePolicyRecommendedLabel": "Recommended by this check",
+  "@performancePolicyRecommendedLabel": {
+    "description": "Non-interactive marker on the policy card recommended by the completed benchmark."
+  },
+  "performancePolicyTimingLiveOrPostSession": "During recording or after recording",
+  "@performancePolicyTimingLiveOrPostSession": {
+    "description": "Timing label on performance policy cards that permit live or post-session processing."
+  },
+  "performancePolicyTimingPostSessionOnly": "After recording only",
+  "@performancePolicyTimingPostSessionOnly": {
+    "description": "Timing label on performance policy cards restricted to post-session processing."
+  },
+  "performancePolicyTimingDisabled": "AI processing off",
+  "@performancePolicyTimingDisabled": {
+    "description": "Timing label on the recording-only policy card."
+  },
+  "performancePolicyHighQualityDescription": "Uses a validated higher-quality model after recording.",
+  "@performancePolicyHighQualityDescription": {
+    "description": "Description on the high-quality performance policy card."
+  },
+  "performancePolicyHighQualityFallback": "Falls back to balanced post-session processing, then recording only.",
+  "@performancePolicyHighQualityFallback": {
+    "description": "Fallback explanation on the high-quality performance policy card."
+  },
+  "performancePolicyBalancedDescription": "Balances transcript quality with device resources.",
+  "@performancePolicyBalancedDescription": {
+    "description": "Description on the balanced performance policy card."
+  },
+  "performancePolicyBalancedFallback": "Reduces resource use, defers work, or keeps recording only.",
+  "@performancePolicyBalancedFallback": {
+    "description": "Fallback explanation on the balanced performance policy card."
+  },
+  "performancePolicyPowerSavingDescription": "Uses a smaller model or reduced concurrency when validated.",
+  "@performancePolicyPowerSavingDescription": {
+    "description": "Description on the power-saving performance policy card."
+  },
+  "performancePolicyPowerSavingFallback": "Defers work until after recording, then keeps recording only if needed.",
+  "@performancePolicyPowerSavingFallback": {
+    "description": "Fallback explanation on the power-saving performance policy card."
+  },
+  "performancePolicyPostSessionDescription": "Reserves capture-time resources and analyzes locally after recording.",
+  "@performancePolicyPostSessionDescription": {
+    "description": "Description on the post-session performance policy card."
+  },
+  "performancePolicyPostSessionFallback": "Recording remains available if analysis cannot run.",
+  "@performancePolicyPostSessionFallback": {
+    "description": "Fallback explanation on the post-session performance policy card."
+  },
+  "performancePolicyRecordingOnlyDescription": "Saves canonical audio without running AI.",
+  "@performancePolicyRecordingOnlyDescription": {
+    "description": "Description on the recording-only performance policy card."
+  },
+  "performancePolicyRecordingOnlyFallback": "Recording continues without an AI fallback.",
+  "@performancePolicyRecordingOnlyFallback": {
+    "description": "Fallback explanation on the recording-only performance policy card."
+  },
+  "performancePolicyProtectionHeading": "How Loquiris protects recording",
+  "@performancePolicyProtectionHeading": {
+    "description": "Heading above recording-protection explanations in the performance policy overview."
+  },
+  "performancePolicyProtectionModerateThermal": "Moderate heat reduces AI concurrency.",
+  "@performancePolicyProtectionModerateThermal": {
+    "description": "Moderate-thermal protection explanation in the performance policy overview."
+  },
+  "performancePolicyProtectionSevereThermal": "Severe heat pauses AI while recording continues.",
+  "@performancePolicyProtectionSevereThermal": {
+    "description": "Severe-thermal protection explanation in the performance policy overview."
+  },
+  "performancePolicyProtectionBacklog": "Sustained backlog moves unfinished work to after recording.",
+  "@performancePolicyProtectionBacklog": {
+    "description": "Backlog protection explanation in the performance policy overview."
+  },
+  "performancePolicyProtectionRecordingFirst": "Engine or resource failure never discards canonical recording audio.",
+  "@performancePolicyProtectionRecordingFirst": {
+    "description": "Recording-first failure protection explanation in the performance policy overview."
+  },
   "benchmarkUnavailableHeading": "Performance check unavailable",
   "benchmarkUnavailableRuntimeBody": "The local benchmark runtime is not installed in this build. Recording remains available.",
   "benchmarkReadyHeading": "Ready for the offline check",

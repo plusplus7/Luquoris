@@ -35,6 +35,49 @@ void main() {
     expect(find.byKey(const Key('benchmark-start')), findsNothing);
   });
 
+  testWidgets('unavailable runtime still explains all five locked policies', (
+    tester,
+  ) async {
+    final runner = FakePerformanceBenchmarkRunner(
+      availability: const BenchmarkUnavailable(
+        'benchmark_runtime_not_installed',
+      ),
+    );
+
+    await tester.pumpWidget(_app(runner));
+    await tester.pump();
+
+    expect(
+      find.byKey(const Key('performance-policy-overview')),
+      findsOneWidget,
+    );
+    for (final mode in PerformanceMode.values) {
+      final card = find.byKey(Key('performance-policy-${mode.name}'));
+      expect(card, findsOneWidget);
+      expect(
+        find.descendant(
+          of: card,
+          matching: find.text(
+            'Modes remain informational until a compatible local inference '
+            'runtime and model pass validation. This screen never changes '
+            'settings automatically.',
+          ),
+        ),
+        findsOneWidget,
+      );
+      await tester.ensureVisible(card);
+      await tester.tap(card);
+      await tester.pump();
+    }
+
+    expect(find.byType(Radio<PerformanceMode>), findsNothing);
+    expect(find.byType(RadioListTile<PerformanceMode>), findsNothing);
+    expect(find.byType(ChoiceChip), findsNothing);
+    expect(find.byType(SegmentedButton<PerformanceMode>), findsNothing);
+    expect(find.byKey(const Key('benchmark-apply')), findsNothing);
+    expect(runner.runCalls, 0);
+  });
+
   testWidgets('ready start is explicit and duplicate taps run only once', (
     tester,
   ) async {
@@ -106,6 +149,82 @@ void main() {
     expect(find.byKey(const Key('benchmark-apply')), findsNothing);
     expect(find.textContaining('Apply recommendation'), findsNothing);
   });
+
+  testWidgets(
+    'completed benchmark highlights recommendation without applying or selecting it',
+    (tester) async {
+      final run = _ControlledRun();
+      final runner = FakePerformanceBenchmarkRunner(onRun: (_) => run.stream);
+      await tester.pumpWidget(_app(runner));
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('benchmark-start')));
+      run.add(BenchmarkSucceeded(_report()));
+      await tester.pump();
+
+      final balancedCard = find.byKey(
+        const Key('performance-policy-balanced'),
+      );
+      await tester.ensureVisible(balancedCard);
+      expect(
+        find.descendant(
+          of: balancedCard,
+          matching: find.text('Recommended by this check'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Recommended by this check'), findsOneWidget);
+      expect(find.byKey(const Key('benchmark-apply')), findsNothing);
+      expect(find.byType(Radio<PerformanceMode>), findsNothing);
+      expect(find.byType(ChoiceChip), findsNothing);
+
+      await tester.tap(balancedCard);
+      await tester.pump();
+
+      expect(runner.runCalls, 1);
+      expect(find.text('Recommended by this check'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'policy overview explains thermal backlog and recording first recovery',
+    (tester) async {
+      final runner = FakePerformanceBenchmarkRunner(
+        availability: const BenchmarkUnavailable(
+          'benchmark_runtime_not_installed',
+        ),
+      );
+
+      await tester.pumpWidget(_app(runner));
+      await tester.pump();
+
+      final protection = find.text('How Loquiris protects recording');
+      await tester.ensureVisible(protection);
+
+      expect(protection, findsOneWidget);
+      expect(
+        find.text('Moderate heat reduces AI concurrency.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Severe heat pauses AI while recording continues.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Sustained backlog moves unfinished work to after recording.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Engine or resource failure never discards canonical recording '
+          'audio.',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('typed failure is retryable without stale recommendation', (
     tester,

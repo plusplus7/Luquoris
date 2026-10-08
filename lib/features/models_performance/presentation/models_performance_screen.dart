@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loquiris/features/models_performance/domain/performance_benchmark.dart';
+import 'package:loquiris/features/models_performance/domain/performance_policy.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/models_performance/presentation/models_performance_controller.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
 import 'package:loquiris/theme/loquiris_tokens.dart';
 
 part 'models_performance_screen_content.dart';
+part 'performance_policy_overview.dart';
 
 /// Shows the explicit fixed-audio benchmark and its advisory recommendation.
 final class ModelsPerformanceScreen extends ConsumerWidget {
@@ -52,6 +54,10 @@ final class ModelsPerformanceScreen extends ConsumerWidget {
     final state = ref.watch(modelsPerformanceControllerProvider);
     final controller = ref.read(modelsPerformanceControllerProvider.notifier);
     final spacing = LoquirisSpacing.of(context);
+    final recommendedMode = switch (state) {
+      ModelsPerformanceCompleted(:final recommendation) => recommendation.mode,
+      _ => null,
+    };
     return Scaffold(
       key: const ValueKey<String>('models-performance'),
       appBar: AppBar(title: Text(l10n.modelsPerformanceTitle)),
@@ -73,6 +79,10 @@ final class ModelsPerformanceScreen extends ConsumerWidget {
                     onStart: controller.start,
                     onCancel: () => unawaited(controller.cancel()),
                     onExport: controller.exportReport,
+                  ),
+                  SizedBox(height: spacing.section),
+                  _PerformancePolicyOverview(
+                    recommendedMode: recommendedMode,
                   ),
                 ],
               ),

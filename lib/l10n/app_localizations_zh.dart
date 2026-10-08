@@ -85,6 +85,70 @@ class AppLocalizationsZh extends AppLocalizations {
       '检查使用内置的 45 秒中英文混合音频。它不会启动麦克风、保存录音或更改设置。';
 
   @override
+  String get performancePolicyHeading => '运行模式与录音保护';
+
+  @override
+  String get performancePolicyLockedBody =>
+      '在兼容的本地推理运行时和模型通过验证前，这些模式仅供说明。本页面绝不会自动更改设置。';
+
+  @override
+  String get performancePolicyRecommendedLabel => '本次检查推荐';
+
+  @override
+  String get performancePolicyTimingLiveOrPostSession => '录音期间或录音结束后';
+
+  @override
+  String get performancePolicyTimingPostSessionOnly => '仅在录音结束后';
+
+  @override
+  String get performancePolicyTimingDisabled => 'AI 处理已关闭';
+
+  @override
+  String get performancePolicyHighQualityDescription => '录音结束后使用通过验证的更高质量模型。';
+
+  @override
+  String get performancePolicyHighQualityFallback => '可降为均衡的会后处理，最后仅保留录音。';
+
+  @override
+  String get performancePolicyBalancedDescription => '在转写质量与设备资源之间取得平衡。';
+
+  @override
+  String get performancePolicyBalancedFallback => '可降低资源使用、延后处理，或仅保留录音。';
+
+  @override
+  String get performancePolicyPowerSavingDescription => '通过验证后，使用更小的模型或更低的并发。';
+
+  @override
+  String get performancePolicyPowerSavingFallback => '可将处理延后到录音结束后，必要时仅保留录音。';
+
+  @override
+  String get performancePolicyPostSessionDescription => '录音时保留资源，结束后再在本机分析。';
+
+  @override
+  String get performancePolicyPostSessionFallback => '即使无法分析，录音仍然可用。';
+
+  @override
+  String get performancePolicyRecordingOnlyDescription => '保存权威音频，不运行 AI。';
+
+  @override
+  String get performancePolicyRecordingOnlyFallback => '录音继续，不再执行 AI 降级。';
+
+  @override
+  String get performancePolicyProtectionHeading => 'Loquiris 如何保护录音';
+
+  @override
+  String get performancePolicyProtectionModerateThermal => '中度发热时会降低 AI 并发。';
+
+  @override
+  String get performancePolicyProtectionSevereThermal => '严重发热时会暂停 AI，但录音继续。';
+
+  @override
+  String get performancePolicyProtectionBacklog => '持续积压会把未完成的工作移到录音结束后。';
+
+  @override
+  String get performancePolicyProtectionRecordingFirst => '引擎或资源故障绝不会丢弃权威录音音频。';
+
+  @override
   String get benchmarkUnavailableHeading => '性能检查不可用';
 
   @override
