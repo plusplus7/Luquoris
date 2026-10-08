@@ -19,6 +19,36 @@ final class ModelsPerformanceScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    ref.listen(
+      modelsPerformanceControllerProvider.select(
+        (state) => switch (state) {
+          ModelsPerformanceCompleted(
+            :final exportReceipt,
+            :final exportFailureCode,
+          ) =>
+            (receipt: exportReceipt, failureCode: exportFailureCode),
+          _ => (receipt: null, failureCode: null),
+        },
+      ),
+      (previous, next) {
+        final message = switch (next) {
+          (:final receipt?, failureCode: _)
+              when !identical(previous?.receipt, receipt) =>
+            l10n.benchmarkExportSucceeded(receipt.fileName),
+          (receipt: _, failureCode: 'export_cancelled')
+              when previous?.failureCode != next.failureCode =>
+            l10n.benchmarkExportCancelled,
+          (receipt: _, :final failureCode?)
+              when previous?.failureCode != failureCode =>
+            l10n.benchmarkExportFailed,
+          _ => null,
+        };
+        if (message == null) return;
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(message)));
+      },
+    );
     final state = ref.watch(modelsPerformanceControllerProvider);
     final controller = ref.read(modelsPerformanceControllerProvider.notifier);
     final spacing = LoquirisSpacing.of(context);
@@ -42,6 +72,7 @@ final class ModelsPerformanceScreen extends ConsumerWidget {
                     state: state,
                     onStart: controller.start,
                     onCancel: () => unawaited(controller.cancel()),
+                    onExport: controller.exportReport,
                   ),
                 ],
               ),
@@ -58,11 +89,13 @@ final class _BenchmarkStateView extends StatelessWidget {
     required this.state,
     required this.onStart,
     required this.onCancel,
+    required this.onExport,
   });
 
   final ModelsPerformanceState state;
   final VoidCallback onStart;
   final VoidCallback onCancel;
+  final Future<void> Function() onExport;
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +118,17 @@ final class _BenchmarkStateView extends StatelessWidget {
         progress: progress,
         onCancel: onCancel,
       ),
-      ModelsPerformanceCompleted(:final report, :final recommendation) =>
+      ModelsPerformanceCompleted(
+        :final report,
+        :final recommendation,
+        :final isExporting,
+      ) =>
         _BenchmarkCompleted(
           report: report,
           recommendation: recommendation,
+          isExporting: isExporting,
           onRerun: onStart,
+          onExport: onExport,
         ),
       ModelsPerformanceFailed(:final failure) => _BenchmarkMessage(
         icon: Icons.error_outline,
@@ -187,7 +226,7 @@ final class _BenchmarkAction extends StatelessWidget {
   final String label;
   final IconData icon;
   final double sortOrder;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool outlined;
 
   @override
@@ -209,7 +248,7 @@ final class _BenchmarkAction extends StatelessWidget {
     return Semantics(
       container: true,
       button: true,
-      enabled: true,
+      enabled: onPressed != null,
       label: label,
       onTap: onPressed,
       sortKey: OrdinalSortKey(sortOrder),

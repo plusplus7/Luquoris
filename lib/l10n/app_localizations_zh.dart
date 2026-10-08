@@ -208,4 +208,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get benchmarkFailedSemantic => '性能检查失败';
+
+  @override
+  String get benchmarkExportAction => '导出报告';
+
+  @override
+  String get benchmarkExportingAction => '正在导出报告…';
+
+  @override
+  String benchmarkExportSucceeded(String fileName) {
+    return '已保存 $fileName。';
+  }
+
+  @override
+  String get benchmarkExportCancelled => '已取消导出，未保存任何文件。';
+
+  @override
+  String get benchmarkExportFailed => '无法导出报告，请重试。';
 }

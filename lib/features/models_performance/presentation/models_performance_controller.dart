@@ -4,9 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loquiris/core/domain/value_object.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/models_performance/application/benchmark_recommendation_policy.dart';
+import 'package:loquiris/features/models_performance/application/benchmark_report_exporter.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/features/models_performance/domain/performance_benchmark.dart';
+import 'package:loquiris/services/service_contracts.dart';
+import 'package:loquiris/services/service_providers.dart';
+import 'package:uuid/uuid.dart';
+
+/// Creates a fresh opaque identity for each benchmark export operation.
+final benchmarkExportOperationIdProvider = Provider<String Function()>(
+  (ref) => const Uuid().v4,
+);
 
 /// Immutable lifecycle state for the first-run performance check.
 sealed class ModelsPerformanceState extends ValueObject {
@@ -52,6 +61,9 @@ final class ModelsPerformanceCompleted extends ModelsPerformanceState {
   const ModelsPerformanceCompleted({
     required this.report,
     required this.recommendation,
+    this.isExporting = false,
+    this.exportReceipt,
+    this.exportFailureCode,
   });
 
   /// Exact versioned report emitted by the runner.
@@ -60,8 +72,43 @@ final class ModelsPerformanceCompleted extends ModelsPerformanceState {
   /// Pure recommendation derived from [report].
   final BenchmarkRecommendation recommendation;
 
+  /// Whether the exact completed report is currently being exported.
+  final bool isExporting;
+
+  /// Receipt from the latest successful export, when present.
+  final ExportReceipt? exportReceipt;
+
+  /// Privacy-safe code from the latest unsuccessful export, when present.
+  final String? exportFailureCode;
+
+  /// Returns an export-state update while preserving the measured result.
+  ModelsPerformanceCompleted copyWithExport({
+    bool? isExporting,
+    ExportReceipt? receipt,
+    String? failureCode,
+    bool clearOutcome = false,
+  }) {
+    return ModelsPerformanceCompleted(
+      report: report,
+      recommendation: recommendation,
+      isExporting: isExporting ?? this.isExporting,
+      exportReceipt: clearOutcome || failureCode != null
+          ? null
+          : receipt ?? exportReceipt,
+      exportFailureCode: clearOutcome || receipt != null
+          ? null
+          : failureCode ?? exportFailureCode,
+    );
+  }
+
   @override
-  List<Object?> get equalityValues => <Object?>[report, recommendation];
+  List<Object?> get equalityValues => <Object?>[
+    report,
+    recommendation,
+    isExporting,
+    exportReceipt,
+    exportFailureCode,
+  ];
 }
 
 /// The run stopped with a typed, privacy-safe failure.
@@ -161,6 +208,47 @@ final class ModelsPerformanceController
     } on Object {
       // Cancellation is best-effort; the generation guard still rejects events.
     }
+  }
+
+  /// Exports the current completed report, coalescing concurrent requests.
+  Future<void> exportReport() async {
+    final completed = state;
+    if (completed is! ModelsPerformanceCompleted || completed.isExporting) {
+      return;
+    }
+
+    state = completed.copyWithExport(isExporting: true);
+    late final Result<ExportReceipt, ExportFailure> outcome;
+    try {
+      outcome = await ref
+          .read(benchmarkReportExporterProvider)
+          .export(
+            report: completed.report,
+            operationId: ref.read(benchmarkExportOperationIdProvider)(),
+            createdAtUtc: ref.read(clockProvider).now().toUtc(),
+          );
+    } on Object {
+      outcome = const Err(
+        ExportUnavailable('benchmark_export_exception'),
+      );
+    }
+
+    if (!ref.mounted) return;
+    final latest = state;
+    if (latest is! ModelsPerformanceCompleted ||
+        !identical(latest.report, completed.report)) {
+      return;
+    }
+    state = switch (outcome) {
+      Ok(:final value) => latest.copyWithExport(
+        isExporting: false,
+        receipt: value,
+      ),
+      Err(:final failure) => latest.copyWithExport(
+        isExporting: false,
+        failureCode: failure.code,
+      ),
+    };
   }
 
   void _onEvent(int generation, PerformanceBenchmarkEvent event) {

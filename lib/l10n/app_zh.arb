@@ -62,5 +62,10 @@
   "benchmarkFailureRuntimeUnavailable": "本地性能检查运行环境不可用。录音功能仍可使用。",
   "benchmarkFailureGeneric": "本地检查意外停止，没有保存任何建议。",
   "benchmarkCompletedSemantic": "性能检查已完成",
-  "benchmarkFailedSemantic": "性能检查失败"
+  "benchmarkFailedSemantic": "性能检查失败",
+  "benchmarkExportAction": "导出报告",
+  "benchmarkExportingAction": "正在导出报告…",
+  "benchmarkExportSucceeded": "已保存 {fileName}。",
+  "benchmarkExportCancelled": "已取消导出，未保存任何文件。",
+  "benchmarkExportFailed": "无法导出报告，请重试。"
 }

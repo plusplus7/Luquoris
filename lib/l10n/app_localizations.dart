@@ -475,6 +475,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Performance check failed'**
   String get benchmarkFailedSemantic;
+
+  /// No description provided for @benchmarkExportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Export report'**
+  String get benchmarkExportAction;
+
+  /// No description provided for @benchmarkExportingAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting report…'**
+  String get benchmarkExportingAction;
+
+  /// Confirms a benchmark report export using only the destination-provided display filename.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {fileName}.'**
+  String benchmarkExportSucceeded(String fileName);
+
+  /// No description provided for @benchmarkExportCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Export cancelled. No file was saved.'**
+  String get benchmarkExportCancelled;
+
+  /// No description provided for @benchmarkExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Report could not be exported. Try again.'**
+  String get benchmarkExportFailed;
 }
 
 class _AppLocalizationsDelegate

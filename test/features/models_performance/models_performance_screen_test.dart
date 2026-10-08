@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/models_performance/application/benchmark_report_exporter.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/features/models_performance/domain/performance_benchmark.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/models_performance/presentation/models_performance_screen.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
+import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
 import 'package:loquiris/theme/app_theme.dart';
 
@@ -155,14 +158,159 @@ void main() {
     expect(find.byKey(const Key('benchmark-progress')), findsOneWidget);
     expect(find.text('Recommended mode'), findsNothing);
   });
+
+  testWidgets('export action appears only for completed report', (
+    tester,
+  ) async {
+    final runs = [_ControlledRun(), _ControlledRun()];
+    var runIndex = 0;
+    final runner = FakePerformanceBenchmarkRunner(
+      onRun: (_) => runs[runIndex++].stream,
+    );
+    await tester.pumpWidget(_app(runner));
+    await tester.pump();
+
+    expect(find.byKey(const Key('benchmark-export')), findsNothing);
+    await tester.tap(find.byKey(const Key('benchmark-start')));
+    await tester.pump();
+    expect(find.byKey(const Key('benchmark-export')), findsNothing);
+    await tester.tap(find.byKey(const Key('benchmark-cancel')));
+    await tester.pump();
+    expect(find.byKey(const Key('benchmark-export')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('benchmark-start')));
+    runs[1].add(const BenchmarkRunFailed(BenchmarkInvalidOutput()));
+    await tester.pump();
+    expect(find.byKey(const Key('benchmark-export')), findsNothing);
+
+    await tester.pumpWidget(
+      _app(
+        FakePerformanceBenchmarkRunner(
+          availability: const BenchmarkUnavailable('runtime_missing'),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byKey(const Key('benchmark-export')), findsNothing);
+
+    final completedRun = _ControlledRun();
+    await tester.pumpWidget(
+      _app(
+        FakePerformanceBenchmarkRunner(onRun: (_) => completedRun.stream),
+      ),
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('benchmark-start')));
+    completedRun.add(BenchmarkSucceeded(_report()));
+    await tester.pump();
+
+    expect(find.byKey(const Key('benchmark-export')), findsOneWidget);
+  });
+
+  testWidgets(
+    'export action disables while in flight and duplicate taps write once',
+    (
+      tester,
+    ) async {
+      final pending = Completer<Result<ExportReceipt, ExportFailure>>();
+      final exporter = _FakeBenchmarkReportExporter(
+        onExport: () => pending.future,
+      );
+      final run = _ControlledRun();
+      await tester.pumpWidget(
+        _app(
+          FakePerformanceBenchmarkRunner(onRun: (_) => run.stream),
+          exporter: exporter,
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('benchmark-start')));
+      run.add(BenchmarkSucceeded(_report()));
+      await tester.pump();
+
+      final export = find.byKey(const Key('benchmark-export'));
+      await tester.ensureVisible(export);
+      await tester.tap(export);
+      await tester.tap(export);
+      await tester.pump();
+
+      expect(exporter.calls, 1);
+      expect(find.text('Exporting report…'), findsOneWidget);
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.descendant(
+                of: export,
+                matching: find.byType(OutlinedButton),
+              ),
+            )
+            .onPressed,
+        isNull,
+      );
+
+      pending.complete(Ok(_receipt()));
+      await tester.pump();
+      expect(exporter.calls, 1);
+    },
+  );
+
+  testWidgets(
+    'success cancellation and failure show localized feedback without changing recommendation',
+    (tester) async {
+      final outcomes = <Result<ExportReceipt, ExportFailure>>[
+        Ok(_receipt()),
+        const Err(ExportUnavailable('export_cancelled')),
+        const Err(ExportUnavailable('content://private/raw-exception')),
+      ];
+      final exporter = _FakeBenchmarkReportExporter(
+        onExport: () async => outcomes.removeAt(0),
+      );
+      final run = _ControlledRun();
+      await tester.pumpWidget(
+        _app(
+          FakePerformanceBenchmarkRunner(onRun: (_) => run.stream),
+          exporter: exporter,
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('benchmark-start')));
+      run.add(BenchmarkSucceeded(_report()));
+      await tester.pump();
+
+      final export = find.byKey(const Key('benchmark-export'));
+      for (final expectedFeedback in <String>[
+        'Saved benchmark-report.json.',
+        'Export cancelled. No file was saved.',
+        'Report could not be exported. Try again.',
+      ]) {
+        await tester.ensureVisible(export);
+        await tester.tap(export);
+        await tester.pump();
+        expect(find.text(expectedFeedback), findsOneWidget);
+        expect(find.text('Recommended mode'), findsOneWidget);
+        expect(find.text('Mode evidence'), findsOneWidget);
+        expect(find.textContaining('content://'), findsNothing);
+        expect(find.textContaining('raw-exception'), findsNothing);
+        ScaffoldMessenger.of(
+          tester.element(find.byType(Scaffold)),
+        ).hideCurrentSnackBar();
+        await tester.pumpAndSettle();
+      }
+
+      expect(exporter.calls, 3);
+    },
+  );
 }
 
 Widget _app(
   FakePerformanceBenchmarkRunner runner, {
   Locale locale = const Locale('en'),
+  BenchmarkReportExporter? exporter,
 }) => ProviderScope(
   overrides: [
     performanceBenchmarkRunnerProvider.overrideWithValue(runner),
+    if (exporter != null)
+      benchmarkReportExporterProvider.overrideWithValue(exporter),
     audioCaptureServiceProvider.overrideWith(
       (ref) => throw StateError('benchmark screen read audio capture'),
     ),
@@ -211,4 +359,28 @@ PerformanceBenchmarkReport _report() => PerformanceBenchmarkReport(
       status: BenchmarkMeasurementStatus.unmeasured,
     ),
   ],
+);
+
+final class _FakeBenchmarkReportExporter implements BenchmarkReportExporter {
+  _FakeBenchmarkReportExporter({
+    required this._onExport,
+  });
+
+  final Future<Result<ExportReceipt, ExportFailure>> Function() _onExport;
+  int calls = 0;
+
+  @override
+  Future<Result<ExportReceipt, ExportFailure>> export({
+    required PerformanceBenchmarkReport report,
+    required String operationId,
+    required DateTime createdAtUtc,
+  }) {
+    calls += 1;
+    return _onExport();
+  }
+}
+
+ExportReceipt _receipt() => ExportReceipt(
+  fileName: 'benchmark-report.json',
+  bytesWritten: 256,
 );

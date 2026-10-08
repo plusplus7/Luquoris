@@ -25,4 +25,32 @@ void main() {
     expect(english.benchmarkShortCheckLimitation, contains('short check'));
     expect(chinese.benchmarkShortCheckLimitation, contains('短时检查'));
   });
+
+  test('benchmark export copy exists in English and Chinese', () {
+    final english = AppLocalizationsEn();
+    final chinese = AppLocalizationsZh();
+
+    expect(english.benchmarkExportAction, 'Export report');
+    expect(chinese.benchmarkExportAction, '导出报告');
+    expect(english.benchmarkExportingAction, 'Exporting report…');
+    expect(chinese.benchmarkExportingAction, '正在导出报告…');
+    expect(
+      english.benchmarkExportSucceeded('benchmark-report.json'),
+      'Saved benchmark-report.json.',
+    );
+    expect(
+      chinese.benchmarkExportSucceeded('benchmark-report.json'),
+      '已保存 benchmark-report.json。',
+    );
+    expect(
+      english.benchmarkExportCancelled,
+      'Export cancelled. No file was saved.',
+    );
+    expect(chinese.benchmarkExportCancelled, '已取消导出，未保存任何文件。');
+    expect(
+      english.benchmarkExportFailed,
+      'Report could not be exported. Try again.',
+    );
+    expect(chinese.benchmarkExportFailed, '无法导出报告，请重试。');
+  });
 }

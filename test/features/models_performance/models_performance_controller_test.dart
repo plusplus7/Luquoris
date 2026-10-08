@@ -1,12 +1,17 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/models_performance/application/benchmark_report_exporter.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/features/models_performance/domain/performance_benchmark.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/models_performance/presentation/models_performance_controller.dart';
+import 'package:loquiris/services/service_contracts.dart';
+import 'package:loquiris/services/service_providers.dart';
 
 import '../../support/fakes/fake_performance_benchmark_runner.dart';
 
@@ -257,12 +262,208 @@ void main() {
       ),
     );
   });
+
+  test(
+    'completed report exports with fresh uuid and fixed utc clock',
+    () async {
+      final exporter = _FakeBenchmarkReportExporter();
+      final report = _report();
+      final instant = DateTime.utc(2026, 10, 2, 3, 4, 5);
+      final (:container, :controller) = _completedContainer(
+        exporter: exporter,
+        report: report,
+        operationId: 'fresh-operation-id',
+        clock: Clock.fixed(instant),
+      );
+
+      await controller.exportReport();
+
+      expect(exporter.calls, hasLength(1));
+      expect(exporter.calls.single.report, same(report));
+      expect(exporter.calls.single.operationId, 'fresh-operation-id');
+      expect(exporter.calls.single.createdAtUtc, instant);
+      expect(exporter.calls.single.createdAtUtc.isUtc, isTrue);
+      expect(
+        container.read(modelsPerformanceControllerProvider),
+        isA<ModelsPerformanceCompleted>()
+            .having((state) => state.isExporting, 'isExporting', isFalse)
+            .having(
+              (state) => state.exportReceipt?.fileName,
+              'fileName',
+              'benchmark-report.json',
+            )
+            .having((state) => state.exportFailureCode, 'failure', isNull),
+      );
+    },
+  );
+
+  test('duplicate export requests coalesce to one call', () async {
+    final pending = Completer<Result<ExportReceipt, ExportFailure>>();
+    final exporter = _FakeBenchmarkReportExporter(
+      onExport: (_) => pending.future,
+    );
+    final (:container, :controller) = _completedContainer(exporter: exporter);
+
+    final first = controller.exportReport();
+    final second = controller.exportReport();
+
+    expect(exporter.calls, hasLength(1));
+    expect(
+      container.read(modelsPerformanceControllerProvider),
+      isA<ModelsPerformanceCompleted>().having(
+        (state) => state.isExporting,
+        'isExporting',
+        isTrue,
+      ),
+    );
+    pending.complete(Ok(_receipt()));
+    await Future.wait([first, second]);
+    expect(exporter.calls, hasLength(1));
+  });
+
+  test('export outside completed state is ignored', () async {
+    final exporter = _FakeBenchmarkReportExporter();
+    final container = _container(
+      FakePerformanceBenchmarkRunner(),
+      exporter: exporter,
+    );
+
+    await container
+        .read(modelsPerformanceControllerProvider.notifier)
+        .exportReport();
+
+    expect(exporter.calls, isEmpty);
+    expect(
+      container.read(modelsPerformanceControllerProvider),
+      const ModelsPerformanceReady(),
+    );
+  });
+
+  test(
+    'success cancellation and failure retain exact report and recommendation',
+    () async {
+      final outcomes = <Result<ExportReceipt, ExportFailure>>[
+        Ok(_receipt()),
+        const Err(ExportUnavailable('export_cancelled')),
+        const Err(ExportUnavailable('destination_unavailable')),
+      ];
+
+      for (final outcome in outcomes) {
+        final exporter = _FakeBenchmarkReportExporter(
+          onExport: (_) async => outcome,
+        );
+        final report = _report();
+        final (:container, :controller) = _completedContainer(
+          exporter: exporter,
+          report: report,
+        );
+        final before =
+            container.read(modelsPerformanceControllerProvider)
+                as ModelsPerformanceCompleted;
+
+        await controller.exportReport();
+
+        final after =
+            container.read(modelsPerformanceControllerProvider)
+                as ModelsPerformanceCompleted;
+        expect(after.report, same(before.report));
+        expect(after.recommendation, same(before.recommendation));
+        expect(after.isExporting, isFalse);
+        switch (outcome) {
+          case Ok(:final value):
+            expect(after.exportReceipt, same(value));
+            expect(after.exportFailureCode, isNull);
+          case Err(:final failure):
+            expect(after.exportReceipt, isNull);
+            expect(after.exportFailureCode, failure.code);
+        }
+      }
+    },
+  );
+
+  test('rerun clears prior export outcome', () async {
+    final runs = [_ControlledRun(), _ControlledRun()];
+    var index = 0;
+    final exporter = _FakeBenchmarkReportExporter();
+    final container = _container(
+      FakePerformanceBenchmarkRunner(onRun: (_) => runs[index++].stream),
+      exporter: exporter,
+    );
+    final controller = container.read(
+      modelsPerformanceControllerProvider.notifier,
+    );
+    final start = controller.start;
+
+    start();
+    runs.first.add(BenchmarkSucceeded(_report()));
+    await controller.exportReport();
+    expect(
+      container.read(modelsPerformanceControllerProvider),
+      isA<ModelsPerformanceCompleted>().having(
+        (state) => state.exportReceipt,
+        'receipt',
+        isNotNull,
+      ),
+    );
+
+    start();
+
+    expect(
+      container.read(modelsPerformanceControllerProvider),
+      const ModelsPerformanceRunning(0),
+    );
+  });
+
+  test('disposed controller ignores late export completion', () async {
+    final pending = Completer<Result<ExportReceipt, ExportFailure>>();
+    final exporter = _FakeBenchmarkReportExporter(
+      onExport: (_) => pending.future,
+    );
+    final run = _ControlledRun();
+    final container = ProviderContainer.test(
+      overrides: [
+        performanceBenchmarkRunnerProvider.overrideWithValue(
+          FakePerformanceBenchmarkRunner(onRun: (_) => run.stream),
+        ),
+        benchmarkReportExporterProvider.overrideWithValue(exporter),
+        benchmarkExportOperationIdProvider.overrideWithValue(() => 'late'),
+        clockProvider.overrideWithValue(Clock.fixed(DateTime.utc(2026))),
+      ],
+    );
+    final states = <ModelsPerformanceState>[];
+    final subscription = container.listen(
+      modelsPerformanceControllerProvider,
+      (previous, next) => states.add(next),
+      fireImmediately: true,
+    );
+    final controller = container.read(
+      modelsPerformanceControllerProvider.notifier,
+    );
+    final start = controller.start;
+    start();
+    run.add(BenchmarkSucceeded(_report()));
+    final export = controller.exportReport();
+
+    subscription.close();
+    await Future<void>.delayed(Duration.zero);
+    final stateCountAfterDispose = states.length;
+    pending.complete(Ok(_receipt()));
+    await export;
+
+    expect(states, hasLength(stateCountAfterDispose));
+    container.dispose();
+  });
 }
 
-ProviderContainer _container(FakePerformanceBenchmarkRunner runner) {
+ProviderContainer _container(
+  FakePerformanceBenchmarkRunner runner, {
+  BenchmarkReportExporter? exporter,
+}) {
   final container = ProviderContainer.test(
     overrides: [
       performanceBenchmarkRunnerProvider.overrideWithValue(runner),
+      if (exporter != null)
+        benchmarkReportExporterProvider.overrideWithValue(exporter),
     ],
   );
   addTearDown(container.dispose);
@@ -273,6 +474,83 @@ ProviderContainer _container(FakePerformanceBenchmarkRunner runner) {
   );
   return container;
 }
+
+({
+  ProviderContainer container,
+  ModelsPerformanceController controller,
+})
+_completedContainer({
+  required _FakeBenchmarkReportExporter exporter,
+  PerformanceBenchmarkReport? report,
+  String operationId = 'operation-id',
+  Clock? clock,
+}) {
+  final run = _ControlledRun();
+  final container = ProviderContainer.test(
+    overrides: [
+      performanceBenchmarkRunnerProvider.overrideWithValue(
+        FakePerformanceBenchmarkRunner(onRun: (_) => run.stream),
+      ),
+      benchmarkReportExporterProvider.overrideWithValue(exporter),
+      benchmarkExportOperationIdProvider.overrideWithValue(() => operationId),
+      clockProvider.overrideWithValue(clock ?? Clock.fixed(DateTime.utc(2026))),
+    ],
+  );
+  addTearDown(container.dispose);
+  container.listen(
+    modelsPerformanceControllerProvider,
+    (previous, next) {},
+    fireImmediately: true,
+  );
+  final controller = container.read(
+    modelsPerformanceControllerProvider.notifier,
+  )..start();
+  run.add(BenchmarkSucceeded(report ?? _report()));
+  return (container: container, controller: controller);
+}
+
+final class _ExportCall {
+  const _ExportCall({
+    required this.report,
+    required this.operationId,
+    required this.createdAtUtc,
+  });
+
+  final PerformanceBenchmarkReport report;
+  final String operationId;
+  final DateTime createdAtUtc;
+}
+
+final class _FakeBenchmarkReportExporter implements BenchmarkReportExporter {
+  _FakeBenchmarkReportExporter({
+    Future<Result<ExportReceipt, ExportFailure>> Function(_ExportCall call)?
+    onExport,
+  }) : _onExport = onExport ?? ((_) async => Ok(_receipt()));
+
+  final Future<Result<ExportReceipt, ExportFailure>> Function(_ExportCall call)
+  _onExport;
+  final List<_ExportCall> calls = [];
+
+  @override
+  Future<Result<ExportReceipt, ExportFailure>> export({
+    required PerformanceBenchmarkReport report,
+    required String operationId,
+    required DateTime createdAtUtc,
+  }) {
+    final call = _ExportCall(
+      report: report,
+      operationId: operationId,
+      createdAtUtc: createdAtUtc,
+    );
+    calls.add(call);
+    return _onExport(call);
+  }
+}
+
+ExportReceipt _receipt() => ExportReceipt(
+  fileName: 'benchmark-report.json',
+  bytesWritten: 256,
+);
 
 final class _ControlledRun {
   int cancelCalls = 0;

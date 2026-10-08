@@ -221,4 +221,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get benchmarkFailedSemantic => 'Performance check failed';
+
+  @override
+  String get benchmarkExportAction => 'Export report';
+
+  @override
+  String get benchmarkExportingAction => 'Exporting report…';
+
+  @override
+  String benchmarkExportSucceeded(String fileName) {
+    return 'Saved $fileName.';
+  }
+
+  @override
+  String get benchmarkExportCancelled => 'Export cancelled. No file was saved.';
+
+  @override
+  String get benchmarkExportFailed =>
+      'Report could not be exported. Try again.';
 }

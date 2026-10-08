@@ -142,6 +142,53 @@ void main() {
     expect(find.byIcon(Icons.error_outline), findsOneWidget);
     expect(find.byIcon(Icons.help_outline), findsOneWidget);
   });
+
+  testWidgets(
+    'export action is a labeled 48 dp secondary control at 200 percent text',
+    (
+      tester,
+    ) async {
+      tester.useDevice(TestDevice.compact);
+      final run = _ControlledRun();
+      final runner = FakePerformanceBenchmarkRunner(onRun: (_) => run.stream);
+      await tester.pumpWidget(
+        _app(
+          runner,
+          textScaler: const TextScaler.linear(2),
+          boldText: true,
+        ),
+      );
+      await tester.pump();
+      final start = find.bySemanticsLabel('Start performance check');
+      await tester.ensureVisible(start);
+      await tester.tap(start);
+      run.add(BenchmarkSucceeded(_report()));
+      await tester.pump();
+
+      final export = find.bySemanticsLabel('Export report');
+      await tester.ensureVisible(export);
+      final semantics = tester.getSemantics(export);
+      final size = tester.getSize(export);
+
+      expect(
+        semantics,
+        isSemantics(
+          label: 'Export report',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+        ),
+      );
+      expect(size.width, greaterThanOrEqualTo(48));
+      expect(size.height, greaterThanOrEqualTo(48));
+      expect(
+        find.descendant(of: export, matching: find.byType(OutlinedButton)),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
 
 Widget _app(
@@ -176,3 +223,22 @@ final class _ControlledRun {
 
   void add(PerformanceBenchmarkEvent event) => _controller.add(event);
 }
+
+PerformanceBenchmarkReport _report() => PerformanceBenchmarkReport(
+  schemaVersion: 1,
+  policyVersion: 1,
+  definition: firstRunBenchmarkDefinition,
+  engineId: 'engine',
+  engineVersion: '1',
+  modelId: 'model',
+  modelVersion: '1',
+  configurationId: 'cpu',
+  measurements: [
+    BenchmarkModeMeasurement(
+      mode: PerformanceMode.balanced,
+      status: BenchmarkMeasurementStatus.measured,
+      realTimeFactor: 0.5,
+      firstTextLatency: const Duration(seconds: 2),
+    ),
+  ],
+);

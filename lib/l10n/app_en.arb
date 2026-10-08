@@ -156,5 +156,14 @@
   "benchmarkFailureRuntimeUnavailable": "The local benchmark runtime is unavailable. Recording remains available.",
   "benchmarkFailureGeneric": "The local check stopped unexpectedly. No recommendation was saved.",
   "benchmarkCompletedSemantic": "Performance check completed",
-  "benchmarkFailedSemantic": "Performance check failed"
+  "benchmarkFailedSemantic": "Performance check failed",
+  "benchmarkExportAction": "Export report",
+  "benchmarkExportingAction": "Exporting report…",
+  "benchmarkExportSucceeded": "Saved {fileName}.",
+  "@benchmarkExportSucceeded": {
+    "description": "Confirms a benchmark report export using only the destination-provided display filename.",
+    "placeholders": {"fileName": {"type": "String"}}
+  },
+  "benchmarkExportCancelled": "Export cancelled. No file was saved.",
+  "benchmarkExportFailed": "Report could not be exported. Try again."
 }

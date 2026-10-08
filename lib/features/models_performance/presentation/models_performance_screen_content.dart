@@ -155,12 +155,16 @@ final class _BenchmarkCompleted extends StatelessWidget {
   const _BenchmarkCompleted({
     required this.report,
     required this.recommendation,
+    required this.isExporting,
     required this.onRerun,
+    required this.onExport,
   });
 
   final PerformanceBenchmarkReport report;
   final BenchmarkRecommendation recommendation;
+  final bool isExporting;
   final VoidCallback onRerun;
+  final Future<void> Function() onExport;
 
   @override
   Widget build(BuildContext context) {
@@ -209,6 +213,17 @@ final class _BenchmarkCompleted extends StatelessWidget {
           sortOrder: 20,
           outlined: true,
           onPressed: onRerun,
+        ),
+        SizedBox(height: spacing.related),
+        _BenchmarkAction(
+          key: const Key('benchmark-export'),
+          label: isExporting
+              ? l10n.benchmarkExportingAction
+              : l10n.benchmarkExportAction,
+          icon: Icons.file_download_outlined,
+          sortOrder: 30,
+          outlined: true,
+          onPressed: isExporting ? null : () => unawaited(onExport()),
         ),
       ],
     );
