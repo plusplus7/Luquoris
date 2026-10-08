@@ -1,2 +1,4 @@
 *.g.dart linguist-generated=true
 *.drift.dart linguist-generated=true
+THIRD_PARTY_NOTICES.md -whitespace
+tool/third_party_notices/licenses/** -whitespace
