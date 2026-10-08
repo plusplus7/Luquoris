@@ -121,6 +121,19 @@ void main() {
     expect(failure.code, 'performance_metrics_channel_unavailable');
     expect(failure.code, isNot(contains('secret')));
   });
+
+  test('malformed binary envelope maps to channel invalid', () async {
+    messenger.setMockMessageHandler(
+      channel.name,
+      (_) async => ByteData(1)..setUint8(0, 0),
+    );
+
+    final result = await const MethodChannelThermalAndPerformanceMonitor(
+      channel: channel,
+    ).current();
+
+    expect(_failureCode(result), 'performance_metrics_channel_invalid');
+  });
 }
 
 Map<String, Object?> _validResponse({

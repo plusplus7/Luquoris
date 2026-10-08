@@ -217,7 +217,10 @@ final class ModelsPerformanceController
       return;
     }
 
-    state = completed.copyWithExport(isExporting: true);
+    state = completed.copyWithExport(
+      isExporting: true,
+      clearOutcome: true,
+    );
     late final Result<ExportReceipt, ExportFailure> outcome;
     try {
       outcome = await ref

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/models_performance/application/benchmark_metrics_collector.dart';
+import 'package:loquiris/features/models_performance/application/benchmark_recommendation_policy.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/features/models_performance/domain/benchmark_resource_metrics.dart';
 import 'package:loquiris/features/models_performance/domain/performance_benchmark.dart';
@@ -24,28 +27,108 @@ final class MetricsCapturingPerformanceBenchmarkRunner
   final PerformanceBenchmarkRunner _delegate;
   final ThermalAndPerformanceMonitor _monitor;
   final BenchmarkMetricsCollector _collector;
+  static const _policy = BenchmarkRecommendationPolicy();
 
   @override
   BenchmarkAvailability get availability => _delegate.availability;
 
   @override
-  Stream<PerformanceBenchmarkEvent> run(BenchmarkDefinition definition) async* {
-    final start = await _current();
-    await for (final event in _delegate.run(definition)) {
-      if (event case BenchmarkSucceeded(:final report)) {
-        final metrics = switch (start) {
-          Err<DevicePerformanceSnapshot, PerformanceFailure>() =>
-            _collector.unavailable(performanceMetricsStartUnavailableCode),
-          Ok<DevicePerformanceSnapshot, PerformanceFailure>(:final value) =>
-            await _metricsAfterSuccess(value),
-        };
-        yield BenchmarkSucceeded(
-          report.copyWith(schemaVersion: 2, resourceMetrics: metrics),
+  Stream<PerformanceBenchmarkEvent> run(BenchmarkDefinition definition) {
+    late final StreamController<PerformanceBenchmarkEvent> controller;
+    StreamSubscription<PerformanceBenchmarkEvent>? delegateSubscription;
+    var cancelled = false;
+    var listenerPaused = false;
+
+    Future<void> cancelDelegate() async {
+      cancelled = true;
+      final subscription = delegateSubscription;
+      delegateSubscription = null;
+      await subscription?.cancel();
+    }
+
+    Future<void> closeWithError(Object error, StackTrace stackTrace) async {
+      if (cancelled) return;
+      controller.addError(error, stackTrace);
+      await controller.close();
+    }
+
+    Future<void> addSuccess(
+      StreamSubscription<PerformanceBenchmarkEvent> subscription,
+      Result<DevicePerformanceSnapshot, PerformanceFailure> start,
+      PerformanceBenchmarkReport report,
+    ) async {
+      if (_policy.recommend(report) case Err()) {
+        if (!cancelled) {
+          controller.add(
+            const BenchmarkRunFailed(BenchmarkInvalidOutput()),
+          );
+          subscription.resume();
+        }
+        return;
+      }
+      final metrics = switch (start) {
+        Err<DevicePerformanceSnapshot, PerformanceFailure>() =>
+          _collector.unavailable(performanceMetricsStartUnavailableCode),
+        Ok<DevicePerformanceSnapshot, PerformanceFailure>(:final value) =>
+          await _metricsAfterSuccess(value),
+      };
+      if (!cancelled) {
+        controller.add(
+          BenchmarkSucceeded(
+            report.copyWith(schemaVersion: 2, resourceMetrics: metrics),
+          ),
         );
-      } else {
-        yield event;
+        subscription.resume();
       }
     }
+
+    Future<void> startDelegate() async {
+      final start = await _current();
+      if (cancelled) return;
+      late final Stream<PerformanceBenchmarkEvent> events;
+      try {
+        events = _delegate.run(definition);
+      } on Object catch (error, stackTrace) {
+        await closeWithError(error, stackTrace);
+        return;
+      }
+      if (cancelled) return;
+      final subscription = events.listen(null);
+      delegateSubscription = subscription;
+      if (listenerPaused) subscription.pause();
+      subscription
+        ..onData((event) {
+          if (cancelled) return;
+          if (event case BenchmarkSucceeded(:final report)) {
+            subscription.pause();
+            unawaited(addSuccess(subscription, start, report));
+          } else {
+            controller.add(event);
+          }
+        })
+        ..onError((Object error, StackTrace stackTrace) {
+          if (!cancelled) controller.addError(error, stackTrace);
+        })
+        ..onDone(() {
+          delegateSubscription = null;
+          if (!cancelled) unawaited(controller.close());
+        });
+    }
+
+    controller = StreamController<PerformanceBenchmarkEvent>(
+      sync: true,
+      onListen: () => unawaited(startDelegate()),
+      onPause: () {
+        listenerPaused = true;
+        delegateSubscription?.pause();
+      },
+      onResume: () {
+        listenerPaused = false;
+        delegateSubscription?.resume();
+      },
+      onCancel: cancelDelegate,
+    );
+    return controller.stream;
   }
 
   Future<BenchmarkResourceMetrics> _metricsAfterSuccess(

@@ -300,6 +300,50 @@ void main() {
       expect(exporter.calls, 3);
     },
   );
+
+  testWidgets('repeated identical export failures each show feedback', (
+    tester,
+  ) async {
+    final outcomes = <Result<ExportReceipt, ExportFailure>>[
+      const Err(ExportUnavailable('export_cancelled')),
+      const Err(ExportUnavailable('export_cancelled')),
+      const Err(ExportUnavailable('destination_unavailable')),
+      const Err(ExportUnavailable('destination_unavailable')),
+    ];
+    final exporter = _FakeBenchmarkReportExporter(
+      onExport: () async => outcomes.removeAt(0),
+    );
+    final run = _ControlledRun();
+    await tester.pumpWidget(
+      _app(
+        FakePerformanceBenchmarkRunner(onRun: (_) => run.stream),
+        exporter: exporter,
+      ),
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('benchmark-start')));
+    run.add(BenchmarkSucceeded(_report()));
+    await tester.pump();
+
+    final export = find.byKey(const Key('benchmark-export'));
+    for (final expectedFeedback in <String>[
+      'Export cancelled. No file was saved.',
+      'Export cancelled. No file was saved.',
+      'Report could not be exported. Try again.',
+      'Report could not be exported. Try again.',
+    ]) {
+      await tester.ensureVisible(export);
+      await tester.tap(export);
+      await tester.pump();
+      expect(find.text(expectedFeedback), findsOneWidget);
+      ScaffoldMessenger.of(
+        tester.element(find.byType(Scaffold)),
+      ).hideCurrentSnackBar();
+      await tester.pumpAndSettle();
+    }
+
+    expect(exporter.calls, 4);
+  });
 }
 
 Widget _app(

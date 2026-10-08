@@ -100,6 +100,11 @@ final class MethodChannelThermalAndPerformanceMonitor
       return _unavailable();
     } on PlatformException {
       return _unavailable();
+    } on FormatException {
+      return _invalid();
+    } catch (error) {
+      if (error is RangeError) return _invalid();
+      rethrow;
     }
   }
 

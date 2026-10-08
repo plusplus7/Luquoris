@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/models_performance/application/metrics_capturing_performance_benchmark_runner.dart';
@@ -163,6 +165,104 @@ void main() {
       expect(monitor.currentCalls, 0);
     },
   );
+
+  test(
+    'cancelling before start snapshot resolves never starts delegate',
+    () async {
+      final monitor = _DeferredMonitor();
+      final delegate = FakePerformanceBenchmarkRunner();
+      final runner = MetricsCapturingPerformanceBenchmarkRunner(
+        delegate: delegate,
+        monitor: monitor,
+      );
+      final subscription = runner
+          .run(firstRunBenchmarkDefinition)
+          .listen((_) {});
+      await Future<void>.delayed(Duration.zero);
+
+      var cancellationCompleted = false;
+      final cancellation = subscription.cancel().then((_) {
+        cancellationCompleted = true;
+      });
+      await Future<void>.delayed(Duration.zero);
+      final completedBeforeSnapshot = cancellationCompleted;
+      monitor.complete(Ok(_start()));
+      await cancellation;
+
+      expect(completedBeforeSnapshot, isTrue);
+      expect(delegate.runCalls, 0);
+    },
+  );
+
+  test(
+    'cancelling while delegate is pending cancels its subscription',
+    () async {
+      var delegateCancelCalls = 0;
+      final delegateEvents = StreamController<PerformanceBenchmarkEvent>(
+        onCancel: () {
+          delegateCancelCalls += 1;
+        },
+      );
+      final delegate = FakePerformanceBenchmarkRunner(
+        onRun: (_) => delegateEvents.stream,
+      );
+      final runner = MetricsCapturingPerformanceBenchmarkRunner(
+        delegate: delegate,
+        monitor: _SequencedMonitor([Ok(_start())]),
+      );
+      final subscription = runner
+          .run(firstRunBenchmarkDefinition)
+          .listen((_) {});
+      await Future<void>.delayed(Duration.zero);
+      expect(delegate.runCalls, 1);
+
+      var cancellationCompleted = false;
+      final cancellation = subscription.cancel().then((_) {
+        cancellationCompleted = true;
+      });
+      await Future<void>.delayed(Duration.zero);
+      final completedBeforeDelegateEvent = cancellationCompleted;
+      final cancelledBeforeDelegateEvent = delegateCancelCalls;
+      await delegateEvents.close();
+      await cancellation;
+
+      expect(completedBeforeDelegateEvent, isTrue);
+      expect(cancelledBeforeDelegateEvent, 1);
+    },
+  );
+
+  test(
+    'unsupported or malformed source reports fail before end snapshot',
+    () async {
+      final invalidReports = [
+        _report(schemaVersion: 3),
+        _report(
+          schemaVersion: 2,
+          resourceMetrics: BenchmarkResourceMetrics(
+            wallDuration: const Duration(seconds: 1),
+          ),
+        ),
+      ];
+
+      for (final report in invalidReports) {
+        final monitor = _SequencedMonitor([Ok(_start()), Ok(_end())]);
+        final runner = MetricsCapturingPerformanceBenchmarkRunner(
+          delegate: FakePerformanceBenchmarkRunner(
+            onRun: (_) => Stream.value(BenchmarkSucceeded(report)),
+          ),
+          monitor: monitor,
+        );
+
+        final events = await runner.run(firstRunBenchmarkDefinition).toList();
+
+        expect(
+          events,
+          const [BenchmarkRunFailed(BenchmarkInvalidOutput())],
+        );
+        expect(monitor.currentCalls, 1);
+      }
+    },
+  );
 }
 
 void _expectUnavailable(
@@ -193,6 +293,22 @@ final class _SequencedMonitor implements ThermalAndPerformanceMonitor {
   }
 }
 
+final class _DeferredMonitor implements ThermalAndPerformanceMonitor {
+  final _completer =
+      Completer<Result<DevicePerformanceSnapshot, PerformanceFailure>>();
+  int currentCalls = 0;
+
+  @override
+  Future<Result<DevicePerformanceSnapshot, PerformanceFailure>> current() {
+    currentCalls += 1;
+    return _completer.future;
+  }
+
+  void complete(Result<DevicePerformanceSnapshot, PerformanceFailure> result) {
+    _completer.complete(result);
+  }
+}
+
 DevicePerformanceSnapshot _start() => DevicePerformanceSnapshot(
   observedAtMonotonic: const Duration(seconds: 1),
   processCpuTime: const Duration(milliseconds: 400),
@@ -211,8 +327,11 @@ DevicePerformanceSnapshot _end() => DevicePerformanceSnapshot(
   isCharging: false,
 );
 
-PerformanceBenchmarkReport _report() => PerformanceBenchmarkReport(
-  schemaVersion: 1,
+PerformanceBenchmarkReport _report({
+  int schemaVersion = 1,
+  BenchmarkResourceMetrics? resourceMetrics,
+}) => PerformanceBenchmarkReport(
+  schemaVersion: schemaVersion,
   policyVersion: 1,
   definition: firstRunBenchmarkDefinition,
   engineId: 'whisper.cpp',
@@ -229,4 +348,5 @@ PerformanceBenchmarkReport _report() => PerformanceBenchmarkReport(
       maximumBacklog: 3,
     ),
   ],
+  resourceMetrics: resourceMetrics,
 );
