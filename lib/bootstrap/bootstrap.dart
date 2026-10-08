@@ -9,8 +9,11 @@ import 'package:loquiris/data/database/open_connection.dart';
 import 'package:loquiris/data/files/private_meeting_audio_store.dart';
 import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
+import 'package:loquiris/features/export_backup/application/local_benchmark_report_exporter.dart';
+import 'package:loquiris/features/models_performance/application/benchmark_report_exporter.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
+import 'package:loquiris/native/method_channel_export_destination_gateway.dart';
 import 'package:loquiris/native/method_channel_thermal_and_performance_monitor.dart';
 import 'package:loquiris/services/service_providers.dart';
 import 'package:path_provider/path_provider.dart';
@@ -82,6 +85,9 @@ Future<AppDependencies> bootstrap({
   Future<AppDatabase> Function() openDatabase = openApplicationDatabase,
 }) async {
   final database = await openDatabase();
+  final exportDestinationGateway = MethodChannelExportDestinationGateway(
+    diagnosticSink: diagnosticLogSink,
+  );
   return AppDependencies(
     diagnosticLogSink: diagnosticLogSink,
     lifecycleActions: const _NoopAppLifecycleActions(),
@@ -91,6 +97,11 @@ Future<AppDependencies> bootstrap({
       ),
       performanceBenchmarkRunnerProvider.overrideWith(
         (ref) => const UnavailablePerformanceBenchmarkRunner(),
+      ),
+      benchmarkReportExporterProvider.overrideWith(
+        (ref) => LocalBenchmarkReportExporter(
+          destinationGateway: exportDestinationGateway,
+        ),
       ),
       _applicationDatabaseProvider.overrideWith((ref) {
         ref.onDispose(database.close);

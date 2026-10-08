@@ -8,6 +8,8 @@ import 'package:loquiris/bootstrap/diagnostic_log.dart';
 import 'package:loquiris/data/database/app_database.dart';
 import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
+import 'package:loquiris/features/export_backup/application/local_benchmark_report_exporter.dart';
+import 'package:loquiris/features/models_performance/application/benchmark_report_exporter.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/native/method_channel_thermal_and_performance_monitor.dart';
@@ -41,8 +43,14 @@ void main() {
             final performanceMonitorInstalled =
                 ref.read(thermalAndPerformanceMonitorProvider)
                     is MethodChannelThermalAndPerformanceMonitor;
+            final benchmarkExporterInstalled =
+                ref.read(benchmarkReportExporterProvider)
+                    is LocalBenchmarkReportExporter;
             return Text(
-              installed && benchmarkInstalled && performanceMonitorInstalled
+              installed &&
+                      benchmarkInstalled &&
+                      performanceMonitorInstalled &&
+                      benchmarkExporterInstalled
                   ? 'installed'
                   : 'missing',
               textDirection: TextDirection.ltr,
