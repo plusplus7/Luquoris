@@ -229,6 +229,660 @@ final class DriftTranscriptRepository implements TranscriptRepository {
   }
 }
 
+/// Drift-backed durable transcription job and run state machine.
+final class DriftTranscriptionJobRepository
+    implements TranscriptionJobRepository {
+  /// Creates a transcription job repository over the shared local database.
+  const DriftTranscriptionJobRepository(
+    this.database, {
+    required this.diagnosticSink,
+  });
+
+  /// Shared local database.
+  final db.AppDatabase database;
+
+  /// Privacy-safe local diagnostic destination.
+  final DiagnosticLogSink diagnosticSink;
+
+  static final RegExp _privacySafeCode = RegExp(r'^[a-z][a-z0-9_]{0,63}$');
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> enqueue(
+    ProcessingJob job,
+    TranscriptRun run, {
+    required int storedAtUtcMs,
+  }) async {
+    if (!_validQueuedPair(job, run) || storedAtUtcMs < 0) {
+      return const Err(AnalysisConflict());
+    }
+    try {
+      final stored = await database.transaction(() async {
+        final existingJob = await _jobRow(job.id);
+        final existingRun = await _runRow(run.id);
+        if (existingJob != null) {
+          if (existingRun == null ||
+              !_sameJobIdentity(existingJob, job) ||
+              !_sameRunIdentity(existingRun, run)) {
+            throw const _AnalysisStateError('analysis_conflict');
+          }
+          return _readTranscriptionJob(existingJob);
+        }
+        if (existingRun != null) {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        await database
+            .into(database.transcriptRuns)
+            .insert(
+              db.TranscriptRunsCompanion.insert(
+                id: run.id,
+                createdAt: run.createdAtUtcMs,
+                updatedAt: storedAtUtcMs,
+                meetingId: run.meetingId,
+                engineId: run.provenance.engineId,
+                engineVersion: run.provenance.engineVersion,
+                modelId: run.provenance.modelId,
+                modelVersion: run.provenance.modelVersion,
+                modelSha256: run.provenance.modelSha256,
+                parametersJson: run.provenance.parametersJson,
+                runState: 'queued',
+              ),
+            );
+        await database
+            .into(database.processingJobs)
+            .insert(
+              db.ProcessingJobsCompanion.insert(
+                id: job.id,
+                createdAt: job.createdAtUtcMs,
+                updatedAt: storedAtUtcMs,
+                meetingId: job.meetingId,
+                jobKind: ProcessingJobKind.transcription.name,
+                jobState: 'queued',
+                transcriptRunId: Value(run.id),
+                modelId: Value(job.modelId),
+              ),
+            );
+        return job;
+      });
+      return Ok(stored);
+    } on _AnalysisStateError catch (error, _) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_job_enqueue_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> load(
+    String jobId,
+  ) async {
+    try {
+      final row = await _jobRow(jobId);
+      if (row == null || row.isDeleted) {
+        return const Err(AnalysisNotFound());
+      }
+      return Ok(_readTranscriptionJob(row));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_job_load_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Stream<Result<List<ProcessingJob>, AnalysisRepositoryFailure>> watchMeeting(
+    String meetingId,
+  ) async* {
+    try {
+      final query = database.select(database.processingJobs)
+        ..where(
+          (row) =>
+              row.meetingId.equals(meetingId) &
+              row.jobKind.equals(ProcessingJobKind.transcription.name) &
+              row.isDeleted.equals(false),
+        )
+        ..orderBy([
+          (row) => OrderingTerm.asc(row.createdAt),
+          (row) => OrderingTerm.asc(row.id),
+        ]);
+      await for (final rows in query.watch()) {
+        yield Ok(
+          List<ProcessingJob>.unmodifiable(rows.map(_readTranscriptionJob)),
+        );
+      }
+    } on SqliteException catch (error, stackTrace) {
+      yield Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_jobs_watch_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  listRecoverable() async {
+    try {
+      final rows =
+          await (database.select(database.processingJobs)
+                ..where(
+                  (row) =>
+                      row.jobKind.equals(ProcessingJobKind.transcription.name) &
+                      row.jobState.isIn(const <String>[
+                        'queued',
+                        'running',
+                        'paused',
+                      ]) &
+                      row.isDeleted.equals(false),
+                )
+                ..orderBy([
+                  (row) => OrderingTerm.asc(row.createdAt),
+                  (row) => OrderingTerm.asc(row.id),
+                ]))
+              .get();
+      return Ok(
+        List<ProcessingJob>.unmodifiable(rows.map(_readTranscriptionJob)),
+      );
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_jobs_list_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> start(
+    String jobId, {
+    required int startedAtUtcMs,
+  }) async {
+    if (startedAtUtcMs < 0) return const Err(AnalysisConflict());
+    try {
+      final job = await database.transaction(() async {
+        final current = await _requiredJob(jobId);
+        final run = await _requiredOwnedRun(current);
+        if ((current.jobState != 'queued' && current.jobState != 'paused') ||
+            run.runState != 'queued') {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        final progress = current.progress ?? run.progress;
+        await (database.update(
+          database.transcriptRuns,
+        )..where((row) => row.id.equals(run.id))).write(
+          db.TranscriptRunsCompanion(
+            updatedAt: Value(startedAtUtcMs),
+            rowRevision: Value(run.rowRevision + 1),
+            runState: const Value('running'),
+            startedAtUtcMs: Value(startedAtUtcMs),
+            endedAtUtcMs: const Value(null),
+            progress: Value(progress),
+            failureCode: const Value(null),
+          ),
+        );
+        await (database.update(
+          database.processingJobs,
+        )..where((row) => row.id.equals(current.id))).write(
+          db.ProcessingJobsCompanion(
+            updatedAt: Value(startedAtUtcMs),
+            rowRevision: Value(current.rowRevision + 1),
+            jobState: const Value('running'),
+            progress: Value(progress),
+            reasonCode: const Value(null),
+            failureCode: const Value(null),
+          ),
+        );
+        return _readTranscriptionJob((await _jobRow(jobId))!);
+      });
+      return Ok(job);
+    } on _AnalysisStateError catch (error, _) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_job_start_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> saveProgress(
+    String jobId, {
+    required double progress,
+    required TranscriptionCheckpoint checkpoint,
+    required int storedAtUtcMs,
+  }) async {
+    if (!progress.isFinite ||
+        progress < 0 ||
+        progress > 1 ||
+        checkpoint.completedMedia.isNegative ||
+        checkpoint.parameterVersion <= 0 ||
+        storedAtUtcMs < 0) {
+      return const Err(AnalysisConflict());
+    }
+    try {
+      final job = await database.transaction(() async {
+        final current = await _requiredJob(jobId);
+        final run = await _requiredOwnedRun(current);
+        final previousCheckpoint = TranscriptionCheckpoint.tryParse(
+          current.checkpoint,
+        );
+        if (current.jobState != 'running' ||
+            run.runState != 'running' ||
+            progress < (current.progress ?? 0) ||
+            progress < run.progress ||
+            (current.checkpoint != null && previousCheckpoint == null) ||
+            (previousCheckpoint != null &&
+                (checkpoint.parameterVersion !=
+                        previousCheckpoint.parameterVersion ||
+                    checkpoint.completedMedia <
+                        previousCheckpoint.completedMedia)) ||
+            checkpoint.parameterVersion !=
+                _transcriptionParameterVersion(run.parametersJson)) {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        await (database.update(
+          database.transcriptRuns,
+        )..where((row) => row.id.equals(run.id))).write(
+          db.TranscriptRunsCompanion(
+            updatedAt: Value(storedAtUtcMs),
+            rowRevision: Value(run.rowRevision + 1),
+            progress: Value(progress),
+          ),
+        );
+        await (database.update(
+          database.processingJobs,
+        )..where((row) => row.id.equals(current.id))).write(
+          db.ProcessingJobsCompanion(
+            updatedAt: Value(storedAtUtcMs),
+            rowRevision: Value(current.rowRevision + 1),
+            progress: Value(progress),
+            checkpoint: Value(checkpoint.toStorageJson()),
+          ),
+        );
+        return _readTranscriptionJob((await _jobRow(jobId))!);
+      });
+      return Ok(job);
+    } on _AnalysisStateError catch (error, _) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_job_progress_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  recoverOrphanedRunning({required int recoveredAtUtcMs}) async {
+    if (recoveredAtUtcMs < 0) return const Err(AnalysisConflict());
+    try {
+      final recovered = await database.transaction(() async {
+        final rows =
+            await (database.select(database.processingJobs)..where(
+                  (row) =>
+                      row.jobKind.equals(ProcessingJobKind.transcription.name) &
+                      row.jobState.equals('running') &
+                      row.isDeleted.equals(false),
+                ))
+                .get();
+        final result = <ProcessingJob>[];
+        for (final current in rows) {
+          final run = await _requiredOwnedRun(current);
+          if (run.runState != 'running') {
+            throw const _AnalysisStateError('analysis_conflict');
+          }
+          await (database.update(
+            database.transcriptRuns,
+          )..where((row) => row.id.equals(run.id))).write(
+            db.TranscriptRunsCompanion(
+              updatedAt: Value(recoveredAtUtcMs),
+              rowRevision: Value(run.rowRevision + 1),
+              runState: const Value('queued'),
+              startedAtUtcMs: const Value(null),
+              endedAtUtcMs: const Value(null),
+              failureCode: const Value(null),
+            ),
+          );
+          await (database.update(
+            database.processingJobs,
+          )..where((row) => row.id.equals(current.id))).write(
+            db.ProcessingJobsCompanion(
+              updatedAt: Value(recoveredAtUtcMs),
+              rowRevision: Value(current.rowRevision + 1),
+              jobState: const Value('paused'),
+              reasonCode: const Value('process_restarted'),
+              failureCode: const Value(null),
+            ),
+          );
+          result.add(_readTranscriptionJob((await _jobRow(current.id))!));
+        }
+        return List<ProcessingJob>.unmodifiable(result);
+      });
+      return Ok(recovered);
+    } on _AnalysisStateError catch (error, _) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_job_recovery_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<TranscriptVersion, AnalysisRepositoryFailure>> complete(
+    String jobId,
+    TranscriptRun completedRun,
+    List<TranscriptSegment> segments, {
+    required int storedAtUtcMs,
+  }) async {
+    if (completedRun.state is! AnalysisCompleted ||
+        !_validStableSegments(completedRun.id, segments) ||
+        storedAtUtcMs < 0) {
+      return const Err(AnalysisConflict());
+    }
+    try {
+      final version = await database.transaction(() async {
+        final current = await _requiredJob(jobId);
+        final run = await _requiredOwnedRun(current);
+        final terminal = completedRun.state as AnalysisCompleted;
+        if (current.jobState != 'running' ||
+            run.runState != 'running' ||
+            !_sameRunIdentity(run, completedRun) ||
+            terminal.startedAtUtcMs != run.startedAtUtcMs ||
+            current.modelId != completedRun.provenance.modelId) {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        final existingSegments = await (database.select(
+          database.transcriptSegments,
+        )..where((row) => row.transcriptRunId.equals(run.id))).get();
+        if (existingSegments.isNotEmpty) {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        for (final segment in segments) {
+          await database
+              .into(database.transcriptSegments)
+              .insert(
+                db.TranscriptSegmentsCompanion.insert(
+                  id: segment.id,
+                  createdAt: storedAtUtcMs,
+                  updatedAt: storedAtUtcMs,
+                  meetingId: run.meetingId,
+                  transcriptRunId: run.id,
+                  startUs: segment.start.inMicroseconds,
+                  endUs: segment.end.inMicroseconds,
+                  rawModelText: segment.rawModelText,
+                  displayedText: segment.displayedText,
+                  revisionState: segment.revisionState.name,
+                  speakerId: Value(segment.speakerId),
+                  speakerMeetingId: Value(
+                    segment.speakerId == null ? null : run.meetingId,
+                  ),
+                ),
+              );
+        }
+        await (database.update(
+          database.transcriptRuns,
+        )..where((row) => row.id.equals(run.id))).write(
+          db.TranscriptRunsCompanion(
+            updatedAt: Value(storedAtUtcMs),
+            rowRevision: Value(run.rowRevision + 1),
+            runState: const Value('completed'),
+            startedAtUtcMs: Value(terminal.startedAtUtcMs),
+            endedAtUtcMs: Value(terminal.endedAtUtcMs),
+            progress: const Value(1),
+            failureCode: const Value(null),
+          ),
+        );
+        await (database.update(
+          database.processingJobs,
+        )..where((row) => row.id.equals(current.id))).write(
+          db.ProcessingJobsCompanion(
+            updatedAt: Value(storedAtUtcMs),
+            rowRevision: Value(current.rowRevision + 1),
+            jobState: const Value('succeeded'),
+            progress: const Value(1),
+            reasonCode: const Value(null),
+            failureCode: const Value(null),
+          ),
+        );
+        final selection =
+            await (database.select(
+                  database.meetingTranscriptSelections,
+                )..where((row) => row.meetingId.equals(run.meetingId)))
+                .getSingleOrNull();
+        final isCurrent = selection == null;
+        if (isCurrent) {
+          await database
+              .into(database.meetingTranscriptSelections)
+              .insert(
+                db.MeetingTranscriptSelectionsCompanion.insert(
+                  id: '${run.meetingId}:current-transcript',
+                  createdAt: storedAtUtcMs,
+                  updatedAt: storedAtUtcMs,
+                  meetingId: run.meetingId,
+                  transcriptRunId: run.id,
+                ),
+              );
+        }
+        return TranscriptVersion(
+          run: completedRun,
+          segments: segments,
+          isCurrent: isCurrent,
+        );
+      });
+      return Ok(version);
+    } on _AnalysisStateError catch (error, _) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_job_complete_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> fail(
+    String jobId, {
+    required String failureCode,
+    required int failedAtUtcMs,
+  }) => _finishWithFailure(
+    jobId,
+    failureCode: failureCode,
+    failedAtUtcMs: failedAtUtcMs,
+  );
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> cancel(
+    String jobId, {
+    required int cancelledAtUtcMs,
+  }) => _finishWithFailure(
+    jobId,
+    failureCode: 'transcription_cancelled',
+    failedAtUtcMs: cancelledAtUtcMs,
+  );
+
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> _finishWithFailure(
+    String jobId, {
+    required String failureCode,
+    required int failedAtUtcMs,
+  }) async {
+    if (!_privacySafeCode.hasMatch(failureCode) || failedAtUtcMs < 0) {
+      return const Err(AnalysisConflict());
+    }
+    try {
+      final job = await database.transaction(() async {
+        final current = await _requiredJob(jobId);
+        final run = await _requiredOwnedRun(current);
+        if (current.jobState != 'running' ||
+            run.runState != 'running' ||
+            run.startedAtUtcMs == null ||
+            failedAtUtcMs < run.startedAtUtcMs!) {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        final progress = current.progress ?? run.progress;
+        await (database.update(
+          database.transcriptRuns,
+        )..where((row) => row.id.equals(run.id))).write(
+          db.TranscriptRunsCompanion(
+            updatedAt: Value(failedAtUtcMs),
+            rowRevision: Value(run.rowRevision + 1),
+            runState: const Value('failed'),
+            endedAtUtcMs: Value(failedAtUtcMs),
+            progress: Value(progress),
+            failureCode: Value(failureCode),
+          ),
+        );
+        await (database.update(
+          database.processingJobs,
+        )..where((row) => row.id.equals(current.id))).write(
+          db.ProcessingJobsCompanion(
+            updatedAt: Value(failedAtUtcMs),
+            rowRevision: Value(current.rowRevision + 1),
+            jobState: const Value('failed'),
+            progress: Value(progress),
+            reasonCode: const Value(null),
+            failureCode: Value(failureCode),
+          ),
+        );
+        return _readTranscriptionJob((await _jobRow(jobId))!);
+      });
+      return Ok(job);
+    } on _AnalysisStateError catch (error, _) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_job_failure_store_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> retry(
+    String jobId, {
+    required int queuedAtUtcMs,
+  }) async {
+    if (queuedAtUtcMs < 0) return const Err(AnalysisConflict());
+    try {
+      final job = await database.transaction(() async {
+        final current = await _requiredJob(jobId);
+        final run = await _requiredOwnedRun(current);
+        if (current.jobState != 'failed' || run.runState != 'failed') {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        await (database.update(
+          database.transcriptRuns,
+        )..where((row) => row.id.equals(run.id))).write(
+          db.TranscriptRunsCompanion(
+            updatedAt: Value(queuedAtUtcMs),
+            rowRevision: Value(run.rowRevision + 1),
+            runState: const Value('queued'),
+            startedAtUtcMs: const Value(null),
+            endedAtUtcMs: const Value(null),
+            failureCode: const Value(null),
+          ),
+        );
+        await (database.update(
+          database.processingJobs,
+        )..where((row) => row.id.equals(current.id))).write(
+          db.ProcessingJobsCompanion(
+            updatedAt: Value(queuedAtUtcMs),
+            rowRevision: Value(current.rowRevision + 1),
+            jobState: const Value('queued'),
+            progress: const Value(null),
+            reasonCode: const Value(null),
+            failureCode: const Value(null),
+          ),
+        );
+        return _readTranscriptionJob((await _jobRow(jobId))!);
+      });
+      return Ok(job);
+    } on _AnalysisStateError catch (error, _) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_job_retry_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  Future<db.ProcessingJob?> _jobRow(String jobId) => (database.select(
+    database.processingJobs,
+  )..where((row) => row.id.equals(jobId))).getSingleOrNull();
+
+  Future<db.TranscriptRun?> _runRow(String runId) => (database.select(
+    database.transcriptRuns,
+  )..where((row) => row.id.equals(runId))).getSingleOrNull();
+
+  Future<db.ProcessingJob> _requiredJob(String jobId) async {
+    final row = await _jobRow(jobId);
+    if (row == null ||
+        row.isDeleted ||
+        row.jobKind != ProcessingJobKind.transcription.name) {
+      throw const _AnalysisStateError('analysis_not_found');
+    }
+    return row;
+  }
+
+  Future<db.TranscriptRun> _requiredOwnedRun(db.ProcessingJob job) async {
+    final runId = job.transcriptRunId;
+    if (runId == null) {
+      throw const _AnalysisStateError('analysis_conflict');
+    }
+    final run = await _runRow(runId);
+    if (run == null || run.isDeleted || run.meetingId != job.meetingId) {
+      throw const _AnalysisStateError('analysis_conflict');
+    }
+    return run;
+  }
+}
+
 /// Drift-backed immutable revision history and corrected-view repository.
 final class DriftRevisionRepository implements RevisionRepository {
   /// Creates a revision repository over the shared local database.
@@ -824,6 +1478,88 @@ _storedAnalysisState(AnalysisState state) => switch (state) {
       failureCode: failureCode,
     ),
 };
+
+bool _validQueuedPair(ProcessingJob job, TranscriptRun run) =>
+    job.kind == ProcessingJobKind.transcription &&
+    job.state is ProcessingQueued &&
+    job.meetingId == run.meetingId &&
+    job.targetRunId == run.id &&
+    job.modelId == run.provenance.modelId &&
+    job.checkpoint == null &&
+    run.state is AnalysisQueued &&
+    _transcriptionParameterVersion(run.provenance.parametersJson) != null;
+
+bool _sameJobIdentity(db.ProcessingJob stored, ProcessingJob requested) =>
+    stored.id == requested.id &&
+    stored.createdAt == requested.createdAtUtcMs &&
+    stored.meetingId == requested.meetingId &&
+    stored.jobKind == requested.kind.name &&
+    stored.transcriptRunId == requested.targetRunId &&
+    stored.modelId == requested.modelId;
+
+bool _sameRunIdentity(db.TranscriptRun stored, TranscriptRun requested) =>
+    stored.id == requested.id &&
+    stored.createdAt == requested.createdAtUtcMs &&
+    stored.meetingId == requested.meetingId &&
+    stored.engineId == requested.provenance.engineId &&
+    stored.engineVersion == requested.provenance.engineVersion &&
+    stored.modelId == requested.provenance.modelId &&
+    stored.modelVersion == requested.provenance.modelVersion &&
+    stored.modelSha256 == requested.provenance.modelSha256 &&
+    stored.parametersJson == requested.provenance.parametersJson;
+
+ProcessingJob _readTranscriptionJob(db.ProcessingJob row) => ProcessingJob(
+  id: row.id,
+  meetingId: row.meetingId,
+  kind: ProcessingJobKind.values.byName(row.jobKind),
+  createdAtUtcMs: row.createdAt,
+  state: switch (row.jobState) {
+    'queued' => const ProcessingQueued(),
+    'running' => ProcessingRunning(progress: row.progress!),
+    'paused' => ProcessingPaused(reasonCode: row.reasonCode!),
+    'succeeded' => const ProcessingSucceeded(),
+    'failed' => ProcessingFailed(failureCode: row.failureCode!),
+    _ => throw StateError('database processing state invariant violated'),
+  },
+  targetRunId: row.transcriptRunId,
+  modelId: row.modelId,
+  checkpoint: row.checkpoint,
+);
+
+int? _transcriptionParameterVersion(String parametersJson) {
+  try {
+    final decoded = jsonDecode(parametersJson);
+    if (decoded is! Map<String, Object?>) return null;
+    final version = decoded['parameterVersion'];
+    return version is int && version > 0 ? version : null;
+  } on FormatException {
+    return null;
+  }
+}
+
+bool _validStableSegments(
+  String runId,
+  List<TranscriptSegment> segments,
+) {
+  final ids = <String>{};
+  final ranges = <(int, int)>{};
+  var previousEndUs = 0;
+  for (final segment in segments) {
+    final startUs = segment.start.inMicroseconds;
+    final endUs = segment.end.inMicroseconds;
+    if (segment.id.isEmpty ||
+        segment.transcriptRunId != runId ||
+        segment.revisionState != TranscriptRevisionState.machine ||
+        startUs < previousEndUs ||
+        endUs <= startUs ||
+        !ids.add(segment.id) ||
+        !ranges.add((startUs, endUs))) {
+      return false;
+    }
+    previousEndUs = endUs;
+  }
+  return true;
+}
 
 TranscriptRun _readTranscriptRun(db.TranscriptRun row) => TranscriptRun(
   id: row.id,

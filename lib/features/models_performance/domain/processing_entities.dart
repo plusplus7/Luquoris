@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:loquiris/core/domain/app_relative_path.dart';
 import 'package:loquiris/core/domain/value_object.dart';
 import 'package:meta/meta.dart';
@@ -155,6 +157,59 @@ enum ProcessingJobKind {
   waveform,
 }
 
+/// Privacy-safe durable resume boundary for post-session transcription.
+@immutable
+final class TranscriptionCheckpoint extends ValueObject {
+  /// Creates a checkpoint containing no audio or transcript content.
+  const TranscriptionCheckpoint({
+    required this.completedMedia,
+    required this.parameterVersion,
+  }) : assert(parameterVersion > 0, 'parameterVersion must be positive');
+
+  /// Last media boundary durably completed by the engine.
+  final Duration completedMedia;
+
+  /// Canonical inference-parameter schema used by the resumed run.
+  final int parameterVersion;
+
+  /// Encodes the allowlisted checkpoint fields in canonical key order.
+  String toStorageJson() => jsonEncode(<String, int>{
+    'completedMediaUs': completedMedia.inMicroseconds,
+    'parameterVersion': parameterVersion,
+  });
+
+  /// Decodes an allowlisted checkpoint, returning `null` for any other shape.
+  static TranscriptionCheckpoint? tryParse(String? source) {
+    if (source == null) return null;
+    try {
+      final decoded = jsonDecode(source);
+      if (decoded is! Map<String, Object?> || decoded.length != 2) {
+        return null;
+      }
+      final completedMediaUs = decoded['completedMediaUs'];
+      final parameterVersion = decoded['parameterVersion'];
+      if (completedMediaUs is! int ||
+          parameterVersion is! int ||
+          completedMediaUs < 0 ||
+          parameterVersion <= 0) {
+        return null;
+      }
+      return TranscriptionCheckpoint(
+        completedMedia: Duration(microseconds: completedMediaUs),
+        parameterVersion: parameterVersion,
+      );
+    } on FormatException {
+      return null;
+    }
+  }
+
+  @override
+  List<Object?> get equalityValues => <Object?>[
+    completedMedia,
+    parameterVersion,
+  ];
+}
+
 /// Closed state of one local processing job.
 @immutable
 sealed class ProcessingState extends ValueObject {
@@ -260,6 +315,10 @@ final class ProcessingJob extends ValueObject {
 
   /// Opaque engine checkpoint that contains no transcript content.
   final String? checkpoint;
+
+  /// Typed transcription checkpoint, or `null` for another job kind/shape.
+  TranscriptionCheckpoint? get transcriptionCheckpoint =>
+      TranscriptionCheckpoint.tryParse(checkpoint);
 
   /// Returns a copy with changed resumable job state.
   ProcessingJob copyWith({

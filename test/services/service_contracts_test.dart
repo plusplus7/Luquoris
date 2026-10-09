@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
+import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
+import 'package:loquiris/services/analysis_repository_contracts.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
 
@@ -79,6 +82,92 @@ void main() {
       expect(transcription.requests, hasLength(1));
       expect(language.requests, hasLength(1));
       expect(speakers.requests, hasLength(1));
+    });
+
+    test('transcription job fake records durable state changes', () async {
+      final fake = FakeTranscriptionJobRepository();
+      addTearDown(fake.dispose);
+      const provenance = InferenceProvenance(
+        engineId: 'whisper.cpp',
+        engineVersion: '1',
+        modelId: 'model-1',
+        modelVersion: '1',
+        modelSha256: 'hash',
+        parametersJson: '{"parameterVersion":1}',
+      );
+      const run = TranscriptRun(
+        id: 'run-1',
+        meetingId: 'meeting-1',
+        provenance: provenance,
+        createdAtUtcMs: 1,
+        state: AnalysisQueued(),
+      );
+      const job = ProcessingJob(
+        id: 'job-1',
+        meetingId: 'meeting-1',
+        kind: ProcessingJobKind.transcription,
+        createdAtUtcMs: 1,
+        state: ProcessingQueued(),
+        targetRunId: 'run-1',
+        modelId: 'model-1',
+      );
+
+      expect(
+        await fake.enqueue(job, run, storedAtUtcMs: 1),
+        isA<Ok<ProcessingJob, AnalysisRepositoryFailure>>(),
+      );
+      expect(
+        (await fake.start(job.id, startedAtUtcMs: 2)
+                as Ok<ProcessingJob, AnalysisRepositoryFailure>)
+            .value
+            .state,
+        const ProcessingRunning(progress: 0),
+      );
+      expect(
+        await fake.saveProgress(
+          job.id,
+          progress: 0.5,
+          checkpoint: const TranscriptionCheckpoint(
+            completedMedia: Duration(seconds: 5),
+            parameterVersion: 1,
+          ),
+          storedAtUtcMs: 3,
+        ),
+        isA<Ok<ProcessingJob, AnalysisRepositoryFailure>>(),
+      );
+
+      expect(fake.enqueueCalls.single.job, job);
+      expect(fake.startCalls.single.jobId, job.id);
+      expect(fake.progressCalls.single.progress, 0.5);
+      expect(
+        (await fake.load(job.id)
+                as Ok<ProcessingJob, AnalysisRepositoryFailure>)
+            .value
+            .transcriptionCheckpoint,
+        const TranscriptionCheckpoint(
+          completedMedia: Duration(seconds: 5),
+          parameterVersion: 1,
+        ),
+      );
+    });
+
+    test('transcription checkpoints reject non-allowlisted shapes', () {
+      expect(
+        TranscriptionCheckpoint.tryParse(
+          '{"completedMediaUs":5,"parameterVersion":1}',
+        ),
+        const TranscriptionCheckpoint(
+          completedMedia: Duration(microseconds: 5),
+          parameterVersion: 1,
+        ),
+      );
+      expect(
+        TranscriptionCheckpoint.tryParse(
+          '{"completedMediaUs":5,"parameterVersion":1,"text":"secret"}',
+        ),
+        isNull,
+      );
+      expect(TranscriptionCheckpoint.tryParse('not-json'), isNull);
     });
 
     test('every fake exposes a typed failure path', () async {
@@ -293,6 +382,7 @@ void main() {
         () => container.read(modelManagerProvider),
         () => container.read(thermalAndPerformanceMonitorProvider),
         () => container.read(sessionRepositoryProvider),
+        () => container.read(transcriptionJobRepositoryProvider),
         () => container.read(exportServiceProvider),
       ]) {
         expect(read, throwsMissingImplementation);

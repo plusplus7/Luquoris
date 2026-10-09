@@ -81,6 +81,83 @@ abstract interface class TranscriptRepository {
   });
 }
 
+/// Durable state machine for one post-session transcription job and run.
+abstract interface class TranscriptionJobRepository {
+  /// Idempotently creates a queued job and its queued transcript run.
+  @useResult
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> enqueue(
+    ProcessingJob job,
+    TranscriptRun run, {
+    required int storedAtUtcMs,
+  });
+
+  /// Loads one job without exposing its Drift row.
+  @useResult
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> load(String jobId);
+
+  /// Watches committed transcription jobs for one meeting.
+  Stream<Result<List<ProcessingJob>, AnalysisRepositoryFailure>> watchMeeting(
+    String meetingId,
+  );
+
+  /// Lists queued, running, or resumably paused transcription work.
+  @useResult
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  listRecoverable();
+
+  /// Atomically marks the queued job and run as active.
+  @useResult
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> start(
+    String jobId, {
+    required int startedAtUtcMs,
+  });
+
+  /// Persists monotonic progress and a privacy-safe resume boundary.
+  @useResult
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> saveProgress(
+    String jobId, {
+    required double progress,
+    required TranscriptionCheckpoint checkpoint,
+    required int storedAtUtcMs,
+  });
+
+  /// Converts process-orphaned running work into resumably paused work.
+  @useResult
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  recoverOrphanedRunning({required int recoveredAtUtcMs});
+
+  /// Atomically completes the run, stable segments, job, and first selection.
+  @useResult
+  Future<Result<TranscriptVersion, AnalysisRepositoryFailure>> complete(
+    String jobId,
+    TranscriptRun completedRun,
+    List<TranscriptSegment> segments, {
+    required int storedAtUtcMs,
+  });
+
+  /// Records one privacy-safe terminal failure on the job and run.
+  @useResult
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> fail(
+    String jobId, {
+    required String failureCode,
+    required int failedAtUtcMs,
+  });
+
+  /// Requeues failed work while retaining its safe checkpoint.
+  @useResult
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> retry(
+    String jobId, {
+    required int queuedAtUtcMs,
+  });
+
+  /// Records cooperative cancellation as a stable terminal failure.
+  @useResult
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> cancel(
+    String jobId, {
+    required int cancelledAtUtcMs,
+  });
+}
+
 /// Immutable bundled-model manifest persistence.
 abstract interface class ModelRepository {
   /// Registers an exact bundled manifest idempotently.

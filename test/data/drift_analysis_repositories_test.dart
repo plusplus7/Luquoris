@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loquiris/bootstrap/diagnostic_log.dart';
@@ -23,6 +25,540 @@ void main() {
   });
 
   tearDown(() => database.close());
+
+  group('durable transcription jobs', () {
+    late DriftTranscriptionJobRepository jobs;
+
+    setUp(() {
+      jobs = DriftTranscriptionJobRepository(
+        database,
+        diagnosticSink: const DisabledDiagnosticLogSink(),
+      );
+    });
+
+    test('enqueue is idempotent for one deterministic job key', () async {
+      await _seedTranscription(database);
+      final run = _jobRun('run-1', createdAt: 2);
+      final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+
+      final first = await _ok(
+        jobs.enqueue(job, run, storedAtUtcMs: 2),
+      );
+      final duplicate = await _ok(
+        jobs.enqueue(job, run, storedAtUtcMs: 3),
+      );
+
+      expect(first, job);
+      expect(duplicate, job);
+      expect(await _tableCount(database, 'processing_jobs'), 1);
+      expect(await _tableCount(database, 'transcript_runs'), 1);
+
+      final conflict = await jobs.enqueue(
+        job.copyWith(targetRunId: 'different-run'),
+        run,
+        storedAtUtcMs: 4,
+      );
+      expect(
+        (conflict as Err<ProcessingJob, AnalysisRepositoryFailure>).failure,
+        isA<AnalysisConflict>(),
+      );
+    });
+
+    test('meeting watch re-emits committed transcription job states', () async {
+      await _seedTranscription(database);
+      final iterator = StreamIterator(jobs.watchMeeting('meeting-1'));
+      addTearDown(iterator.cancel);
+      expect(await iterator.moveNext(), isTrue);
+      expect(
+        (iterator.current as Ok<List<ProcessingJob>, AnalysisRepositoryFailure>)
+            .value,
+        isEmpty,
+      );
+      final run = _jobRun('run-1', createdAt: 2);
+      final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+
+      await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+      expect(await iterator.moveNext(), isTrue);
+      expect(
+        (iterator.current as Ok<List<ProcessingJob>, AnalysisRepositoryFailure>)
+            .value
+            .single
+            .state,
+        const ProcessingQueued(),
+      );
+      await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+      expect(await iterator.moveNext(), isTrue);
+      expect(
+        (iterator.current as Ok<List<ProcessingJob>, AnalysisRepositoryFailure>)
+            .value
+            .single
+            .state,
+        const ProcessingRunning(progress: 0),
+      );
+    });
+
+    test('running progress and checkpoints never regress', () async {
+      await _seedTranscription(database);
+      final run = _jobRun('run-1', createdAt: 2);
+      final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+      await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+
+      final started = await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+      expect(started.state, const ProcessingRunning(progress: 0));
+      const checkpoint = TranscriptionCheckpoint(
+        completedMedia: Duration(seconds: 4),
+        parameterVersion: 1,
+      );
+      final progressed = await _ok(
+        jobs.saveProgress(
+          job.id,
+          progress: 0.4,
+          checkpoint: checkpoint,
+          storedAtUtcMs: 4,
+        ),
+      );
+      expect(progressed.state, const ProcessingRunning(progress: 0.4));
+      expect(progressed.transcriptionCheckpoint, checkpoint);
+
+      final regressing = await jobs.saveProgress(
+        job.id,
+        progress: 0.3,
+        checkpoint: const TranscriptionCheckpoint(
+          completedMedia: Duration(seconds: 3),
+          parameterVersion: 1,
+        ),
+        storedAtUtcMs: 5,
+      );
+      expect(
+        (regressing as Err<ProcessingJob, AnalysisRepositoryFailure>).failure,
+        isA<AnalysisConflict>(),
+      );
+      final incompatible = await jobs.saveProgress(
+        job.id,
+        progress: 0.5,
+        checkpoint: const TranscriptionCheckpoint(
+          completedMedia: Duration(seconds: 5),
+          parameterVersion: 2,
+        ),
+        storedAtUtcMs: 5,
+      );
+      expect(
+        (incompatible as Err<ProcessingJob, AnalysisRepositoryFailure>).failure,
+        isA<AnalysisConflict>(),
+      );
+      expect((await _ok(jobs.load(job.id))).state, progressed.state);
+    });
+
+    test('orphaned running jobs become resumably paused', () async {
+      await _seedTranscription(database);
+      final run = _jobRun('run-1', createdAt: 2);
+      final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+      await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+      await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+      await _ok(
+        jobs.saveProgress(
+          job.id,
+          progress: 0.25,
+          checkpoint: const TranscriptionCheckpoint(
+            completedMedia: Duration(seconds: 2),
+            parameterVersion: 1,
+          ),
+          storedAtUtcMs: 4,
+        ),
+      );
+
+      final recovered = await _ok(
+        jobs.recoverOrphanedRunning(recoveredAtUtcMs: 5),
+      );
+
+      expect(recovered, hasLength(1));
+      expect(
+        recovered.single.state,
+        const ProcessingPaused(reasonCode: 'process_restarted'),
+      );
+      expect(
+        recovered.single.transcriptionCheckpoint,
+        const TranscriptionCheckpoint(
+          completedMedia: Duration(seconds: 2),
+          parameterVersion: 1,
+        ),
+      );
+      final version = (await _ok(
+        DriftTranscriptRepository(
+          database,
+          diagnosticSink: const DisabledDiagnosticLogSink(),
+        ).listVersions('meeting-1'),
+      )).single;
+      expect(version.run.state, const AnalysisQueued());
+      expect(await _ok(jobs.listRecoverable()), recovered);
+    });
+
+    test(
+      'checkpoint storage contains only the typed resume boundary',
+      () async {
+        await _seedTranscription(database);
+        final run = _jobRun('run-1', createdAt: 2);
+        final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+        await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+        await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+
+        await _ok(
+          jobs.saveProgress(
+            job.id,
+            progress: 0.5,
+            checkpoint: const TranscriptionCheckpoint(
+              completedMedia: Duration(microseconds: 1234567),
+              parameterVersion: 1,
+            ),
+            storedAtUtcMs: 4,
+          ),
+        );
+
+        final row = await database
+            .customSelect(
+              "SELECT checkpoint FROM processing_jobs WHERE id = 'job-1'",
+            )
+            .getSingle();
+        expect(
+          row.read<String>('checkpoint'),
+          '{"completedMediaUs":1234567,"parameterVersion":1}',
+        );
+      },
+    );
+
+    test('completion atomically stores one stable visible version', () async {
+      await _seedTranscription(database);
+      final run = _jobRun('run-1', createdAt: 2);
+      final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+      await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+      await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+      final completedRun = _completedJobRun(
+        'run-1',
+        createdAt: 2,
+        startedAt: 3,
+        endedAt: 8,
+      );
+      final segments = <TranscriptSegment>[
+        _timedSegment('segment-1', run.id, 'first', startSeconds: 0),
+        _timedSegment('segment-2', run.id, 'second', startSeconds: 1),
+      ];
+
+      final completed = await _ok(
+        jobs.complete(
+          job.id,
+          completedRun,
+          segments,
+          storedAtUtcMs: 8,
+        ),
+      );
+
+      expect(completed.run, completedRun);
+      expect(completed.segments, segments);
+      expect(completed.isCurrent, isTrue);
+      expect((await _ok(jobs.load(job.id))).state, const ProcessingSucceeded());
+      final retained = await _ok(
+        DriftTranscriptRepository(
+          database,
+          diagnosticSink: const DisabledDiagnosticLogSink(),
+        ).listVersions('meeting-1'),
+      );
+      expect(retained, hasLength(1));
+      expect(retained.single.run, completed.run);
+      expect(retained.single.segments, completed.segments);
+      expect(retained.single.isCurrent, isTrue);
+    });
+
+    test(
+      'completion rejects incompatible provenance and duplicate segments',
+      () async {
+        await _seedTranscription(database);
+        final run = _jobRun('run-1', createdAt: 2);
+        final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+        await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+        await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+
+        final incompatible = await jobs.complete(
+          job.id,
+          _completedJobRun(
+            run.id,
+            createdAt: 2,
+            startedAt: 3,
+            endedAt: 4,
+            engineVersion: 'different',
+          ),
+          [_timedSegment('segment-1', run.id, 'text', startSeconds: 0)],
+          storedAtUtcMs: 4,
+        );
+        expect(
+          (incompatible as Err<TranscriptVersion, AnalysisRepositoryFailure>)
+              .failure,
+          isA<AnalysisConflict>(),
+        );
+
+        final duplicate = await jobs.complete(
+          job.id,
+          _completedJobRun(
+            run.id,
+            createdAt: 2,
+            startedAt: 3,
+            endedAt: 4,
+          ),
+          [
+            _timedSegment('segment-1', run.id, 'text', startSeconds: 0),
+            _timedSegment('segment-1', run.id, 'text', startSeconds: 0),
+          ],
+          storedAtUtcMs: 4,
+        );
+        expect(
+          (duplicate as Err<TranscriptVersion, AnalysisRepositoryFailure>)
+              .failure,
+          isA<AnalysisConflict>(),
+        );
+        expect(await _tableCount(database, 'transcript_segments'), 0);
+        expect(
+          (await _ok(jobs.load(job.id))).state,
+          const ProcessingRunning(progress: 0),
+        );
+      },
+    );
+
+    test(
+      'completion rolls back run, segments, job, and selection together',
+      () async {
+        await _seedTranscription(database);
+        final run = _jobRun('run-1', createdAt: 2);
+        final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+        await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+        await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+        await database.customStatement('''
+        CREATE TRIGGER fail_transcription_segment
+        BEFORE INSERT ON transcript_segments
+        BEGIN
+          SELECT RAISE(ABORT, 'simulated segment failure');
+        END
+      ''');
+
+        final result = await jobs.complete(
+          job.id,
+          _completedJobRun(
+            run.id,
+            createdAt: 2,
+            startedAt: 3,
+            endedAt: 4,
+          ),
+          [_timedSegment('segment-1', run.id, 'text', startSeconds: 0)],
+          storedAtUtcMs: 4,
+        );
+
+        expect(
+          (result as Err<TranscriptVersion, AnalysisRepositoryFailure>).failure,
+          isA<AnalysisStoreUnavailable>(),
+        );
+        expect(await _tableCount(database, 'transcript_segments'), 0);
+        expect(await _tableCount(database, 'meeting_transcript_selections'), 0);
+        expect(
+          (await _ok(jobs.load(job.id))).state,
+          const ProcessingRunning(progress: 0),
+        );
+        final version = (await _ok(
+          DriftTranscriptRepository(
+            database,
+            diagnosticSink: const DisabledDiagnosticLogSink(),
+          ).listVersions('meeting-1'),
+        )).single;
+        expect(
+          version.run.state,
+          const AnalysisRunning(startedAtUtcMs: 3, progress: 0),
+        );
+      },
+    );
+
+    test(
+      'failure is terminal, privacy-safe, and retry returns to queued',
+      () async {
+        await _seedTranscription(database);
+        final run = _jobRun('run-1', createdAt: 2);
+        final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+        await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+        await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+        await _ok(
+          jobs.saveProgress(
+            job.id,
+            progress: 0.6,
+            checkpoint: const TranscriptionCheckpoint(
+              completedMedia: Duration(seconds: 6),
+              parameterVersion: 1,
+            ),
+            storedAtUtcMs: 4,
+          ),
+        );
+
+        final unsafe = await jobs.fail(
+          job.id,
+          failureCode: 'meeting title leaked',
+          failedAtUtcMs: 5,
+        );
+        expect(
+          (unsafe as Err<ProcessingJob, AnalysisRepositoryFailure>).failure,
+          isA<AnalysisConflict>(),
+        );
+        final failed = await _ok(
+          jobs.fail(
+            job.id,
+            failureCode: 'inference_execution_failed',
+            failedAtUtcMs: 5,
+          ),
+        );
+        expect(
+          failed.state,
+          const ProcessingFailed(failureCode: 'inference_execution_failed'),
+        );
+        final failedRun = (await _ok(
+          DriftTranscriptRepository(
+            database,
+            diagnosticSink: const DisabledDiagnosticLogSink(),
+          ).listVersions('meeting-1'),
+        )).single.run;
+        expect(
+          failedRun.state,
+          const AnalysisFailed(
+            startedAtUtcMs: 3,
+            endedAtUtcMs: 5,
+            progress: 0.6,
+            failureCode: 'inference_execution_failed',
+          ),
+        );
+
+        final retried = await _ok(jobs.retry(job.id, queuedAtUtcMs: 6));
+        expect(retried.state, const ProcessingQueued());
+        expect(
+          retried.transcriptionCheckpoint,
+          const TranscriptionCheckpoint(
+            completedMedia: Duration(seconds: 6),
+            parameterVersion: 1,
+          ),
+        );
+        final queuedRun = (await _ok(
+          DriftTranscriptRepository(
+            database,
+            diagnosticSink: const DisabledDiagnosticLogSink(),
+          ).listVersions('meeting-1'),
+        )).single.run;
+        expect(queuedRun.state, const AnalysisQueued());
+      },
+    );
+
+    test('cancellation records a stable terminal failure', () async {
+      await _seedTranscription(database);
+      final run = _jobRun('run-1', createdAt: 2);
+      final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+      await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+      await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+
+      final cancelled = await _ok(
+        jobs.cancel(job.id, cancelledAtUtcMs: 4),
+      );
+
+      expect(
+        cancelled.state,
+        const ProcessingFailed(failureCode: 'transcription_cancelled'),
+      );
+      expect(await _tableCount(database, 'transcript_segments'), 0);
+      final version = (await _ok(
+        DriftTranscriptRepository(
+          database,
+          diagnosticSink: const DisabledDiagnosticLogSink(),
+        ).listVersions('meeting-1'),
+      )).single;
+      expect(
+        version.run.state,
+        const AnalysisFailed(
+          startedAtUtcMs: 3,
+          endedAtUtcMs: 4,
+          progress: 0,
+          failureCode: 'transcription_cancelled',
+        ),
+      );
+    });
+
+    test(
+      'only the first completed version is selected automatically',
+      () async {
+        await _seedTranscription(database);
+        for (var index = 1; index <= 2; index += 1) {
+          final run = _jobRun('run-$index', createdAt: index + 1);
+          final job = _transcriptionJob(
+            'job-$index',
+            run.id,
+            createdAt: index + 1,
+          );
+          await _ok(jobs.enqueue(job, run, storedAtUtcMs: index + 1));
+          await _ok(jobs.start(job.id, startedAtUtcMs: index + 3));
+          await _ok(
+            jobs.complete(
+              job.id,
+              _completedJobRun(
+                run.id,
+                createdAt: index + 1,
+                startedAt: index + 3,
+                endedAt: index + 4,
+              ),
+              [
+                _timedSegment(
+                  'segment-$index',
+                  run.id,
+                  'text $index',
+                  startSeconds: 0,
+                ),
+              ],
+              storedAtUtcMs: index + 4,
+            ),
+          );
+        }
+
+        final versions = await _ok(
+          DriftTranscriptRepository(
+            database,
+            diagnosticSink: const DisabledDiagnosticLogSink(),
+          ).listVersions('meeting-1'),
+        );
+        expect(versions, hasLength(2));
+        expect(
+          versions.singleWhere((version) => version.isCurrent).run.id,
+          'run-1',
+        );
+      },
+    );
+
+    test('illegal state transitions are rejected without mutation', () async {
+      await _seedTranscription(database);
+      final run = _jobRun('run-1', createdAt: 2);
+      final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+      await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+
+      expect(
+        await jobs.saveProgress(
+          job.id,
+          progress: 0.1,
+          checkpoint: const TranscriptionCheckpoint(
+            completedMedia: Duration(seconds: 1),
+            parameterVersion: 1,
+          ),
+          storedAtUtcMs: 3,
+        ),
+        isA<Err<ProcessingJob, AnalysisRepositoryFailure>>(),
+      );
+      expect(
+        await jobs.fail(
+          job.id,
+          failureCode: 'inference_execution_failed',
+          failedAtUtcMs: 3,
+        ),
+        isA<Err<ProcessingJob, AnalysisRepositoryFailure>>(),
+      );
+      expect((await _ok(jobs.load(job.id))).state, const ProcessingQueued());
+    });
+  });
 
   test('model manifests are complete, idempotent, and immutable', () async {
     final model = _model();
@@ -456,6 +992,74 @@ TranscriptRun _run(String id, {required int createdAt}) => TranscriptRun(
   state: const AnalysisQueued(),
 );
 
+TranscriptRun _jobRun(String id, {required int createdAt}) => TranscriptRun(
+  id: id,
+  meetingId: 'meeting-1',
+  provenance: const InferenceProvenance(
+    engineId: 'whisper.cpp',
+    engineVersion: '1',
+    modelId: 'whisper-base-q5',
+    modelVersion: '1',
+    modelSha256: 'verified-hash',
+    parametersJson: '{"parameterVersion":1}',
+  ),
+  createdAtUtcMs: createdAt,
+  state: const AnalysisQueued(),
+);
+
+TranscriptRun _completedJobRun(
+  String id, {
+  required int createdAt,
+  required int startedAt,
+  required int endedAt,
+  String engineVersion = '1',
+}) => TranscriptRun(
+  id: id,
+  meetingId: 'meeting-1',
+  provenance: InferenceProvenance(
+    engineId: 'whisper.cpp',
+    engineVersion: engineVersion,
+    modelId: 'whisper-base-q5',
+    modelVersion: '1',
+    modelSha256: 'verified-hash',
+    parametersJson: '{"parameterVersion":1}',
+  ),
+  createdAtUtcMs: createdAt,
+  state: AnalysisCompleted(
+    startedAtUtcMs: startedAt,
+    endedAtUtcMs: endedAt,
+  ),
+);
+
+ProcessingJob _transcriptionJob(
+  String id,
+  String runId, {
+  required int createdAt,
+}) => ProcessingJob(
+  id: id,
+  meetingId: 'meeting-1',
+  kind: ProcessingJobKind.transcription,
+  createdAtUtcMs: createdAt,
+  state: const ProcessingQueued(),
+  targetRunId: runId,
+  modelId: 'whisper-base-q5',
+);
+
+TranscriptSegment _timedSegment(
+  String id,
+  String runId,
+  String text, {
+  required int startSeconds,
+}) => TranscriptSegment(
+  id: id,
+  transcriptRunId: runId,
+  start: Duration(seconds: startSeconds),
+  end: Duration(seconds: startSeconds + 1),
+  rawModelText: text,
+  displayedText: text,
+  revisionState: TranscriptRevisionState.machine,
+);
+
 TranscriptSegment _segment(String id, String runId, String text) =>
     TranscriptSegment(
       id: id,
@@ -477,6 +1081,16 @@ Future<void> _insertMeeting(db.AppDatabase database, String id) =>
       ''',
       <Object>[id, id],
     );
+
+Future<void> _seedTranscription(db.AppDatabase database) async {
+  await _insertMeeting(database, 'meeting-1');
+  await _ok(
+    DriftModelRepository(
+      database,
+      diagnosticSink: const DisabledDiagnosticLogSink(),
+    ).registerBundled(_model(), observedAtUtcMs: 1),
+  );
+}
 
 Future<void> _insertAutomaticLanguage(db.AppDatabase database) async {
   await database.customStatement('''

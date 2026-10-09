@@ -53,6 +53,12 @@ final transcriptRepositoryProvider = Provider<TranscriptRepository>(
   (ref) => throw UnimplementedError('TranscriptRepository is not installed'),
 );
 
+/// Durable transcription-job boundary; bootstrap must override it.
+final transcriptionJobRepositoryProvider = Provider<TranscriptionJobRepository>(
+  (ref) =>
+      throw UnimplementedError('TranscriptionJobRepository is not installed'),
+);
+
 /// Bundled-model manifest persistence boundary; bootstrap must override it.
 final modelRepositoryProvider = Provider<ModelRepository>(
   (ref) => throw UnimplementedError('ModelRepository is not installed'),

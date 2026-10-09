@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
+import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
+import 'package:loquiris/services/analysis_repository_contracts.dart';
 import 'package:loquiris/services/service_contracts.dart';
 
 final class FakeAudioCaptureService implements AudioCaptureService {
@@ -96,6 +99,310 @@ final class FakeTranscriptionEngine implements TranscriptionEngine {
   Future<Result<void, TranscriptionFailure>> cancel(String runId) async {
     cancellationRequests.add(runId);
     return cancelResult;
+  }
+}
+
+final class FakeTranscriptionJobRepository
+    implements TranscriptionJobRepository {
+  final StreamController<String> _changes = StreamController.broadcast(
+    sync: true,
+  );
+  final List<({ProcessingJob job, TranscriptRun run, int storedAtUtcMs})>
+  enqueueCalls = [];
+  final List<({String jobId, int startedAtUtcMs})> startCalls = [];
+  final List<
+    ({
+      String jobId,
+      double progress,
+      TranscriptionCheckpoint checkpoint,
+      int storedAtUtcMs,
+    })
+  >
+  progressCalls = [];
+  final List<int> recoveryCalls = [];
+  final List<
+    ({
+      String jobId,
+      TranscriptRun run,
+      List<TranscriptSegment> segments,
+      int storedAtUtcMs,
+    })
+  >
+  completionCalls = [];
+  final List<({String jobId, String failureCode, int failedAtUtcMs})>
+  failureCalls = [];
+  final List<({String jobId, int queuedAtUtcMs})> retryCalls = [];
+  final List<({String jobId, int cancelledAtUtcMs})> cancellationCalls = [];
+
+  final Map<String, ProcessingJob> jobs = {};
+  final Map<String, TranscriptRun> runs = {};
+  final Map<String, String> _selectedRunByMeeting = {};
+  AnalysisRepositoryFailure? failure;
+
+  Future<void> dispose() => _changes.close();
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> enqueue(
+    ProcessingJob job,
+    TranscriptRun run, {
+    required int storedAtUtcMs,
+  }) async {
+    enqueueCalls.add((job: job, run: run, storedAtUtcMs: storedAtUtcMs));
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final existing = jobs[job.id];
+    if (existing != null) return Ok(existing);
+    jobs[job.id] = job;
+    runs[run.id] = run;
+    _changes.add(job.meetingId);
+    return Ok(job);
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> load(
+    String jobId,
+  ) async {
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final job = jobs[jobId];
+    return job == null ? const Err(AnalysisNotFound()) : Ok(job);
+  }
+
+  @override
+  Stream<Result<List<ProcessingJob>, AnalysisRepositoryFailure>> watchMeeting(
+    String meetingId,
+  ) async* {
+    yield _meetingSnapshot(meetingId);
+    await for (final changedMeetingId in _changes.stream) {
+      if (changedMeetingId == meetingId) yield _meetingSnapshot(meetingId);
+    }
+  }
+
+  @override
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  listRecoverable() async {
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    return Ok(
+      jobs.values
+          .where(
+            (job) =>
+                job.state is ProcessingQueued ||
+                job.state is ProcessingRunning ||
+                job.state is ProcessingPaused,
+          )
+          .toList(growable: false),
+    );
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> start(
+    String jobId, {
+    required int startedAtUtcMs,
+  }) async {
+    startCalls.add((jobId: jobId, startedAtUtcMs: startedAtUtcMs));
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final job = jobs[jobId];
+    if (job == null) return const Err(AnalysisNotFound());
+    final updated = job.copyWith(
+      state: const ProcessingRunning(progress: 0),
+    );
+    jobs[jobId] = updated;
+    final runId = job.targetRunId;
+    final run = runId == null ? null : runs[runId];
+    if (run != null) {
+      runs[run.id] = run.copyWith(
+        state: AnalysisRunning(
+          startedAtUtcMs: startedAtUtcMs,
+          progress: 0,
+        ),
+      );
+    }
+    _changes.add(job.meetingId);
+    return Ok(updated);
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> saveProgress(
+    String jobId, {
+    required double progress,
+    required TranscriptionCheckpoint checkpoint,
+    required int storedAtUtcMs,
+  }) async {
+    progressCalls.add((
+      jobId: jobId,
+      progress: progress,
+      checkpoint: checkpoint,
+      storedAtUtcMs: storedAtUtcMs,
+    ));
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final job = jobs[jobId];
+    if (job == null) return const Err(AnalysisNotFound());
+    final updated = job.copyWith(
+      state: ProcessingRunning(progress: progress),
+      checkpoint: checkpoint.toStorageJson(),
+    );
+    jobs[jobId] = updated;
+    final runId = job.targetRunId;
+    final run = runId == null ? null : runs[runId];
+    if (run?.state case final AnalysisRunning running) {
+      runs[run!.id] = run.copyWith(
+        state: AnalysisRunning(
+          startedAtUtcMs: running.startedAtUtcMs,
+          progress: progress,
+        ),
+      );
+    }
+    _changes.add(job.meetingId);
+    return Ok(updated);
+  }
+
+  @override
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  recoverOrphanedRunning({required int recoveredAtUtcMs}) async {
+    recoveryCalls.add(recoveredAtUtcMs);
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final recovered = <ProcessingJob>[];
+    for (final entry in jobs.entries.toList(growable: false)) {
+      if (entry.value.state is! ProcessingRunning) continue;
+      final updated = entry.value.copyWith(
+        state: const ProcessingPaused(reasonCode: 'process_restarted'),
+      );
+      jobs[entry.key] = updated;
+      recovered.add(updated);
+      final runId = updated.targetRunId;
+      if (runId != null) {
+        final run = runs[runId];
+        if (run != null) {
+          runs[runId] = run.copyWith(state: const AnalysisQueued());
+        }
+      }
+      _changes.add(updated.meetingId);
+    }
+    return Ok(recovered);
+  }
+
+  @override
+  Future<Result<TranscriptVersion, AnalysisRepositoryFailure>> complete(
+    String jobId,
+    TranscriptRun completedRun,
+    List<TranscriptSegment> segments, {
+    required int storedAtUtcMs,
+  }) async {
+    completionCalls.add((
+      jobId: jobId,
+      run: completedRun,
+      segments: List<TranscriptSegment>.unmodifiable(segments),
+      storedAtUtcMs: storedAtUtcMs,
+    ));
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final job = jobs[jobId];
+    if (job == null) return const Err(AnalysisNotFound());
+    jobs[jobId] = job.copyWith(state: const ProcessingSucceeded());
+    runs[completedRun.id] = completedRun;
+    final isCurrent = !_selectedRunByMeeting.containsKey(
+      completedRun.meetingId,
+    );
+    if (isCurrent) {
+      _selectedRunByMeeting[completedRun.meetingId] = completedRun.id;
+    }
+    _changes.add(job.meetingId);
+    return Ok(
+      TranscriptVersion(
+        run: completedRun,
+        segments: segments,
+        isCurrent: isCurrent,
+      ),
+    );
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> fail(
+    String jobId, {
+    required String failureCode,
+    required int failedAtUtcMs,
+  }) async {
+    failureCalls.add((
+      jobId: jobId,
+      failureCode: failureCode,
+      failedAtUtcMs: failedAtUtcMs,
+    ));
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final job = jobs[jobId];
+    if (job == null) return const Err(AnalysisNotFound());
+    final updated = job.copyWith(
+      state: ProcessingFailed(failureCode: failureCode),
+    );
+    jobs[jobId] = updated;
+    final runId = job.targetRunId;
+    final run = runId == null ? null : runs[runId];
+    if (run?.state case final AnalysisRunning running) {
+      runs[run!.id] = run.copyWith(
+        state: AnalysisFailed(
+          startedAtUtcMs: running.startedAtUtcMs,
+          endedAtUtcMs: failedAtUtcMs,
+          progress: running.progress,
+          failureCode: failureCode,
+        ),
+      );
+    }
+    _changes.add(job.meetingId);
+    return Ok(updated);
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> retry(
+    String jobId, {
+    required int queuedAtUtcMs,
+  }) async {
+    retryCalls.add((jobId: jobId, queuedAtUtcMs: queuedAtUtcMs));
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final job = jobs[jobId];
+    if (job == null) return const Err(AnalysisNotFound());
+    final updated = job.copyWith(state: const ProcessingQueued());
+    jobs[jobId] = updated;
+    final runId = job.targetRunId;
+    final run = runId == null ? null : runs[runId];
+    if (run != null) runs[run.id] = run.copyWith(state: const AnalysisQueued());
+    _changes.add(job.meetingId);
+    return Ok(updated);
+  }
+
+  @override
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> cancel(
+    String jobId, {
+    required int cancelledAtUtcMs,
+  }) async {
+    cancellationCalls.add((jobId: jobId, cancelledAtUtcMs: cancelledAtUtcMs));
+    return fail(
+      jobId,
+      failureCode: 'transcription_cancelled',
+      failedAtUtcMs: cancelledAtUtcMs,
+    );
+  }
+
+  Result<List<ProcessingJob>, AnalysisRepositoryFailure> _meetingSnapshot(
+    String meetingId,
+  ) {
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final matching =
+        jobs.values
+            .where((job) => job.meetingId == meetingId)
+            .toList(growable: false)
+          ..sort((left, right) {
+            final byCreated = left.createdAtUtcMs.compareTo(
+              right.createdAtUtcMs,
+            );
+            return byCreated != 0 ? byCreated : left.id.compareTo(right.id);
+          });
+    return Ok(List<ProcessingJob>.unmodifiable(matching));
   }
 }
 
