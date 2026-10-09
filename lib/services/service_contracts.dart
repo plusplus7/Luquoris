@@ -115,13 +115,28 @@ abstract interface class AudioCaptureService {
 /// A request to transcribe local audio.
 final class TranscriptionRequest {
   /// Creates a transcription request.
-  const TranscriptionRequest({required this.runId, required this.audio});
+  const TranscriptionRequest({
+    required this.runId,
+    required this.audio,
+    this.modelId = 'whisper-base-q5_1',
+    this.languageHint = MeetingLanguageMode.mixed,
+    this.parameterVersion = 1,
+  });
 
   /// Stable identifier shared by progress events and the final output.
   final String runId;
 
   /// The local audio to analyze.
   final AudioInput audio;
+
+  /// Stable bundled-model identifier requested for this run.
+  final String modelId;
+
+  /// Recognition-language preference selected for the meeting.
+  final MeetingLanguageMode languageHint;
+
+  /// Canonical inference-parameter schema used for this run.
+  final int parameterVersion;
 }
 
 /// A timestamped piece of recognized speech.
@@ -167,11 +182,20 @@ enum TranscriptStability {
 /// Output from one transcription engine run.
 final class TranscriptionOutput {
   /// Creates transcription output.
-  TranscriptionOutput({required List<TranscriptChunk> chunks})
-    : chunks = List.unmodifiable(chunks);
+  TranscriptionOutput({
+    required List<TranscriptChunk> chunks,
+    this.engineVersion = 'unknown',
+    this.warningCode,
+  }) : chunks = List.unmodifiable(chunks);
 
   /// Timestamped chunks in media-time order.
   final List<TranscriptChunk> chunks;
+
+  /// Exact native inference-engine version that produced [chunks].
+  final String engineVersion;
+
+  /// Stable partial-input warning retained with a successful output.
+  final String? warningCode;
 }
 
 /// An observable event emitted while a transcription run is active.
@@ -238,6 +262,10 @@ abstract interface class TranscriptionEngine {
   Future<Result<TranscriptionOutput, TranscriptionFailure>> transcribe(
     TranscriptionRequest request,
   );
+
+  /// Requests cooperative cancellation for [runId].
+  @useResult
+  Future<Result<void, TranscriptionFailure>> cancel(String runId);
 }
 
 /// A request to identify the primary language of local audio.
