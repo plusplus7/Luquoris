@@ -1356,6 +1356,30 @@
       "redistribution": "Include the copyright and permission notice in all copies or substantial portions of the software.",
       "approvedBy": "+7",
       "approvedAt": "2026-10-09"
+    },
+    {
+      "kind": "model",
+      "name": "whisper-base-q5_1",
+      "version": "f281eb45af861ab5e5297d23694b7d46e090c02c",
+      "artifactSha256": "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898",
+      "licenseId": "MIT",
+      "licensePath": "tool/third_party_notices/licenses/mit-b5d65a59060e68c4ff940e1eddfa6f94b2d68fdf58ed7f4dd57721c997e35e9d.txt",
+      "licenseTextSha256": "b5d65a59060e68c4ff940e1eddfa6f94b2d68fdf58ed7f4dd57721c997e35e9d",
+      "redistribution": "Include the copyright and permission notice in all copies or substantial portions of the model.",
+      "approvedBy": "+7",
+      "approvedAt": "2026-10-09"
+    },
+    {
+      "kind": "nativeSource",
+      "name": "whisper.cpp",
+      "version": "927cfce34f31707e17f2bff35c349632fb9e2c3a",
+      "artifactSha256": "57e280cee375ab02425b806ad5146b99f6eb9357e3c2b31357c8a6af2e2e44ae",
+      "licenseId": "MIT",
+      "licensePath": "tool/third_party_notices/licenses/mit-94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d.txt",
+      "licenseTextSha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "redistribution": "Include the copyright and permission notice in all copies or substantial portions of the software.",
+      "approvedBy": "+7",
+      "approvedAt": "2026-10-09"
     }
   ]
 }

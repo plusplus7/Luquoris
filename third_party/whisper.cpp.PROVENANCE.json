@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "name": "whisper.cpp",
+  "version": "v1.9.4",
+  "upstream": "https://github.com/ggml-org/whisper.cpp",
+  "tagObject": "7d75b14994ae7f59623e2471445e2355fe506ed2",
+  "commit": "927cfce34f31707e17f2bff35c349632fb9e2c3a",
+  "archive": {
+    "url": "https://github.com/ggml-org/whisper.cpp/archive/refs/tags/v1.9.4.tar.gz",
+    "bytes": 9353438,
+    "sha256": "57e280cee375ab02425b806ad5146b99f6eb9357e3c2b31357c8a6af2e2e44ae"
+  },
+  "license": {
+    "id": "MIT",
+    "snapshotPath": "third_party/whisper.cpp/LICENSE"
+  },
+  "included": [
+    "CMakeLists.txt",
+    "LICENSE",
+    "cmake/",
+    "ggml/",
+    "include/",
+    "src/"
+  ],
+  "buildPolicy": {
+    "cpuOnly": true,
+    "androidArmNeonBaseline": true,
+    "examples": false,
+    "ffmpeg": false,
+    "gpuBackends": false,
+    "networkRuntime": false
+  }
+}

@@ -109,6 +109,29 @@ void main() {
     },
   );
 
+  test('collects native source provenance independently from models', () async {
+    await fixture.writeNativeSourceProvenance(
+      name: 'speech-runtime',
+      commit: '1' * 40,
+      licenseId: 'MIT',
+      licensePath: 'third_party/speech-runtime/LICENSE',
+    );
+
+    final inventory = await fixture.collect();
+    final nativeSource = inventory.components.singleWhere(
+      (component) => component.kind.name == 'nativeSource',
+    );
+
+    expect(nativeSource.name, 'speech-runtime');
+    expect(nativeSource.version, '1' * 40);
+    expect(nativeSource.artifactSha256, 'e' * 64);
+    expect(nativeSource.licenseId, 'MIT');
+    expect(
+      nativeSource.licenseSnapshotPath,
+      'third_party/speech-runtime/LICENSE',
+    );
+  });
+
   test(
     'rejects missing duplicate mutable and unsafe license metadata',
     () async {
@@ -421,6 +444,31 @@ final class _NoticeFixture {
       },
       'capabilities': <String>['transcription'],
       'enabledModes': <String>['balanced'],
+    });
+  }
+
+  Future<void> writeNativeSourceProvenance({
+    required String name,
+    required String commit,
+    required String licenseId,
+    required String licensePath,
+  }) async {
+    await _write(licensePath, 'native source license text');
+    await _writeJson('third_party/$name.PROVENANCE.json', <String, Object?>{
+      'schemaVersion': 1,
+      'name': name,
+      'version': 'v1.0.0',
+      'upstream': 'https://example.invalid/$name',
+      'commit': commit,
+      'archive': <String, Object?>{
+        'url': 'https://example.invalid/$name/archive/$commit.tar.gz',
+        'bytes': 100,
+        'sha256': 'e' * 64,
+      },
+      'license': <String, Object?>{
+        'id': licenseId,
+        'snapshotPath': licensePath,
+      },
     });
   }
 

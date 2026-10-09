@@ -13,6 +13,9 @@ enum NoticeComponentKind {
   /// An Android artifact resolved from `releaseRuntimeClasspath`.
   androidArtifact,
 
+  /// A pinned native source archive built into the application.
+  nativeSource,
+
   /// A separately licensed on-device model artifact.
   model,
 
@@ -63,6 +66,7 @@ final class NoticeInventoryRequest {
     required this.pubspecLock,
     required this.dartPackageGraph,
     required this.androidReleaseInventory,
+    required this.nativeSourceManifestDirectory,
     required this.modelManifestDirectory,
     required this.benchmarkManifest,
   });
@@ -82,6 +86,9 @@ final class NoticeInventoryRequest {
             'third_party_notices',
             'android_release_dependencies.json',
           ),
+        ),
+        nativeSourceManifestDirectory: Directory(
+          path.join(projectRoot.path, 'third_party'),
         ),
         modelManifestDirectory: Directory(
           path.join(projectRoot.path, 'models', 'manifests'),
@@ -108,6 +115,9 @@ final class NoticeInventoryRequest {
 
   /// Generated Android release-runtime inventory.
   final File androidReleaseInventory;
+
+  /// Optional directory of committed native-source provenance manifests.
+  final Directory nativeSourceManifestDirectory;
 
   /// Optional directory of committed model manifests.
   final Directory modelManifestDirectory;
@@ -201,6 +211,7 @@ final class NoticeInventory {
           request.dartPackageGraph,
         ),
         ...await _collectAndroidArtifacts(request.androidReleaseInventory),
+        ...await _collectNativeSources(request),
         ...await _collectModels(request),
         await _collectBenchmark(request),
       ]..sort(_compareComponents);
@@ -930,6 +941,68 @@ Future<List<NoticeComponent>> _collectModels(
         source: source,
         artifactSha256: _requiredSha256(manifest['sha256']),
         licenseId: licenseId,
+        licenseSnapshotPath: licensePath,
+        licenseTextSha256: sha256
+            .convert(await licenseFile.readAsBytes())
+            .toString(),
+      ),
+    );
+  }
+  return components;
+}
+
+Future<List<NoticeComponent>> _collectNativeSources(
+  NoticeInventoryRequest request,
+) async {
+  if (!request.nativeSourceManifestDirectory.existsSync()) {
+    return const <NoticeComponent>[];
+  }
+  final manifestFiles =
+      request.nativeSourceManifestDirectory
+          .listSync(followLinks: false)
+          .whereType<File>()
+          .where((file) => file.path.endsWith('.PROVENANCE.json'))
+          .toList()
+        ..sort((left, right) => left.path.compareTo(right.path));
+  final components = <NoticeComponent>[];
+  for (final manifestFile in manifestFiles) {
+    final manifest = await _readJsonMap(manifestFile);
+    final name = _requiredString(manifest['name']);
+    final commit = _requiredString(manifest['commit']);
+    final archive = manifest['archive'];
+    final license = manifest['license'];
+    if (manifest['schemaVersion'] != 1 ||
+        !RegExp(r'^[0-9a-f]{40}$').hasMatch(commit) ||
+        archive is! Map<String, Object?> ||
+        license is! Map<String, Object?>) {
+      throw const NoticeInventoryFailure(
+        NoticeInventoryFailureReason.invalidMetadata,
+      );
+    }
+    final source = _requiredString(archive['url']);
+    if (!source.startsWith('https://') || _looksMutable(source)) {
+      throw const NoticeInventoryFailure(
+        NoticeInventoryFailureReason.invalidMetadata,
+      );
+    }
+    final licensePath = _requiredSafePath(
+      license['snapshotPath'],
+      requiredPrefix: 'third_party',
+    );
+    final licenseFile = _safeProjectFile(
+      request.projectRoot,
+      licensePath,
+      requiredPrefix: 'third_party',
+    );
+    _requireRegularFile(licenseFile);
+    components.add(
+      NoticeComponent(
+        kind: NoticeComponentKind.nativeSource,
+        name: name,
+        version: commit,
+        source: source,
+        artifactSha256: _requiredSha256(archive['sha256']),
+        licenseId: _requiredString(license['id']),
         licenseSnapshotPath: licensePath,
         licenseTextSha256: sha256
             .convert(await licenseFile.readAsBytes())

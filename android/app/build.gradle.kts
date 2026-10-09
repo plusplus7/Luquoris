@@ -9,6 +9,24 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val generatedModelAssetsDirectory =
+    rootProject.layout.buildDirectory.dir("generated/model_assets")
+
+val verifyImportedModels by tasks.registering {
+    group = "verification"
+    description = "Rejects Android builds without verified offline model assets."
+    inputs.dir(generatedModelAssetsDirectory)
+
+    doLast {
+        val assetsRoot = generatedModelAssetsDirectory.get().asFile
+        val index = assetsRoot.resolve("model_manifests/index.json")
+        val models = assetsRoot.resolve("models")
+        if (!index.isFile || !models.isDirectory) {
+            throw GradleException("model_assets_not_imported")
+        }
+    }
+}
+
 android {
     namespace = "com.loquiris"
     compileSdk = 36
@@ -36,6 +54,12 @@ android {
             // Release signing is supplied outside source control by the release workflow.
         }
     }
+
+    sourceSets.getByName("main").assets.srcDir(generatedModelAssetsDirectory.get().asFile)
+
+    androidResources {
+        noCompress += "bin"
+    }
 }
 
 kotlin {
@@ -53,6 +77,10 @@ dependencies {
 
 flutter {
     source = "../.."
+}
+
+tasks.named("preBuild").configure {
+    dependsOn(verifyImportedModels)
 }
 
 val releaseRuntimeClasspath =

@@ -5,6 +5,25 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../tool/release_privacy_policy.dart';
 
 void main() {
+  test('Android build accepts only verified generated model assets', () {
+    final buildScript = File(
+      'android/app/build.gradle.kts',
+    ).readAsStringSync();
+
+    expect(
+      buildScript,
+      contains('buildDirectory.dir("generated/model_assets")'),
+    );
+    expect(buildScript, contains('model_assets_not_imported'));
+    expect(buildScript, contains('model_manifests/index.json'));
+    expect(
+      buildScript,
+      contains('assets.srcDir(generatedModelAssetsDirectory.get().asFile)'),
+    );
+    expect(buildScript, contains('noCompress += "bin"'));
+    expect(buildScript, contains('dependsOn(verifyImportedModels)'));
+  });
+
   test('release manifest explicitly removes network permissions', () {
     final manifest = File(
       'android/app/src/release/AndroidManifest.xml',
