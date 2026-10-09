@@ -64,8 +64,6 @@ android {
         }
     }
 
-    sourceSets.getByName("main").assets.srcDir(generatedModelAssetsDirectory.get().asFile)
-
     androidResources {
         noCompress += "bin"
     }

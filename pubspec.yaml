@@ -33,3 +33,7 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
+  assets:
+    - build/generated/model_assets/model_manifests/
+    - build/generated/model_assets/models/licenses/
+    - build/generated/model_assets/models/whisper-base-q5_1/

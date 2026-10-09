@@ -17,8 +17,18 @@ void main() {
     expect(buildScript, contains('model_assets_not_imported'));
     expect(buildScript, contains('model_manifests/index.json'));
     expect(
-      buildScript,
-      contains('assets.srcDir(generatedModelAssetsDirectory.get().asFile)'),
+      File('pubspec.yaml').readAsStringSync(),
+      contains(
+        'build/generated/model_assets/models/whisper-base-q5_1/',
+      ),
+    );
+    expect(buildScript, isNot(contains('assets.srcDir(')));
+    expect(
+      File(
+        'android/app/src/main/kotlin/com/loquiris/transcription/'
+        'WhisperModelStore.kt',
+      ).readAsStringSync(),
+      contains('flutter_assets/build/generated/model_assets/'),
     );
     expect(buildScript, contains('noCompress += "bin"'));
     expect(buildScript, contains('dependsOn(verifyImportedModels)'));

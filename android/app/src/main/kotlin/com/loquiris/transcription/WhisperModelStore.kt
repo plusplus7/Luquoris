@@ -19,7 +19,11 @@ class WhisperModelStore(
 ) : WhisperModelProvider {
     constructor(context: Context) : this(
         modelRoot = File(context.applicationContext.filesDir, "models"),
-        openAsset = { context.applicationContext.assets.open(REVIEWED_BASE_Q5_MODEL.assetPath) },
+        openAsset = {
+            context.applicationContext.assets.open(
+                "flutter_assets/build/generated/model_assets/${REVIEWED_BASE_Q5_MODEL.assetPath}",
+            )
+        },
         directorySync = ::syncDirectory,
     )
 

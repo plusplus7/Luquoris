@@ -1,20 +1,27 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:loquiris/bootstrap/diagnostic_log.dart';
+import 'package:loquiris/core/result.dart';
 import 'package:loquiris/data/database/app_database.dart';
 import 'package:loquiris/data/database/open_connection.dart';
 import 'package:loquiris/data/files/private_meeting_audio_store.dart';
 import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
 import 'package:loquiris/features/export_backup/application/local_benchmark_report_exporter.dart';
+import 'package:loquiris/features/models_performance/application/asset_bundle_model_artifact_source.dart';
 import 'package:loquiris/features/models_performance/application/benchmark_report_exporter.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
+import 'package:loquiris/features/models_performance/application/runtime_model_manager.dart';
+import 'package:loquiris/features/models_performance/domain/model_manifest.dart';
+import 'package:loquiris/features/transcript/application/transcription_coordinator.dart';
 import 'package:loquiris/native/method_channel_export_destination_gateway.dart';
 import 'package:loquiris/native/method_channel_thermal_and_performance_monitor.dart';
+import 'package:loquiris/native/method_channel_transcription_engine.dart';
 import 'package:loquiris/services/service_providers.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -83,8 +90,37 @@ final class AppDependencies {
 Future<AppDependencies> bootstrap({
   required DiagnosticLogSink diagnosticLogSink,
   Future<AppDatabase> Function() openDatabase = openApplicationDatabase,
+  int Function()? observedAtUtcMs,
+  AssetBundle? modelAssetBundle,
 }) async {
   final database = await openDatabase();
+  final startupObservedAtUtcMs =
+      observedAtUtcMs?.call() ?? DateTime.now().toUtc().millisecondsSinceEpoch;
+  final modelRepository = DriftModelRepository(
+    database,
+    diagnosticSink: diagnosticLogSink,
+  );
+  final modelBundle = modelAssetBundle ?? rootBundle;
+  final modelCatalog = await AssetBundleModelManifestCatalog(
+    bundle: modelBundle,
+  ).load();
+  final registeredManifests = <BundledModelManifest>[];
+  if (modelCatalog case Ok(:final value)) {
+    for (final manifest in value) {
+      final registered = await modelRepository.registerBundled(
+        manifest.toInstalledModel(),
+        observedAtUtcMs: startupObservedAtUtcMs,
+      );
+      if (registered case Ok()) registeredManifests.add(manifest);
+    }
+  }
+  final transcriptionManifest = registeredManifests
+      .where((manifest) => manifest.id == 'whisper-base-q5_1')
+      .firstOrNull;
+  final modelManager = RuntimeModelManager(
+    manifests: registeredManifests,
+    artifactSource: AssetBundleModelArtifactSource(bundle: modelBundle),
+  );
   final exportDestinationGateway = MethodChannelExportDestinationGateway(
     diagnosticSink: diagnosticLogSink,
   );
@@ -122,12 +158,21 @@ Future<AppDependencies> bootstrap({
           diagnosticSink: diagnosticLogSink,
         ),
       ),
-      modelRepositoryProvider.overrideWith(
-        (ref) => DriftModelRepository(
+      transcriptionJobRepositoryProvider.overrideWith(
+        (ref) => DriftTranscriptionJobRepository(
           ref.watch(_applicationDatabaseProvider),
           diagnosticSink: diagnosticLogSink,
         ),
       ),
+      modelRepositoryProvider.overrideWithValue(modelRepository),
+      modelManagerProvider.overrideWithValue(modelManager),
+      transcriptionEngineProvider.overrideWith(
+        (ref) => MethodChannelTranscriptionEngine(),
+      ),
+      if (transcriptionManifest != null)
+        transcriptionModelManifestProvider.overrideWithValue(
+          transcriptionManifest,
+        ),
       revisionRepositoryProvider.overrideWith(
         (ref) => DriftRevisionRepository(
           ref.watch(_applicationDatabaseProvider),
