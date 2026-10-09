@@ -289,4 +289,57 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get benchmarkExportFailed => '无法导出报告，请重试。';
+
+  @override
+  String get sessionJobTranscription => '语音转写';
+
+  @override
+  String get transcriptionPreparingModel => '正在准备离线模型';
+
+  @override
+  String get transcriptionDecodingAudio => '正在解码已保存的音频';
+
+  @override
+  String transcriptionProgress(int percent) {
+    return '正在本地转写 $percent%';
+  }
+
+  @override
+  String get transcriptionDelayed => '转写有所延迟。录音仍然安全，处理会在本地继续。';
+
+  @override
+  String get transcriptionIncomplete => '转写内容不完整。录音仍然安全，你可以重试。';
+
+  @override
+  String get transcriptionRetryAction => '重试转写';
+
+  @override
+  String get transcriptionRetrying => '正在重试转写…';
+
+  @override
+  String get transcriptionCancelled => '转写已取消，录音仍然安全。';
+
+  @override
+  String get transcriptionCompleted => '转写已完成';
+
+  @override
+  String get transcriptionFailureModel => '无法验证内置转写模型，录音仍然安全。';
+
+  @override
+  String get transcriptionFailureEngine => '离线转写引擎未能完成处理，录音仍然安全。';
+
+  @override
+  String get transcriptionFailureStorage => '无法在本地保存转写进度，录音仍然安全。';
+
+  @override
+  String get transcriptionFailureUnknown => '转写未能完成，录音仍然安全。';
+
+  @override
+  String get transcriptionRetryFailed => '无法重新启动转写，你可以再次重试。';
+
+  @override
+  String get transcriptPreviewTitle => '转写预览';
+
+  @override
+  String get transcriptPreviewEmpty => '已完成的转写中没有稳定文本。';
 }

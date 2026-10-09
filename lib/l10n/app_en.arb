@@ -249,5 +249,26 @@
     "placeholders": {"fileName": {"type": "String"}}
   },
   "benchmarkExportCancelled": "Export cancelled. No file was saved.",
-  "benchmarkExportFailed": "Report could not be exported. Try again."
+  "benchmarkExportFailed": "Report could not be exported. Try again.",
+  "sessionJobTranscription": "Transcription",
+  "transcriptionPreparingModel": "Preparing the offline model",
+  "transcriptionDecodingAudio": "Decoding saved audio",
+  "transcriptionProgress": "Transcribing locally {percent}%",
+  "@transcriptionProgress": {
+    "description": "Durably persisted post-session transcription progress.",
+    "placeholders": {"percent": {"type": "int"}}
+  },
+  "transcriptionDelayed": "Transcription is delayed. Your recording is safe and processing will resume locally.",
+  "transcriptionIncomplete": "The transcript is incomplete. Your recording is safe and you can try again.",
+  "transcriptionRetryAction": "Retry transcription",
+  "transcriptionRetrying": "Retrying transcription…",
+  "transcriptionCancelled": "Transcription was cancelled. Your recording is safe.",
+  "transcriptionCompleted": "Transcription completed",
+  "transcriptionFailureModel": "The bundled transcription model could not be verified. Your recording is safe.",
+  "transcriptionFailureEngine": "The offline transcription engine could not finish. Your recording is safe.",
+  "transcriptionFailureStorage": "Transcription progress could not be saved locally. Your recording is safe.",
+  "transcriptionFailureUnknown": "Transcription could not finish. Your recording is safe.",
+  "transcriptionRetryFailed": "Transcription could not be restarted. You can try again.",
+  "transcriptPreviewTitle": "Transcript preview",
+  "transcriptPreviewEmpty": "The completed transcript contains no stable text."
 }

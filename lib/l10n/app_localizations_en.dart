@@ -320,4 +320,66 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get benchmarkExportFailed =>
       'Report could not be exported. Try again.';
+
+  @override
+  String get sessionJobTranscription => 'Transcription';
+
+  @override
+  String get transcriptionPreparingModel => 'Preparing the offline model';
+
+  @override
+  String get transcriptionDecodingAudio => 'Decoding saved audio';
+
+  @override
+  String transcriptionProgress(int percent) {
+    return 'Transcribing locally $percent%';
+  }
+
+  @override
+  String get transcriptionDelayed =>
+      'Transcription is delayed. Your recording is safe and processing will resume locally.';
+
+  @override
+  String get transcriptionIncomplete =>
+      'The transcript is incomplete. Your recording is safe and you can try again.';
+
+  @override
+  String get transcriptionRetryAction => 'Retry transcription';
+
+  @override
+  String get transcriptionRetrying => 'Retrying transcription…';
+
+  @override
+  String get transcriptionCancelled =>
+      'Transcription was cancelled. Your recording is safe.';
+
+  @override
+  String get transcriptionCompleted => 'Transcription completed';
+
+  @override
+  String get transcriptionFailureModel =>
+      'The bundled transcription model could not be verified. Your recording is safe.';
+
+  @override
+  String get transcriptionFailureEngine =>
+      'The offline transcription engine could not finish. Your recording is safe.';
+
+  @override
+  String get transcriptionFailureStorage =>
+      'Transcription progress could not be saved locally. Your recording is safe.';
+
+  @override
+  String get transcriptionFailureUnknown =>
+      'Transcription could not finish. Your recording is safe.';
+
+  @override
+  String get transcriptionRetryFailed =>
+      'Transcription could not be restarted. You can try again.';
+
+  @override
+  String get transcriptPreviewTitle => 'Transcript preview';
+
+  @override
+  String get transcriptPreviewEmpty =>
+      'The completed transcript contains no stable text.';
 }

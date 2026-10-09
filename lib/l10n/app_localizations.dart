@@ -631,6 +631,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report could not be exported. Try again.'**
   String get benchmarkExportFailed;
+
+  /// No description provided for @sessionJobTranscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription'**
+  String get sessionJobTranscription;
+
+  /// No description provided for @transcriptionPreparingModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing the offline model'**
+  String get transcriptionPreparingModel;
+
+  /// No description provided for @transcriptionDecodingAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Decoding saved audio'**
+  String get transcriptionDecodingAudio;
+
+  /// Durably persisted post-session transcription progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcribing locally {percent}%'**
+  String transcriptionProgress(int percent);
+
+  /// No description provided for @transcriptionDelayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription is delayed. Your recording is safe and processing will resume locally.'**
+  String get transcriptionDelayed;
+
+  /// No description provided for @transcriptionIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'The transcript is incomplete. Your recording is safe and you can try again.'**
+  String get transcriptionIncomplete;
+
+  /// No description provided for @transcriptionRetryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry transcription'**
+  String get transcriptionRetryAction;
+
+  /// No description provided for @transcriptionRetrying.
+  ///
+  /// In en, this message translates to:
+  /// **'Retrying transcription…'**
+  String get transcriptionRetrying;
+
+  /// No description provided for @transcriptionCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription was cancelled. Your recording is safe.'**
+  String get transcriptionCancelled;
+
+  /// No description provided for @transcriptionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription completed'**
+  String get transcriptionCompleted;
+
+  /// No description provided for @transcriptionFailureModel.
+  ///
+  /// In en, this message translates to:
+  /// **'The bundled transcription model could not be verified. Your recording is safe.'**
+  String get transcriptionFailureModel;
+
+  /// No description provided for @transcriptionFailureEngine.
+  ///
+  /// In en, this message translates to:
+  /// **'The offline transcription engine could not finish. Your recording is safe.'**
+  String get transcriptionFailureEngine;
+
+  /// No description provided for @transcriptionFailureStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription progress could not be saved locally. Your recording is safe.'**
+  String get transcriptionFailureStorage;
+
+  /// No description provided for @transcriptionFailureUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription could not finish. Your recording is safe.'**
+  String get transcriptionFailureUnknown;
+
+  /// No description provided for @transcriptionRetryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription could not be restarted. You can try again.'**
+  String get transcriptionRetryFailed;
+
+  /// No description provided for @transcriptPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcript preview'**
+  String get transcriptPreviewTitle;
+
+  /// No description provided for @transcriptPreviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'The completed transcript contains no stable text.'**
+  String get transcriptPreviewEmpty;
 }
 
 class _AppLocalizationsDelegate
