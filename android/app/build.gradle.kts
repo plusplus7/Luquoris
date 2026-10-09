@@ -44,6 +44,15 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters += "arm64-v8a"
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags += listOf("-std=c++17")
+            }
+        }
     }
 
     buildTypes {
@@ -59,6 +68,13 @@ android {
 
     androidResources {
         noCompress += "bin"
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
     }
 }
 
