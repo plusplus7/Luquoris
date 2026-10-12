@@ -410,6 +410,110 @@ void main() {
       },
     );
 
+    test(
+      'startup recomputes with durable language provenance after meeting edits',
+      () async {
+        final manifest = _manifest();
+        final originalMeeting = _meeting(
+          'meeting-1',
+          language: MeetingLanguageMode.english,
+        );
+        final parameters = _parameters(
+          meeting: originalMeeting,
+          manifest: manifest,
+        );
+        final runId = transcriptionRunId(
+          meetingId: originalMeeting.id,
+          parameters: parameters,
+        );
+        final jobId = transcriptionJobId(
+          meetingId: originalMeeting.id,
+          parameters: parameters,
+        );
+        final harness = _Harness(
+          meeting: originalMeeting.copyWith(
+            languageMode: MeetingLanguageMode.chinese,
+          ),
+          manifest: manifest,
+        );
+        harness.jobs.jobs[jobId] = ProcessingJob(
+          id: jobId,
+          meetingId: originalMeeting.id,
+          kind: ProcessingJobKind.transcription,
+          createdAtUtcMs: originalMeeting.createdAtUtcMs,
+          state: const ProcessingPaused(reasonCode: 'process_restarted'),
+          targetRunId: runId,
+          modelId: manifest.id,
+          checkpoint: const TranscriptionCheckpoint(
+            completedMedia: Duration(seconds: 4),
+            parameterVersion: 1,
+          ).toStorageJson(),
+        );
+        harness.jobs.runs[runId] = TranscriptRun(
+          id: runId,
+          meetingId: originalMeeting.id,
+          provenance: parameters.provenance,
+          createdAtUtcMs: originalMeeting.createdAtUtcMs,
+          state: const AnalysisQueued(),
+        );
+        addTearDown(harness.dispose);
+
+        await harness.start();
+        await harness.coordinator.waitForIdle();
+
+        expect(
+          harness.engine.requests.single.languageHint,
+          MeetingLanguageMode.english,
+        );
+        expect(harness.jobs.jobs[jobId]?.state, const ProcessingSucceeded());
+      },
+    );
+
+    test('completion rejection becomes a durable terminal failure', () async {
+      final harness = _Harness();
+      harness.jobs.completionFailure = const AnalysisConflict();
+      addTearDown(harness.dispose);
+      await harness.start();
+
+      await harness.coordinator.scheduleFinalized('meeting-1');
+
+      expect(harness.jobs.completionCalls, hasLength(1));
+      expect(
+        harness.jobs.failureCalls.last.failureCode,
+        'transcription_persistence_failed',
+      );
+      expect(
+        harness.jobs.jobs.values.single.state,
+        const ProcessingFailed(
+          failureCode: 'transcription_persistence_failed',
+        ),
+      );
+    });
+
+    test('persists a partial-input warning on successful output', () async {
+      final harness = _Harness();
+      harness.engine.results.add(
+        Ok(
+          TranscriptionOutput(
+            engineVersion: '1.9.4',
+            chunks: const [],
+            warningCode: 'transcription_audio_uncommitted_tail',
+          ),
+        ),
+      );
+      addTearDown(harness.dispose);
+      await harness.start();
+
+      await harness.coordinator.scheduleFinalized('meeting-1');
+
+      expect(
+        harness.jobs.jobs.values.single.state,
+        const ProcessingSucceededWithWarning(
+          warningCode: 'transcription_audio_uncommitted_tail',
+        ),
+      );
+    });
+
     test('allows only one native base-model inference at a time', () async {
       final engine = _ControlledTranscriptionEngine(gated: true);
       final harness = _Harness(engine: engine);
@@ -620,13 +724,14 @@ BundledModelManifest _manifest() {
 Meeting _meeting(
   String id, {
   MeetingTranscriptionMode mode = MeetingTranscriptionMode.postSession,
+  MeetingLanguageMode language = MeetingLanguageMode.mixed,
 }) => Meeting(
   id: id,
   title: 'Private title',
   createdAtUtcMs: 7,
   mediaDuration: const Duration(seconds: 10),
   lifecycle: MeetingLifecycle.finalized,
-  languageMode: MeetingLanguageMode.mixed,
+  languageMode: language,
   transcriptionMode: mode,
 );
 

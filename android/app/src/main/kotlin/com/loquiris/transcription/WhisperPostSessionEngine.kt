@@ -10,6 +10,7 @@ class WhisperPostSessionEngine(
     fun transcribe(
         meetingId: String,
         cancellation: TranscriptionCancellation = TranscriptionCancellation(),
+        languageHint: TranscriptionLanguageHint = TranscriptionLanguageHint.mixed,
         onProgress: (Double) -> Unit = {},
     ): PostSessionTranscriptionResult {
         if (cancellation.isCancelled()) return PostSessionTranscriptionResult.Cancelled
@@ -59,6 +60,7 @@ class WhisperPostSessionEngine(
                     run,
                     cancellation,
                     warningCode,
+                    languageHint,
                     onProgress,
                 )
             } finally {
@@ -82,6 +84,7 @@ class WhisperPostSessionEngine(
         run: Long,
         cancellation: TranscriptionCancellation,
         warningCode: String?,
+        languageHint: TranscriptionLanguageHint,
         onProgress: (Double) -> Unit,
     ): PostSessionTranscriptionResult {
         val segments = mutableListOf<TranscriptionSegment>()
@@ -93,7 +96,13 @@ class WhisperPostSessionEngine(
                 val windowStartMilliseconds = window.startSample * 1_000L / audio.sampleRateHz
                 val lease = arbiter.acquirePostSession(cancellation::isCancelled) ?: return@decode false
                 val result = lease.use {
-                    native.transcribePcm(context, run, window.samples, windowStartMilliseconds)
+                    native.transcribePcm(
+                        context,
+                        run,
+                        window.samples,
+                        windowStartMilliseconds,
+                        languageHint,
+                    )
                 }
                 if (result == 0L) {
                     nativeFailureCode = stableNativeFailure()

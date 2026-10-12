@@ -210,6 +210,41 @@ final class TranscriptionCheckpoint extends ValueObject {
   ];
 }
 
+/// Privacy-safe metadata retained after a successful partial transcription.
+@immutable
+final class TranscriptionCompletionWarning extends ValueObject {
+  /// Creates terminal metadata with a stable [warningCode].
+  const TranscriptionCompletionWarning({required this.warningCode});
+
+  /// Stable code explaining why the successful output may be incomplete.
+  final String warningCode;
+
+  /// Encodes the allowlisted terminal metadata shape.
+  String toStorageJson() => jsonEncode(<String, String>{
+    'completionWarningCode': warningCode,
+  });
+
+  /// Decodes only the terminal warning shape used by transcription jobs.
+  static TranscriptionCompletionWarning? tryParse(String? source) {
+    if (source == null) return null;
+    try {
+      final decoded = jsonDecode(source);
+      if (decoded is! Map<String, Object?> || decoded.length != 1) return null;
+      final warningCode = decoded['completionWarningCode'];
+      if (warningCode is! String ||
+          !RegExp(r'^[a-z][a-z0-9_]{0,63}$').hasMatch(warningCode)) {
+        return null;
+      }
+      return TranscriptionCompletionWarning(warningCode: warningCode);
+    } on FormatException {
+      return null;
+    }
+  }
+
+  @override
+  List<Object?> get equalityValues => <Object?>[warningCode];
+}
+
 /// Closed state of one local processing job.
 @immutable
 sealed class ProcessingState extends ValueObject {
@@ -261,6 +296,18 @@ final class ProcessingSucceeded extends ProcessingState {
 
   @override
   List<Object?> get equalityValues => const <Object?>[];
+}
+
+/// Job finished successfully but produced a privacy-safe user-visible warning.
+final class ProcessingSucceededWithWarning extends ProcessingState {
+  /// Creates a successful state with a stable [warningCode].
+  const ProcessingSucceededWithWarning({required this.warningCode});
+
+  /// Stable code describing why the derived output may be incomplete.
+  final String warningCode;
+
+  @override
+  List<Object?> get equalityValues => <Object?>[warningCode];
 }
 
 /// Job finished with a structured failure.

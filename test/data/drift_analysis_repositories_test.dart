@@ -62,6 +62,37 @@ void main() {
         (conflict as Err<ProcessingJob, AnalysisRepositoryFailure>).failure,
         isA<AnalysisConflict>(),
       );
+      expect(await _ok(jobs.loadRun(run.id)), run);
+    });
+
+    test('successful partial output retains its safe warning code', () async {
+      await _seedTranscription(database);
+      final run = _jobRun('run-1', createdAt: 2);
+      final job = _transcriptionJob('job-1', run.id, createdAt: 2);
+      await _ok(jobs.enqueue(job, run, storedAtUtcMs: 2));
+      await _ok(jobs.start(job.id, startedAtUtcMs: 3));
+
+      await _ok(
+        jobs.complete(
+          job.id,
+          _completedJobRun(
+            run.id,
+            createdAt: 2,
+            startedAt: 3,
+            endedAt: 4,
+          ),
+          [_timedSegment('segment-1', run.id, 'text', startSeconds: 0)],
+          storedAtUtcMs: 4,
+          warningCode: 'transcription_audio_uncommitted_tail',
+        ),
+      );
+
+      expect(
+        (await _ok(jobs.load(job.id))).state,
+        const ProcessingSucceededWithWarning(
+          warningCode: 'transcription_audio_uncommitted_tail',
+        ),
+      );
     });
 
     test('meeting watch re-emits committed transcription job states', () async {

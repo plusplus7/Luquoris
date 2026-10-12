@@ -341,6 +341,28 @@ final class DriftTranscriptionJobRepository
   }
 
   @override
+  Future<Result<TranscriptRun, AnalysisRepositoryFailure>> loadRun(
+    String runId,
+  ) async {
+    try {
+      final row = await _runRow(runId);
+      if (row == null || row.isDeleted) {
+        return const Err(AnalysisNotFound());
+      }
+      return Ok(_readTranscriptRun(row));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcription_run_load_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
   Stream<Result<List<ProcessingJob>, AnalysisRepositoryFailure>> watchMeeting(
     String meetingId,
   ) async* {
@@ -606,10 +628,12 @@ final class DriftTranscriptionJobRepository
     TranscriptRun completedRun,
     List<TranscriptSegment> segments, {
     required int storedAtUtcMs,
+    String? warningCode,
   }) async {
     if (completedRun.state is! AnalysisCompleted ||
         !_validStableSegments(completedRun.id, segments) ||
-        storedAtUtcMs < 0) {
+        storedAtUtcMs < 0 ||
+        (warningCode != null && !_privacySafeCode.hasMatch(warningCode))) {
       return const Err(AnalysisConflict());
     }
     try {
@@ -675,6 +699,13 @@ final class DriftTranscriptionJobRepository
             progress: const Value(1),
             reasonCode: const Value(null),
             failureCode: const Value(null),
+            checkpoint: Value(
+              warningCode == null
+                  ? null
+                  : TranscriptionCompletionWarning(
+                      warningCode: warningCode,
+                    ).toStorageJson(),
+            ),
           ),
         );
         final selection =
@@ -1517,7 +1548,14 @@ ProcessingJob _readTranscriptionJob(db.ProcessingJob row) => ProcessingJob(
     'queued' => const ProcessingQueued(),
     'running' => ProcessingRunning(progress: row.progress!),
     'paused' => ProcessingPaused(reasonCode: row.reasonCode!),
-    'succeeded' => const ProcessingSucceeded(),
+    'succeeded' =>
+      TranscriptionCompletionWarning.tryParse(row.checkpoint) == null
+          ? const ProcessingSucceeded()
+          : ProcessingSucceededWithWarning(
+              warningCode: TranscriptionCompletionWarning.tryParse(
+                row.checkpoint,
+              )!.warningCode,
+            ),
     'failed' => ProcessingFailed(failureCode: row.failureCode!),
     _ => throw StateError('database processing state invariant violated'),
   },

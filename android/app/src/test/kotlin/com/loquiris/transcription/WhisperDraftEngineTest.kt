@@ -10,6 +10,28 @@ import org.junit.Test
 
 class WhisperDraftEngineTest {
     @Test
+    fun `forwards the requested language to native draft inference`() {
+        val native = DraftNativeApi()
+        val engine = WhisperDraftEngine(
+            "draft-1",
+            readyModel(),
+            native,
+            {},
+            languageHint = TranscriptionLanguageHint.chinese,
+            sampleRateHz = 1_000,
+            windowSamples = 4,
+            strideSamples = 2,
+        )
+
+        engine.start()
+        engine.consume(pcmFrame(0, 1, 2))
+        engine.consume(pcmFrame(1, 3, 4))
+
+        assertEquals(listOf(TranscriptionLanguageHint.chinese), native.languageHints)
+        engine.close()
+    }
+
+    @Test
     fun `owner close during materialization never allocates a context`() {
         val native = DraftNativeApi()
         lateinit var engine: WhisperDraftEngine
@@ -167,6 +189,7 @@ private fun pcmFrame(
 private class DraftNativeApi : WhisperNativeApi {
     val windows = mutableListOf<List<Short>>()
     val windowStartsMilliseconds = mutableListOf<Long>()
+    val languageHints = mutableListOf<TranscriptionLanguageHint>()
     var maximumActiveDecodes = 0
         private set
     var createdContexts = 0
@@ -205,11 +228,13 @@ private class DraftNativeApi : WhisperNativeApi {
         runHandle: Long,
         pcm: ShortArray,
         windowStartMilliseconds: Long,
+        languageHint: TranscriptionLanguageHint,
     ): Long {
         activeDecodes += 1
         maximumActiveDecodes = maxOf(maximumActiveDecodes, activeDecodes)
         windows += pcm.toList()
         windowStartsMilliseconds += windowStartMilliseconds
+        languageHints += languageHint
         val result = resultSequence++
         resultStarts[result] = windowStartMilliseconds
         activeDecodes -= 1

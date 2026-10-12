@@ -46,6 +46,62 @@ final class TranscriptionParameters {
     parameterVersion: transcriptionParameterVersion,
   );
 
+  /// Rebuilds only exact, currently supported parameters from durable provenance.
+  static TranscriptionParameters? tryFromProvenance({
+    required InferenceProvenance provenance,
+    required BundledModelManifest manifest,
+  }) {
+    if (!isSupportedTranscriptionManifest(manifest) ||
+        provenance.engineId != manifest.engineId ||
+        provenance.engineVersion != transcriptionEngineVersion ||
+        provenance.modelId != manifest.id ||
+        provenance.modelVersion != manifest.version ||
+        provenance.modelSha256 != manifest.sha256) {
+      return null;
+    }
+    try {
+      final decoded = jsonDecode(provenance.parametersJson);
+      if (decoded is! Map<String, Object?> ||
+          decoded.keys.toSet().difference(_canonicalKeys).isNotEmpty ||
+          _canonicalKeys.difference(decoded.keys.toSet()).isNotEmpty) {
+        return null;
+      }
+      final requestedTiming = MeetingTranscriptionMode.values
+          .where((value) => value.name == decoded['requestedTiming'])
+          .firstOrNull;
+      final languageHint = MeetingLanguageMode.values
+          .where((value) => value.name == decoded['languageHint'])
+          .firstOrNull;
+      final executionMode = PerformanceMode.values
+          .where((value) => value.name == decoded['executionMode'])
+          .firstOrNull;
+      final parameterVersion = decoded['parameterVersion'];
+      if (requestedTiming == null ||
+          languageHint == null ||
+          executionMode == null ||
+          parameterVersion is! int ||
+          parameterVersion != transcriptionParameterVersion) {
+        return null;
+      }
+      final parameters = TranscriptionParameters._(
+        requestedTiming: requestedTiming,
+        languageHint: languageHint,
+        executionMode: executionMode,
+        modelId: provenance.modelId,
+        modelVersion: provenance.modelVersion,
+        modelSha256: provenance.modelSha256,
+        engineId: provenance.engineId,
+        engineVersion: provenance.engineVersion,
+        parameterVersion: parameterVersion,
+      );
+      return parameters.canonicalJson == provenance.parametersJson
+          ? parameters
+          : null;
+    } on FormatException {
+      return null;
+    }
+  }
+
   /// User-selected meeting timing retained even when live work falls back.
   final MeetingTranscriptionMode requestedTiming;
 
@@ -103,3 +159,10 @@ bool isSupportedTranscriptionManifest(BundledModelManifest manifest) =>
     manifest.modelFormat == 'ggml' &&
     manifest.capabilities.contains(ModelCapability.transcription) &&
     manifest.enabledModes.contains(PerformanceMode.postSession);
+
+const Set<String> _canonicalKeys = <String>{
+  'executionMode',
+  'languageHint',
+  'parameterVersion',
+  'requestedTiming',
+};

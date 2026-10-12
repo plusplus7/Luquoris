@@ -111,7 +111,11 @@ final class MeetingTranscriptionController
         (result as Ok<List<ProcessingJob>, AnalysisRepositoryFailure>).value;
     TranscriptEditorDocument? document;
     AnalysisRepositoryFailure? failure;
-    if (jobs.any((job) => job.state is ProcessingSucceeded)) {
+    if (jobs.any(
+      (job) =>
+          job.state is ProcessingSucceeded ||
+          job.state is ProcessingSucceededWithWarning,
+    )) {
       final loaded = await ref
           .read(transcriptRepositoryProvider)
           .loadEditor(meetingId);

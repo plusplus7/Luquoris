@@ -176,18 +176,24 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
       if (detail == null) return;
       final manifest = ref.read(transcriptionModelManifestProvider);
       if (!isSupportedTranscriptionManifest(manifest)) return;
-      final parameters = TranscriptionParameters.forMeeting(
-        meeting: detail.meeting,
-        manifest: manifest,
-      );
+      final parameters = await _durableParameters(job, manifest);
       final retried = await repository.retry(
         job.id,
         queuedAtUtcMs: _nowUtcMs,
       );
       if (retried case Err()) return;
+      final queued =
+          (retried as Ok<ProcessingJob, AnalysisRepositoryFailure>).value;
+      if (parameters == null) {
+        await _failRecoverableJob(
+          queued,
+          failureCode: 'transcription_provenance_invalid',
+        );
+        return;
+      }
       await _serializeInference(
         () => _execute(
-          (retried as Ok<ProcessingJob, AnalysisRepositoryFailure>).value,
+          queued,
           detail,
           parameters,
         ),
@@ -321,11 +327,59 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
     if (detail == null) return;
     final manifest = ref.read(transcriptionModelManifestProvider);
     if (!isSupportedTranscriptionManifest(manifest)) return;
-    final parameters = TranscriptionParameters.forMeeting(
-      meeting: detail.meeting,
+    final parameters = await _durableParameters(job, manifest);
+    if (parameters == null) {
+      await _failRecoverableJob(
+        job,
+        failureCode: 'transcription_provenance_invalid',
+      );
+      return;
+    }
+    await _execute(job, detail, parameters);
+  }
+
+  Future<TranscriptionParameters?> _durableParameters(
+    ProcessingJob job,
+    BundledModelManifest manifest,
+  ) async {
+    final runId = job.targetRunId;
+    if (runId == null || job.modelId == null) return null;
+    final loaded = await ref
+        .read(transcriptionJobRepositoryProvider)
+        .loadRun(runId);
+    if (loaded case Err()) return null;
+    final run = (loaded as Ok<TranscriptRun, AnalysisRepositoryFailure>).value;
+    if (run.id != runId ||
+        run.meetingId != job.meetingId ||
+        run.provenance.modelId != job.modelId) {
+      return null;
+    }
+    final parameters = TranscriptionParameters.tryFromProvenance(
+      provenance: run.provenance,
       manifest: manifest,
     );
-    await _execute(job, detail, parameters);
+    final checkpoint = job.transcriptionCheckpoint;
+    if (parameters == null ||
+        (job.checkpoint != null && checkpoint == null) ||
+        (checkpoint != null &&
+            checkpoint.parameterVersion != parameters.parameterVersion)) {
+      return null;
+    }
+    return parameters;
+  }
+
+  Future<void> _failRecoverableJob(
+    ProcessingJob job, {
+    required String failureCode,
+  }) async {
+    final repository = ref.read(transcriptionJobRepositoryProvider);
+    final started = await repository.start(job.id, startedAtUtcMs: _nowUtcMs);
+    if (started case Err()) return;
+    final _ = await repository.fail(
+      job.id,
+      failureCode: failureCode,
+      failedAtUtcMs: _nowUtcMs,
+    );
   }
 
   Future<SessionDetail?> _loadDetail(String meetingId) async {
@@ -467,7 +521,7 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
       return;
     }
     final endedAtUtcMs = _nowUtcMs;
-    final _ = await repository.complete(
+    final completion = await repository.complete(
       job.id,
       TranscriptRun(
         id: runId,
@@ -481,7 +535,15 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
       ),
       segments,
       storedAtUtcMs: endedAtUtcMs,
+      warningCode: output.warningCode,
     );
+    if (completion case Err()) {
+      final _ = await repository.fail(
+        job.id,
+        failureCode: 'transcription_persistence_failed',
+        failedAtUtcMs: _nowUtcMs,
+      );
+    }
   }
 
   Future<void> _serializeMeeting(

@@ -306,6 +306,7 @@ private fun productionWorker(context: Context): TranscriptionChannelWorker {
     return TranscriptionChannelWorker { request, cancellation, onProgress ->
         engine.transcribe(
             meetingId = request.meetingId,
+            languageHint = request.languageHint,
             cancellation = cancellation,
             onProgress = onProgress,
         )
@@ -319,6 +320,7 @@ private fun productionLiveDraftFactory(context: Context): LiveDraftSessionFactor
             modelProvider = WhisperModelStore(context),
             native = JniWhisperNativeApi,
             eventEmitter = eventEmitter,
+            languageHint = request.languageHint,
             arbiter = WhisperInferenceArbiter.process,
         )
     }

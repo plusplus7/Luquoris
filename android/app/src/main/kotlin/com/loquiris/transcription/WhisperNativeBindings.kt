@@ -20,6 +20,7 @@ internal object WhisperNativeBindings {
         runHandle: Long,
         pcm: ShortArray,
         windowStartMilliseconds: Long,
+        languageHint: String,
     ): Long
 
     external fun nativeSegmentCount(resultHandle: Long): Int
@@ -64,12 +65,14 @@ object JniWhisperNativeApi : WhisperNativeApi {
         runHandle: Long,
         pcm: ShortArray,
         windowStartMilliseconds: Long,
+        languageHint: TranscriptionLanguageHint,
     ): Long =
         WhisperNativeBindings.nativeTranscribePcm(
             contextHandle,
             runHandle,
             pcm,
             windowStartMilliseconds,
+            languageHint.name,
         )
 
     override fun segmentCount(resultHandle: Long): Int = WhisperNativeBindings.nativeSegmentCount(resultHandle)

@@ -42,6 +42,7 @@ class WhisperDraftEngine(
     private val modelProvider: WhisperModelProvider,
     private val native: WhisperNativeApi,
     private val eventEmitter: (LiveDraftRuntimeEvent) -> Unit,
+    private val languageHint: TranscriptionLanguageHint = TranscriptionLanguageHint.mixed,
     private val sampleRateHz: Int = DEFAULT_SAMPLE_RATE_HZ,
     private val windowSamples: Int = DEFAULT_WINDOW_SAMPLES,
     private val strideSamples: Int = DEFAULT_STRIDE_SAMPLES,
@@ -174,7 +175,13 @@ class WhisperDraftEngine(
         val windowStartMilliseconds = windowStartSamples * 1_000L / sampleRateHz
         var resultHandle = 0L
         try {
-            resultHandle = native.transcribePcm(context, run, rollingPcm.copyOf(), windowStartMilliseconds)
+            resultHandle = native.transcribePcm(
+                context,
+                run,
+                rollingPcm.copyOf(),
+                windowStartMilliseconds,
+                languageHint,
+            )
             if (closed.get()) return
             if (resultHandle == 0L) {
                 emitDegraded(stableNativeFailure(), incomplete = true)

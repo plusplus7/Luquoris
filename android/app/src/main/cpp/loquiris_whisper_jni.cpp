@@ -236,7 +236,7 @@ Java_com_loquiris_transcription_WhisperNativeBindings_nativeFreeRun(
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_loquiris_transcription_WhisperNativeBindings_nativeTranscribePcm(
     JNIEnv *env, jobject, jlong context_handle, jlong run_handle,
-    jshortArray pcm, jlong window_start_milliseconds) {
+    jshortArray pcm, jlong window_start_milliseconds, jstring language_hint) {
   try {
     const auto context = find_handle(contexts, context_handle);
     const auto run = find_handle(runs, run_handle);
@@ -244,7 +244,7 @@ Java_com_loquiris_transcription_WhisperNativeBindings_nativeTranscribePcm(
       set_error("transcription_native_invalid_handle");
       return 0;
     }
-    if (pcm == nullptr || window_start_milliseconds < 0 ||
+    if (pcm == nullptr || language_hint == nullptr || window_start_milliseconds < 0 ||
         window_start_milliseconds >
             std::numeric_limits<jlong>::max() - 60'000) {
       set_error("transcription_native_input_invalid");
@@ -257,6 +257,17 @@ Java_com_loquiris_transcription_WhisperNativeBindings_nativeTranscribePcm(
     }
     if (run->cancelled.load(std::memory_order_relaxed)) {
       set_error("transcription_cancelled");
+      return 0;
+    }
+
+    const std::string requested_language = read_utf8(env, language_hint);
+    const char *whisper_language = "auto";
+    if (requested_language == "chinese") {
+      whisper_language = "zh";
+    } else if (requested_language == "english") {
+      whisper_language = "en";
+    } else if (requested_language != "mixed") {
+      set_error("transcription_native_input_invalid");
       return 0;
     }
 
@@ -276,6 +287,7 @@ Java_com_loquiris_transcription_WhisperNativeBindings_nativeTranscribePcm(
         whisper_full_default_params(WHISPER_SAMPLING_GREEDY);
     params.n_threads = inference_thread_count();
     params.translate = false;
+    params.language = whisper_language;
     params.no_context = true;
     params.no_timestamps = false;
     params.print_special = false;

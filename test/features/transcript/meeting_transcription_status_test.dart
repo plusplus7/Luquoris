@@ -118,6 +118,37 @@ void main() {
     expect(retryCalls, 1);
   });
 
+  testWidgets('shows a durable warning when only committed audio was used', (
+    tester,
+  ) async {
+    final jobs = FakeTranscriptionJobRepository();
+    final transcripts = _TranscriptRepository(_document(completed: true));
+    addTearDown(jobs.dispose);
+    await jobs.enqueue(
+      _job(
+        state: const ProcessingSucceededWithWarning(
+          warningCode: 'transcription_audio_uncommitted_tail',
+        ),
+      ),
+      _run(
+        state: const AnalysisCompleted(
+          startedAtUtcMs: 2,
+          endedAtUtcMs: 4,
+        ),
+      ),
+      storedAtUtcMs: 1,
+    );
+
+    await _pumpStatus(tester, jobs: jobs, transcripts: transcripts);
+
+    expect(
+      find.text(
+        'The transcript is incomplete. Your recording is safe and you can try again.',
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('remains readable at two hundred percent text scale', (
     tester,
   ) async {

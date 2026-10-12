@@ -156,6 +156,7 @@ final class FakeTranscriptionJobRepository
   final Map<String, TranscriptRun> runs = {};
   final Map<String, String> _selectedRunByMeeting = {};
   AnalysisRepositoryFailure? failure;
+  AnalysisRepositoryFailure? completionFailure;
 
   Future<void> dispose() => _changes.close();
 
@@ -184,6 +185,16 @@ final class FakeTranscriptionJobRepository
     if (configuredFailure != null) return Err(configuredFailure);
     final job = jobs[jobId];
     return job == null ? const Err(AnalysisNotFound()) : Ok(job);
+  }
+
+  @override
+  Future<Result<TranscriptRun, AnalysisRepositoryFailure>> loadRun(
+    String runId,
+  ) async {
+    final configuredFailure = failure;
+    if (configuredFailure != null) return Err(configuredFailure);
+    final run = runs[runId];
+    return run == null ? const Err(AnalysisNotFound()) : Ok(run);
   }
 
   @override
@@ -309,6 +320,7 @@ final class FakeTranscriptionJobRepository
     TranscriptRun completedRun,
     List<TranscriptSegment> segments, {
     required int storedAtUtcMs,
+    String? warningCode,
   }) async {
     completionCalls.add((
       jobId: jobId,
@@ -316,11 +328,24 @@ final class FakeTranscriptionJobRepository
       segments: List<TranscriptSegment>.unmodifiable(segments),
       storedAtUtcMs: storedAtUtcMs,
     ));
+    final configuredCompletionFailure = completionFailure;
+    if (configuredCompletionFailure != null) {
+      return Err(configuredCompletionFailure);
+    }
     final configuredFailure = failure;
     if (configuredFailure != null) return Err(configuredFailure);
     final job = jobs[jobId];
     if (job == null) return const Err(AnalysisNotFound());
-    jobs[jobId] = job.copyWith(state: const ProcessingSucceeded());
+    jobs[jobId] = job.copyWith(
+      state: warningCode == null
+          ? const ProcessingSucceeded()
+          : ProcessingSucceededWithWarning(warningCode: warningCode),
+      checkpoint: warningCode == null
+          ? null
+          : TranscriptionCompletionWarning(
+              warningCode: warningCode,
+            ).toStorageJson(),
+    );
     runs[completedRun.id] = completedRun;
     final isCurrent = !_selectedRunByMeeting.containsKey(
       completedRun.meetingId,

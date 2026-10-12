@@ -2,11 +2,54 @@ package com.loquiris.transcription
 
 import java.io.File
 import java.nio.file.Files
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class WhisperPostSessionEngineTest {
+    @Test
+    fun `forwards the requested language to every native window`() {
+        val native = FakeNativeApi()
+
+        engine(native = native).transcribe(
+            "meeting-1",
+            languageHint = TranscriptionLanguageHint.english,
+        )
+
+        assertEquals(
+            listOf(TranscriptionLanguageHint.english, TranscriptionLanguageHint.english),
+            native.languageHints,
+        )
+    }
+
+    @Test
+    fun `live reservation pauses post session inference and cancellation unblocks it`() {
+        val live = WhisperInferenceArbiter.process.acquireLive { false }!!
+        val cancellation = TranscriptionCancellation()
+        val atWindow = CountDownLatch(1)
+        val native = FakeNativeApi()
+        val engine = engine(native, decoder = FakeDecoder { onWindow ->
+            atWindow.countDown()
+            onWindow(PcmWindow(0, ShortArray(16_000)))
+        })
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val result = executor.submit<PostSessionTranscriptionResult> {
+                engine.transcribe("meeting-1", cancellation)
+            }
+            assertTrue(atWindow.await(2, TimeUnit.SECONDS))
+            cancellation.cancel()
+            assertEquals(PostSessionTranscriptionResult.Cancelled, result.get(2, TimeUnit.SECONDS))
+            assertEquals(0, native.resultsFreed)
+        } finally {
+            live.close()
+            executor.shutdownNow()
+        }
+    }
+
     @Test
     fun `normalizes regressing native timestamps and releases every handle`() {
         val native = FakeNativeApi()
@@ -189,6 +232,7 @@ private class FakeNativeApi(
     var runsFreed = 0
     var resultsFreed = 0
     val cancelledRuns = mutableListOf<Long>()
+    val languageHints = mutableListOf<TranscriptionLanguageHint>()
     private var transcriptionCalls = 0
 
     override fun createContext(modelPath: String): Long =
@@ -213,7 +257,9 @@ private class FakeNativeApi(
         runHandle: Long,
         pcm: ShortArray,
         windowStartMilliseconds: Long,
+        languageHint: TranscriptionLanguageHint,
     ): Long {
+        languageHints += languageHint
         transcriptionCalls += 1
         return transcribeResult ?: (30 + transcriptionCalls).toLong()
     }

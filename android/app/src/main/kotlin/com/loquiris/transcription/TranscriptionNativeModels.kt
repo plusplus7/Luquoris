@@ -102,6 +102,7 @@ interface WhisperNativeApi {
         runHandle: Long,
         pcm: ShortArray,
         windowStartMilliseconds: Long,
+        languageHint: TranscriptionLanguageHint = TranscriptionLanguageHint.mixed,
     ): Long
 
     fun segmentCount(resultHandle: Long): Int

@@ -95,6 +95,12 @@ abstract interface class TranscriptionJobRepository {
   @useResult
   Future<Result<ProcessingJob, AnalysisRepositoryFailure>> load(String jobId);
 
+  /// Loads the durable run whose provenance owns resumed inference.
+  @useResult
+  Future<Result<TranscriptRun, AnalysisRepositoryFailure>> loadRun(
+    String runId,
+  );
+
   /// Watches committed transcription jobs for one meeting.
   Stream<Result<List<ProcessingJob>, AnalysisRepositoryFailure>> watchMeeting(
     String meetingId,
@@ -133,6 +139,7 @@ abstract interface class TranscriptionJobRepository {
     TranscriptRun completedRun,
     List<TranscriptSegment> segments, {
     required int storedAtUtcMs,
+    String? warningCode,
   });
 
   /// Records one privacy-safe terminal failure on the job and run.

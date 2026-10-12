@@ -128,6 +128,9 @@ final class _JobStatus extends StatelessWidget {
       ),
       ProcessingPaused() => _LiveMessage(message: l10n.transcriptionDelayed),
       ProcessingSucceeded() => Text(l10n.transcriptionCompleted),
+      ProcessingSucceededWithWarning() => _LiveMessage(
+        message: l10n.transcriptionIncomplete,
+      ),
       ProcessingFailed(:final failureCode) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
