@@ -54,7 +54,10 @@ void main() {
     expect(manifest.enabledModes, <PerformanceMode>[
       PerformanceMode.postSession,
     ]);
-    expect(File(manifest.licenseSnapshotPath.value).lengthSync(), greaterThan(0));
+    expect(
+      File(manifest.licenseSnapshotPath.value).lengthSync(),
+      greaterThan(0),
+    );
   });
 
   late Directory projectRoot;

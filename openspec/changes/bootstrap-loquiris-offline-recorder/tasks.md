@@ -104,10 +104,10 @@
 
 ## 11. Whisper Transcription Spike
 
-- [ ] 11.1 Integrate `whisper.cpp` behind `TranscriptionEngine` in an isolated native execution boundary using CPU/ARM NEON as baseline
-- [ ] 11.2 Import and verify multilingual `base q5` through the approved build-time model workflow
-- [ ] 11.3 Implement post-session decoding, timestamp normalization, progress, cancellation, resumable job state, and structured failures
-- [ ] 11.4 Implement a bounded sliding-window draft experiment with stable/unstable hypotheses and backlog reporting
+- [x] 11.1 Integrate `whisper.cpp` behind `TranscriptionEngine` in an isolated native execution boundary using CPU/ARM NEON as baseline
+- [x] 11.2 Import and verify multilingual `base q5` through the approved build-time model workflow
+- [x] 11.3 Implement post-session decoding, timestamp normalization, progress, cancellation, resumable job state, and structured failures
+- [x] 11.4 Implement a bounded sliding-window draft experiment with stable/unstable hypotheses and backlog reporting
 - [ ] 11.5 Benchmark Chinese CER, English WER, mixed MER, first-text latency, RTF, peak PSS, energy, thermals, and UI responsiveness on the target device
 - [ ] 11.6 Evaluate `small q5` as an included high-quality model against accuracy gain, RTF ≤2.0, memory stability, license, and size budgets
 - [ ] 11.7 Decide production, preview, or rejected status for each mode/model strictly from recorded gates and update manifests/notices

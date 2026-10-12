@@ -153,34 +153,39 @@ void main() {
     await subscription.cancel();
   });
 
-  test('native and model failures remain visible as draft degradation', () async {
-    final engine = draftEngine(channel, rawEvents.stream);
-    final events = <TranscriptionEvent>[];
-    final subscription = engine.eventsFor('draft-1').listen(events.add);
-    await pumpEventQueue();
-    for (final code in <String>[
-      'transcription_model_hash_mismatch',
-      'transcription_native_out_of_memory',
-    ]) {
-      rawEvents.add(<String, Object?>{
-        'v': 1,
-        'runId': 'draft-1',
-        'type': 'draftDegraded',
-        'reason': code,
-        'backlogMilliseconds': 0,
-        'incomplete': true,
-      });
-    }
-    await pumpEventQueue();
-    expect(
-      events.whereType<TranscriptionDraftDegraded>().map((event) => event.reason),
-      <String>[
+  test(
+    'native and model failures remain visible as draft degradation',
+    () async {
+      final engine = draftEngine(channel, rawEvents.stream);
+      final events = <TranscriptionEvent>[];
+      final subscription = engine.eventsFor('draft-1').listen(events.add);
+      await pumpEventQueue();
+      for (final code in <String>[
         'transcription_model_hash_mismatch',
         'transcription_native_out_of_memory',
-      ],
-    );
-    await subscription.cancel();
-  });
+      ]) {
+        rawEvents.add(<String, Object?>{
+          'v': 1,
+          'runId': 'draft-1',
+          'type': 'draftDegraded',
+          'reason': code,
+          'backlogMilliseconds': 0,
+          'incomplete': true,
+        });
+      }
+      await pumpEventQueue();
+      expect(
+        events.whereType<TranscriptionDraftDegraded>().map(
+          (event) => event.reason,
+        ),
+        <String>[
+          'transcription_model_hash_mismatch',
+          'transcription_native_out_of_memory',
+        ],
+      );
+      await subscription.cancel();
+    },
+  );
 }
 
 MethodChannelTranscriptionEngine draftEngine(

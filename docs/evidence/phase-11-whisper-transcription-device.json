@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "scope": "single-run-device-smoke",
+  "limitations": [
+    "One authorized mixed-language fixture; no CER, WER, or MER claim.",
+    "One run; not a p50\/p95 latency or sustained-RTF benchmark.",
+    "No Flutter frame timing, microphone capture, durable database, restart, retry, or playback measurement.",
+    "PSS values are checkpoints, not continuously sampled peak PSS."
+  ],
+  "build": {
+    "commit": "e8da984590a49cba1847435c0c7681636d90dfa7",
+    "packageName": "com.loquiris.debug",
+    "versionName": "0.1.0",
+    "versionCode": 1,
+    "installedApkSha256": "811bb7764dd5547f0136f5cfd5097920f39938d5d8a4694b17dd94f61a9adf3f"
+  },
+  "device": {
+    "manufacturer": "Xiaomi",
+    "model": "M2104K10AC",
+    "device": "chopin",
+    "fingerprint": "Redmi\/chopin\/chopin:13\/TP1A.220624.014\/V14.0.8.0.TKPCNXM:user\/release-keys",
+    "sdkInt": 33,
+    "supportedAbis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "armeabi"
+    ],
+    "availableProcessors": 8
+  },
+  "engine": {
+    "id": "whisper.cpp",
+    "version": "1.9.4",
+    "modelId": "whisper-base-q5_1",
+    "modelSha256": "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898",
+    "modelBytes": 59707625,
+    "materializationMilliseconds": 340
+  },
+  "fixture": {
+    "id": "zh-en-mixed-v1",
+    "sha256": "83440d4ccbd82dafd1a88346ab448e1dd309e408c598d665413b910cc92c40a7",
+    "durationMilliseconds": 45000,
+    "sampleRateHz": 16000,
+    "channels": 1,
+    "languageCoverage": [
+      "zh-CN",
+      "en",
+      "zh-en-code-switching"
+    ]
+  },
+  "liveDraft": {
+    "firstTextLatencyMilliseconds": 10934,
+    "updateCount": 1,
+    "stableUpdateCount": 0,
+    "unstableUpdateCount": 1,
+    "maximumReportedBacklogMilliseconds": 0,
+    "degradationCodes": []
+  },
+  "postSession": {
+    "elapsedMilliseconds": 15618,
+    "realTimeFactor": 0.3470666666666667,
+    "segmentCount": 18,
+    "visibleText": true,
+    "timestampsMonotonic": true
+  },
+  "resources": {
+    "threadCpuMilliseconds": 21674,
+    "pssBeforeKilobytes": 45233,
+    "pssAfterLiveKilobytes": 288922,
+    "pssAfterPostKilobytes": 47611,
+    "pssCheckpointMaximumKilobytes": 288922,
+    "thermalStatusBefore": 0,
+    "thermalStatusAfter": 0,
+    "batteryTemperatureTenthsCelsiusBefore": 307,
+    "batteryTemperatureTenthsCelsiusAfter": 309,
+    "energyCounterBefore": -9223372036854775808,
+    "energyCounterAfter": -9223372036854775808,
+    "chargeCounterMicroampereHoursBefore": 2936000,
+    "chargeCounterMicroampereHoursAfter": 2941000
+  },
+  "nativeFailureCount": 0,
+  "activeNativeHandlesAfter": {
+    "contexts": 0,
+    "runs": 0,
+    "results": 0
+  }
+}
