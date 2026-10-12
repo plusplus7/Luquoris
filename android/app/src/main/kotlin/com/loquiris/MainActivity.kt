@@ -60,6 +60,7 @@ class MainActivity : FlutterActivity() {
 
                 override fun onCancel(arguments: Any?) {
                     transcriptionEventSink = null
+                    transcription.closeLiveOwner()
                 }
             },
         )

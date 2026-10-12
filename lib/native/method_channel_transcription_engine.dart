@@ -32,12 +32,14 @@ final class MethodChannelTranscriptionEngine implements TranscriptionEngine {
   Stream<TranscriptionEvent> eventsFor(String runId) {
     var lastProgress = 0.0;
     return _eventStream
-        .map(_parseProgressEvent)
+        .map(_parseEvent)
         .where((event) => event != null && event.runId == runId)
-        .cast<TranscriptionProgressUpdated>()
+        .cast<TranscriptionEvent>()
         .where((event) {
-          if (event.fraction < lastProgress) return false;
-          lastProgress = event.fraction;
+          if (event case TranscriptionProgressUpdated(:final fraction)) {
+            if (fraction < lastProgress) return false;
+            lastProgress = fraction;
+          }
           return true;
         })
         .handleError(
@@ -45,6 +47,65 @@ final class MethodChannelTranscriptionEngine implements TranscriptionEngine {
           test: (error) =>
               error is PlatformException || error is MissingPluginException,
         );
+  }
+
+  @override
+  Future<Result<void, TranscriptionFailure>> startDraft(
+    TranscriptionDraftRequest request,
+  ) async {
+    if (!_isSafeIdentifier(request.runId) ||
+        !_isSafeIdentifier(request.meetingId) ||
+        !_isSafeIdentifier(request.modelId) ||
+        request.parameterVersion <= 0) {
+      return const Err(
+        TranscriptionUnavailable('transcription_request_invalid'),
+      );
+    }
+    final response = await _invoke('startDraft', <String, Object?>{
+      'runId': request.runId,
+      'meetingId': request.meetingId,
+      'modelId': request.modelId,
+      'languageHint': request.languageHint.name,
+      'parameterVersion': request.parameterVersion,
+    });
+    if (response case Err<Map<Object?, Object?>, TranscriptionFailure>(
+      :final failure,
+    )) {
+      return Err(failure);
+    }
+    final envelope =
+        (response as Ok<Map<Object?, Object?>, TranscriptionFailure>).value;
+    if (envelope['runId'] != request.runId || envelope['started'] != true) {
+      return const Err(
+        TranscriptionUnavailable('transcription_channel_invalid'),
+      );
+    }
+    return const Ok<void, TranscriptionFailure>(null);
+  }
+
+  @override
+  Future<Result<void, TranscriptionFailure>> stopDraft(String runId) async {
+    if (!_isSafeIdentifier(runId)) {
+      return const Err(
+        TranscriptionUnavailable('transcription_request_invalid'),
+      );
+    }
+    final response = await _invoke('stopDraft', <String, Object?>{
+      'runId': runId,
+    });
+    if (response case Err<Map<Object?, Object?>, TranscriptionFailure>(
+      :final failure,
+    )) {
+      return Err(failure);
+    }
+    final envelope =
+        (response as Ok<Map<Object?, Object?>, TranscriptionFailure>).value;
+    if (envelope['runId'] != runId || envelope['stopped'] != true) {
+      return const Err(
+        TranscriptionUnavailable('transcription_channel_invalid'),
+      );
+    }
+    return const Ok<void, TranscriptionFailure>(null);
   }
 
   @override
@@ -176,6 +237,11 @@ final class MethodChannelTranscriptionEngine implements TranscriptionEngine {
   }
 
   TranscriptChunk? _parseStableChunk(Object? raw) {
+    final chunk = _parseChunk(raw);
+    return chunk?.stability == TranscriptStability.stable ? chunk : null;
+  }
+
+  TranscriptChunk? _parseChunk(Object? raw) {
     if (raw is! Map<Object?, Object?>) return null;
     final segmentId = raw['segmentId'];
     final start = raw['startMilliseconds'];
@@ -189,32 +255,47 @@ final class MethodChannelTranscriptionEngine implements TranscriptionEngine {
         end is! int ||
         end < start ||
         rawText is! String ||
-        displayText is! String ||
-        raw['stability'] != 'stable') {
+        displayText is! String) {
       return null;
     }
+    final stability = switch (raw['stability']) {
+      'stable' => TranscriptStability.stable,
+      'unstable' => TranscriptStability.unstable,
+      _ => null,
+    };
+    if (stability == null) return null;
     return TranscriptChunk(
       segmentId: segmentId,
       start: Duration(milliseconds: start),
       end: Duration(milliseconds: end),
       rawText: rawText,
       displayText: displayText,
-      stability: TranscriptStability.stable,
+      stability: stability,
     );
   }
 
-  TranscriptionProgressUpdated? _parseProgressEvent(Object? raw) {
-    if (raw is! Map<Object?, Object?> ||
-        raw['v'] != _version ||
-        raw['type'] != 'progress') {
+  TranscriptionEvent? _parseEvent(Object? raw) {
+    if (raw is! Map<Object?, Object?> || raw['v'] != _version) {
       return null;
     }
     final runId = raw['runId'];
+    if (runId is! String || !_isSafeIdentifier(runId)) return null;
+    return switch (raw['type']) {
+      'progress' => _parseProgressEvent(runId, raw),
+      'draft' => _parseDraftEvent(runId, raw),
+      'draftDegraded' => _parseDraftDegradedEvent(runId, raw),
+      _ => null,
+    };
+  }
+
+  TranscriptionProgressUpdated? _parseProgressEvent(
+    String runId,
+    Map<Object?, Object?> raw,
+  ) {
     final fraction = raw['fraction'];
     final remaining = raw['remainingMilliseconds'];
-    if (runId is! String ||
-        !_isSafeIdentifier(runId) ||
-        fraction is! double ||
+    if (fraction is! double ||
+        !fraction.isFinite ||
         fraction < 0 ||
         fraction > 1 ||
         (remaining != null && (remaining is! int || remaining < 0))) {
@@ -226,6 +307,42 @@ final class MethodChannelTranscriptionEngine implements TranscriptionEngine {
       remaining: remaining == null
           ? null
           : Duration(milliseconds: remaining as int),
+    );
+  }
+
+  TranscriptionDraftUpdated? _parseDraftEvent(
+    String runId,
+    Map<Object?, Object?> raw,
+  ) {
+    final chunk = _parseChunk(raw['chunk']);
+    final backlog = raw['backlogMilliseconds'];
+    if (chunk == null || backlog is! int || backlog < 0) return null;
+    return TranscriptionDraftUpdated(
+      runId: runId,
+      chunk: chunk,
+      backlog: Duration(milliseconds: backlog),
+    );
+  }
+
+  TranscriptionDraftDegraded? _parseDraftDegradedEvent(
+    String runId,
+    Map<Object?, Object?> raw,
+  ) {
+    final reason = raw['reason'];
+    final backlog = raw['backlogMilliseconds'];
+    final incomplete = raw['incomplete'];
+    if (reason is! String ||
+        !_safeFailureCodes.contains(reason) ||
+        backlog is! int ||
+        backlog < 0 ||
+        incomplete is! bool) {
+      return null;
+    }
+    return TranscriptionDraftDegraded(
+      runId: runId,
+      reason: reason,
+      backlog: Duration(milliseconds: backlog),
+      incomplete: incomplete,
     );
   }
 
@@ -289,5 +406,19 @@ final class MethodChannelTranscriptionEngine implements TranscriptionEngine {
     'transcription_channel_timeout',
     'transcription_channel_unavailable',
     'transcription_channel_version_unsupported',
+    ..._safeLiveFailureCodes,
+  };
+
+  static const Set<String> _safeLiveFailureCodes = <String>{
+    'transcription_live_backlog',
+    'transcription_live_channel_closed',
+    'transcription_live_closed',
+    'transcription_live_consumer_failed',
+    'transcription_live_engine_failed',
+    'transcription_live_pcm_gap',
+    'transcription_live_pcm_invalid',
+    'transcription_live_recording_stopped',
+    'transcription_live_replaced',
+    'transcription_live_thermal',
   };
 }

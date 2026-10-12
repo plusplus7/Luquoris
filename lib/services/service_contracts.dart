@@ -139,6 +139,33 @@ final class TranscriptionRequest {
   final int parameterVersion;
 }
 
+/// A request to start bounded near-real-time draft inference for a meeting.
+final class TranscriptionDraftRequest {
+  /// Creates a live draft request.
+  const TranscriptionDraftRequest({
+    required this.runId,
+    required this.meetingId,
+    this.modelId = 'whisper-base-q5_1',
+    this.languageHint = MeetingLanguageMode.mixed,
+    this.parameterVersion = 1,
+  });
+
+  /// Stable identifier shared by live events and stop requests.
+  final String runId;
+
+  /// Active recording whose canonical PCM fan-out supplies inference.
+  final String meetingId;
+
+  /// Stable bundled-model identifier requested for this run.
+  final String modelId;
+
+  /// Recognition-language preference selected for the meeting.
+  final MeetingLanguageMode languageHint;
+
+  /// Canonical inference-parameter schema used for this run.
+  final int parameterVersion;
+}
+
 /// A timestamped piece of recognized speech.
 final class TranscriptChunk {
   /// Creates a transcript chunk.
@@ -222,6 +249,26 @@ final class TranscriptionDraftUpdated extends TranscriptionEvent {
   final Duration backlog;
 }
 
+/// Explicit notification that live inference degraded or stopped safely.
+final class TranscriptionDraftDegraded extends TranscriptionEvent {
+  /// Creates a live degradation event.
+  const TranscriptionDraftDegraded({
+    required super.runId,
+    required this.reason,
+    required this.backlog,
+    required this.incomplete,
+  });
+
+  /// Stable, user-presentable reason code without native diagnostic detail.
+  final String reason;
+
+  /// Audio duration waiting when degradation was detected.
+  final Duration backlog;
+
+  /// Whether the visible draft may omit audio or unstable text.
+  final bool incomplete;
+}
+
 /// Progress for a post-session or live transcription run.
 final class TranscriptionProgressUpdated extends TranscriptionEvent {
   /// Creates a progress event.
@@ -262,6 +309,16 @@ abstract interface class TranscriptionEngine {
   Future<Result<TranscriptionOutput, TranscriptionFailure>> transcribe(
     TranscriptionRequest request,
   );
+
+  /// Starts bounded live inference without affecting canonical recording.
+  @useResult
+  Future<Result<void, TranscriptionFailure>> startDraft(
+    TranscriptionDraftRequest request,
+  );
+
+  /// Stops and releases a live draft run. Repeated calls are successful.
+  @useResult
+  Future<Result<void, TranscriptionFailure>> stopDraft(String runId);
 
   /// Requests cooperative cancellation for [runId].
   @useResult

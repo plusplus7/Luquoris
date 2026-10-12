@@ -25,6 +25,16 @@ sealed interface TranscriptionChannelParseResult {
     ) : TranscriptionChannelParseResult
 }
 
+sealed interface LiveDraftChannelParseResult {
+    data class Ready(
+        val request: LiveDraftRequest,
+    ) : LiveDraftChannelParseResult
+
+    data class Failure(
+        val code: String,
+    ) : LiveDraftChannelParseResult
+}
+
 sealed interface TranscriptionRunIdParseResult {
     data class Ready(
         val runId: String,
@@ -53,6 +63,15 @@ object TranscriptionChannelContract {
             "parameterVersion",
         )
     private val cancelKeys = setOf("v", "runId")
+    private val liveDraftKeys =
+        setOf(
+            "v",
+            "runId",
+            "meetingId",
+            "modelId",
+            "languageHint",
+            "parameterVersion",
+        )
     private val identifierPattern = Regex("[A-Za-z0-9._-]{1,128}")
     private val segmentNamePattern = Regex("segment-[0-9]{5,}\\.adts")
     private val safeWorkerFailureCodes =
@@ -145,6 +164,41 @@ object TranscriptionChannelContract {
         return TranscriptionRunIdParseResult.Ready(checkNotNull(runId))
     }
 
+    fun parseStartDraft(arguments: Any?): LiveDraftChannelParseResult {
+        val values = arguments as? Map<*, *>
+            ?: return LiveDraftChannelParseResult.Failure("transcription_request_invalid")
+        versionFailure(values)?.let { return LiveDraftChannelParseResult.Failure(it) }
+        if (values.keys != liveDraftKeys) {
+            return LiveDraftChannelParseResult.Failure("transcription_request_invalid")
+        }
+        val runId = values["runId"] as? String
+        val meetingId = values["meetingId"] as? String
+        val modelId = values["modelId"] as? String
+        val parameterVersion = values["parameterVersion"] as? Int
+        val languageHint =
+            (values["languageHint"] as? String)?.let { raw ->
+                TranscriptionLanguageHint.entries.firstOrNull { it.name == raw }
+            }
+        if (!isSafeIdentifier(runId) ||
+            !isSafeIdentifier(meetingId) ||
+            !isSafeIdentifier(modelId) ||
+            parameterVersion == null ||
+            parameterVersion <= 0 ||
+            languageHint == null
+        ) {
+            return LiveDraftChannelParseResult.Failure("transcription_request_invalid")
+        }
+        return LiveDraftChannelParseResult.Ready(
+            LiveDraftRequest(
+                runId = checkNotNull(runId),
+                meetingId = checkNotNull(meetingId),
+                modelId = checkNotNull(modelId),
+                languageHint = languageHint,
+                parameterVersion = parameterVersion,
+            ),
+        )
+    }
+
     fun completed(
         runId: String,
         result: PostSessionTranscriptionResult.Completed,
@@ -183,6 +237,51 @@ object TranscriptionChannelContract {
             "remainingMilliseconds" to null,
         )
 
+    fun liveEvent(event: LiveDraftRuntimeEvent): Map<String, Any?> =
+        when (event) {
+            is LiveDraftUpdated ->
+                mapOf(
+                    "v" to version,
+                    "runId" to event.runId,
+                    "type" to "draft",
+                    "chunk" to
+                        mapOf(
+                            "segmentId" to event.segment.id,
+                            "startMilliseconds" to event.segment.startMilliseconds,
+                            "endMilliseconds" to event.segment.endMilliseconds,
+                            "rawText" to event.segment.rawText,
+                            "displayText" to event.segment.displayText,
+                            "stability" to if (event.segment.stable) "stable" else "unstable",
+                        ),
+                    "backlogMilliseconds" to event.backlogMilliseconds,
+                )
+            is LiveDraftDegraded ->
+                mapOf(
+                    "v" to version,
+                    "runId" to event.runId,
+                    "type" to "draftDegraded",
+                    "reason" to safeLiveFailureCode(event.code),
+                    "backlogMilliseconds" to event.backlogMilliseconds,
+                    "incomplete" to event.incomplete,
+                )
+        }
+
+    fun liveStarted(runId: String): Map<String, Any?> =
+        mapOf(
+            "v" to version,
+            "ok" to true,
+            "runId" to runId,
+            "started" to true,
+        )
+
+    fun liveStopped(runId: String): Map<String, Any?> =
+        mapOf(
+            "v" to version,
+            "ok" to true,
+            "runId" to runId,
+            "stopped" to true,
+        )
+
     fun cancelled(runId: String): Map<String, Any?> =
         mapOf(
             "v" to version,
@@ -205,6 +304,9 @@ object TranscriptionChannelContract {
     fun safeWorkerFailureCode(code: String): String =
         code.takeIf(safeWorkerFailureCodes::contains) ?: "transcription_native_failed"
 
+    fun safeLiveFailureCode(code: String): String =
+        code.takeIf(safeLiveFailureCodes::contains) ?: "transcription_native_failed"
+
     private fun versionFailure(values: Map<*, *>): String? {
         val received = values["v"]
         return when {
@@ -225,4 +327,30 @@ object TranscriptionChannelContract {
             parts.none { it.isEmpty() || it == "." || it == ".." } &&
             segmentNamePattern.matches(parts.last())
     }
+
+    private val safeLiveFailureCodes =
+        setOf(
+            "transcription_live_backlog",
+            "transcription_live_channel_closed",
+            "transcription_live_closed",
+            "transcription_live_consumer_failed",
+            "transcription_live_engine_failed",
+            "transcription_live_pcm_gap",
+            "transcription_live_pcm_invalid",
+            "transcription_live_recording_stopped",
+            "transcription_live_replaced",
+            "transcription_live_thermal",
+            "transcription_model_directory_failed",
+            "transcription_model_hash_mismatch",
+            "transcription_model_load_failed",
+            "transcription_model_manifest_invalid",
+            "transcription_model_materialization_failed",
+            "transcription_model_publish_failed",
+            "transcription_native_failed",
+            "transcription_native_inference_failed",
+            "transcription_native_input_invalid",
+            "transcription_native_invalid_handle",
+            "transcription_native_out_of_memory",
+            "transcription_native_unavailable",
+        )
 }

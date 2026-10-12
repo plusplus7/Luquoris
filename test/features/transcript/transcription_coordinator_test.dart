@@ -571,6 +571,15 @@ final class _ControlledTranscriptionEngine implements TranscriptionEngine {
   Future<Result<void, TranscriptionFailure>> cancel(String runId) async =>
       const Ok(null);
 
+  @override
+  Future<Result<void, TranscriptionFailure>> startDraft(
+    TranscriptionDraftRequest request,
+  ) async => const Ok(null);
+
+  @override
+  Future<Result<void, TranscriptionFailure>> stopDraft(String runId) async =>
+      const Ok(null);
+
   Future<void> dispose() => _events.close();
 }
 

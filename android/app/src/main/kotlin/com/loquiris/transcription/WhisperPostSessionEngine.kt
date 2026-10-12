@@ -5,6 +5,7 @@ class WhisperPostSessionEngine(
     private val modelProvider: WhisperModelProvider,
     private val decoder: AacPcmDecoder,
     private val native: WhisperNativeApi,
+    private val arbiter: WhisperInferenceArbiter = WhisperInferenceArbiter.process,
 ) {
     fun transcribe(
         meetingId: String,
@@ -90,7 +91,10 @@ class WhisperPostSessionEngine(
             decoder.decode(audio) { window ->
                 if (cancellation.isCancelled()) return@decode false
                 val windowStartMilliseconds = window.startSample * 1_000L / audio.sampleRateHz
-                val result = native.transcribePcm(context, run, window.samples, windowStartMilliseconds)
+                val lease = arbiter.acquirePostSession(cancellation::isCancelled) ?: return@decode false
+                val result = lease.use {
+                    native.transcribePcm(context, run, window.samples, windowStartMilliseconds)
+                }
                 if (result == 0L) {
                     nativeFailureCode = stableNativeFailure()
                     return@decode false

@@ -71,6 +71,8 @@ final class FakeAudioCaptureService implements AudioCaptureService {
 
 final class FakeTranscriptionEngine implements TranscriptionEngine {
   final List<TranscriptionRequest> requests = [];
+  final List<TranscriptionDraftRequest> draftRequests = [];
+  final List<String> stopDraftRequests = [];
   final List<String> cancellationRequests = [];
   final StreamController<TranscriptionEvent> _events =
       StreamController.broadcast(sync: true);
@@ -78,6 +80,8 @@ final class FakeTranscriptionEngine implements TranscriptionEngine {
     TranscriptionOutput(chunks: []),
   );
   Result<void, TranscriptionFailure> cancelResult = const Ok(null);
+  Result<void, TranscriptionFailure> startDraftResult = const Ok(null);
+  Result<void, TranscriptionFailure> stopDraftResult = const Ok(null);
 
   @override
   Stream<TranscriptionEvent> eventsFor(String runId) =>
@@ -93,6 +97,20 @@ final class FakeTranscriptionEngine implements TranscriptionEngine {
   ) async {
     requests.add(request);
     return result;
+  }
+
+  @override
+  Future<Result<void, TranscriptionFailure>> startDraft(
+    TranscriptionDraftRequest request,
+  ) async {
+    draftRequests.add(request);
+    return startDraftResult;
+  }
+
+  @override
+  Future<Result<void, TranscriptionFailure>> stopDraft(String runId) async {
+    stopDraftRequests.add(runId);
+    return stopDraftResult;
   }
 
   @override
