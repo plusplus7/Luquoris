@@ -27,6 +27,7 @@ import 'package:loquiris/features/models_performance/application/performance_ben
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/features/models_performance/application/runtime_model_manager.dart';
 import 'package:loquiris/features/models_performance/domain/model_manifest.dart';
+import 'package:loquiris/features/recording/application/recording_inventory_synchronizer.dart';
 import 'package:loquiris/features/transcript/application/transcription_coordinator.dart';
 import 'package:loquiris/native/method_channel_backup_gateway.dart';
 import 'package:loquiris/native/method_channel_export_destination_gateway.dart';
@@ -120,6 +121,11 @@ Future<AppDependencies> bootstrap({
     database,
     audioStore: PrivateMeetingAudioStore(resolveSupportDirectory),
     diagnosticSink: diagnosticLogSink,
+  );
+  final recordingInventorySynchronizer = NativeRecordingInventorySynchronizer(
+    recoveryGateway: recoveryGateway,
+    sessionRepository: sessionRepository,
+    nowUtcMs: () => DateTime.now().toUtc().millisecondsSinceEpoch,
   );
   final exportRecordRepository = DriftExportRecordRepository(
     database,
@@ -239,6 +245,9 @@ Future<AppDependencies> bootstrap({
         ref.watch(_applicationDatabaseProvider);
         return sessionRepository;
       }),
+      recordingInventorySynchronizerProvider.overrideWithValue(
+        recordingInventorySynchronizer,
+      ),
       transcriptRepositoryProvider.overrideWith(
         (ref) => DriftTranscriptRepository(
           ref.watch(_applicationDatabaseProvider),
@@ -281,6 +290,12 @@ Future<AppDependencies> bootstrap({
           snapshotPlanner: DriftBackupSnapshotPlanner(
             ref.watch(_applicationDatabaseProvider),
             resolveSupportDirectory,
+            beforeSnapshotCreated: () async {
+              final result = await recordingInventorySynchronizer.synchronize();
+              if (result case Err()) {
+                throw const _RecordingInventorySynchronizationFailed();
+              }
+            },
           ),
           gateway: MethodChannelBackupGateway(
             diagnosticSink: diagnosticLogSink,
@@ -312,6 +327,10 @@ Future<AppDependencies> bootstrap({
       ),
     ],
   );
+}
+
+final class _RecordingInventorySynchronizationFailed implements Exception {
+  const _RecordingInventorySynchronizationFailed();
 }
 
 /// Builds the single dependency-injection root used by production and tests.

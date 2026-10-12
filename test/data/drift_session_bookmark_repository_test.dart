@@ -54,6 +54,7 @@ void main() {
 final class _NoOpAudioStore implements MeetingAudioStore {
   @override
   Future<Result<void, MeetingAudioStoreFailure>> deleteAuthoritativeAudio(
+    String meetingId,
     List<AppRelativePath> paths,
   ) async => const Ok<void, MeetingAudioStoreFailure>(null);
 }

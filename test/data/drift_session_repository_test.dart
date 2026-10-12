@@ -359,8 +359,10 @@ void main() {
   });
 
   test(
-    'permanent deletion removes private audio and preserves external copies',
+    'permanent deletion removes the complete native session and preserves external copies',
     () async {
+      const storageKey =
+          '4fe1c071bc5c3a334a142da5de7ce6e370df307d6c63c689890a41f09ab6350c';
       final directory = await Directory.systemTemp.createTemp(
         'loquiris-audio-',
       );
@@ -373,10 +375,39 @@ void main() {
           await externalDirectory.delete(recursive: true);
         }
       });
-      final audioFile = File('${directory.path}/meetings/meeting-1/0000.aac');
+      final recordingDirectory = Directory(
+        '${directory.path}/recordings/$storageKey',
+      );
+      final audioFile = File(
+        '${recordingDirectory.path}/segment-00000.adts',
+      );
+      final manifest = File('${recordingDirectory.path}/segments.manifest');
+      final playback = File('${recordingDirectory.path}/playback.m4a');
+      final journal = File('${recordingDirectory.path}/segment-00000.commit');
+      final eventDirectory = Directory('${directory.path}/recording-events');
+      final bookmarkEvents = File(
+        '${eventDirectory.path}/$storageKey.bookmarks',
+      );
+      final interruptionEvents = File(
+        '${eventDirectory.path}/$storageKey.interruptions',
+      );
+      final storageFailure = File(
+        '${eventDirectory.path}/$storageKey.storage-failure',
+      );
+      final unrelatedEvent = File(
+        '${eventDirectory.path}/${'a' * 64}.bookmarks',
+      );
       final externalCopy = File('${externalDirectory.path}/exported-copy.m4a');
       await audioFile.parent.create(recursive: true);
       await audioFile.writeAsBytes(const <int>[1, 2, 3], flush: true);
+      await manifest.writeAsString('manifest', flush: true);
+      await playback.writeAsBytes(const <int>[4, 5], flush: true);
+      await journal.writeAsString('journal', flush: true);
+      await eventDirectory.create(recursive: true);
+      await bookmarkEvents.writeAsString('bookmark', flush: true);
+      await interruptionEvents.writeAsString('interruption', flush: true);
+      await storageFailure.writeAsString('failure', flush: true);
+      await unrelatedEvent.writeAsString('keep', flush: true);
       await externalCopy.writeAsBytes(const <int>[1, 2, 3], flush: true);
       repository = DriftSessionRepository(
         database,
@@ -384,12 +415,22 @@ void main() {
         diagnosticSink: diagnosticSink,
       );
       await _save(repository, _meeting('meeting-1', createdAt: 1));
-      await _insertAudio(database, 'audio-1', 'meeting-1', 3);
+      await _insertAudio(
+        database,
+        'audio-1',
+        'meeting-1',
+        3,
+        relativePath: 'recordings/$storageKey/segment-00000.adts',
+      );
       await _ok(repository.moveToTrash('meeting-1', atUtcMs: 2));
 
       await _ok(repository.permanentlyDelete('meeting-1'));
 
-      expect(audioFile.existsSync(), isFalse);
+      expect(recordingDirectory.existsSync(), isFalse);
+      expect(bookmarkEvents.existsSync(), isFalse);
+      expect(interruptionEvents.existsSync(), isFalse);
+      expect(storageFailure.existsSync(), isFalse);
+      expect(unrelatedEvent.readAsStringSync(), 'keep');
       expect(externalCopy.readAsBytesSync(), const <int>[1, 2, 3]);
       expect(await _count(database, 'meetings'), 0);
     },
@@ -1146,15 +1187,21 @@ Future<void> _insertAudio(
   db.AppDatabase database,
   String id,
   String meetingId,
-  int bytes,
-) => database.customStatement(
+  int bytes, {
+  String? relativePath,
+}) => database.customStatement(
   '''
   INSERT INTO audio_segments (
     id, created_at, updated_at, meeting_id, sequence, relative_path,
     media_start_us, media_duration_us, committed_bytes, state
   ) VALUES (?, 1, 1, ?, 0, ?, 0, 1, ?, 'committed')
   ''',
-  <Object>[id, meetingId, 'meetings/$meetingId/0000.aac', bytes],
+  <Object>[
+    id,
+    meetingId,
+    relativePath ?? 'meetings/$meetingId/0000.aac',
+    bytes,
+  ],
 );
 
 Future<void> _insertCurrentTranscript(db.AppDatabase database) async {
@@ -1191,14 +1238,17 @@ final class _FakeMeetingAudioStore implements MeetingAudioStore {
       const Ok<void, MeetingAudioStoreFailure>(null);
   Error? error;
   Future<void> Function()? onDelete;
+  String? deletedMeetingId;
   List<AppRelativePath> deletedPaths = const [];
 
   @override
   Future<Result<void, MeetingAudioStoreFailure>> deleteAuthoritativeAudio(
+    String meetingId,
     List<AppRelativePath> relativePaths,
   ) async {
     if (error case final error?) throw error;
     await onDelete?.call();
+    deletedMeetingId = meetingId;
     deletedPaths = List.unmodifiable(relativePaths);
     return result;
   }

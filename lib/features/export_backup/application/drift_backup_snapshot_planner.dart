@@ -13,13 +13,16 @@ final class DriftBackupSnapshotPlanner implements BackupSnapshotPlanner {
   const DriftBackupSnapshotPlanner(
     this.database,
     this._resolveBaseDirectory, {
+    Future<void> Function()? beforeSnapshotCreated,
     Future<void> Function()? afterSnapshotCreated,
-  }) : _afterSnapshotCreated = afterSnapshotCreated ?? _noopAfterSnapshot;
+  }) : _beforeSnapshotCreated = beforeSnapshotCreated ?? _noopSnapshotCallback,
+       _afterSnapshotCreated = afterSnapshotCreated ?? _noopSnapshotCallback;
 
   /// Live local database.
   final AppDatabase database;
 
   final Future<Directory> Function() _resolveBaseDirectory;
+  final Future<void> Function() _beforeSnapshotCreated;
   final Future<void> Function() _afterSnapshotCreated;
 
   @override
@@ -33,6 +36,7 @@ final class DriftBackupSnapshotPlanner implements BackupSnapshotPlanner {
     File? snapshot;
     try {
       final baseDirectory = await _resolveBaseDirectory();
+      await _beforeSnapshotCreated();
       snapshot = File(
         path.joinAll(<String>[baseDirectory.path, ...relativePath.split('/')]),
       );
@@ -120,7 +124,7 @@ final class DriftBackupSnapshotPlanner implements BackupSnapshotPlanner {
   );
 }
 
-Future<void> _noopAfterSnapshot() async {}
+Future<void> _noopSnapshotCallback() async {}
 
 final class _BackupAudioPlanInvalid implements Exception {
   const _BackupAudioPlanInvalid();

@@ -619,7 +619,10 @@ final class DriftSessionRepository implements SessionRepository {
       return Err(_storeFailure('session_delete_failed', error, stackTrace));
     }
 
-    final audioDeletion = await audioStore.deleteAuthoritativeAudio(audioPaths);
+    final audioDeletion = await audioStore.deleteAuthoritativeAudio(
+      meetingId,
+      audioPaths,
+    );
     switch (audioDeletion) {
       case Err(:final failure):
         diagnosticSink.record(

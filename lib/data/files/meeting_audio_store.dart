@@ -36,8 +36,9 @@ final class MeetingAudioStoreUnavailable extends MeetingAudioStoreFailure {
 // This interface is injectable so repository deletion remains deterministic.
 // ignore: one_member_abstracts
 abstract interface class MeetingAudioStore {
-  /// Deletes every supplied authoritative relative path or reports failure.
+  /// Deletes the meeting-owned native directory and every supplied segment.
   Future<Result<void, MeetingAudioStoreFailure>> deleteAuthoritativeAudio(
+    String meetingId,
     List<AppRelativePath> relativePaths,
   );
 }

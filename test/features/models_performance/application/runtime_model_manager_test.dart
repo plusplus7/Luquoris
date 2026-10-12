@@ -58,6 +58,35 @@ void main() {
       );
     });
 
+    test('keeps the caller isolate responsive while hashing', () async {
+      final heartbeat = Completer<void>();
+      var verificationCompleted = false;
+      late StreamController<List<int>> controller;
+      controller = StreamController<List<int>>(
+        sync: true,
+        onListen: () {
+          Timer.run(heartbeat.complete);
+          controller.add(const <int>[1, 2, 3]);
+          unawaited(controller.close());
+        },
+      );
+      final source = _MemoryModelArtifactSource()
+        ..artifacts['models/test-model/model.bin'] = () => controller.stream;
+      final manager = RuntimeModelManager(
+        manifests: <BundledModelManifest>[_manifest()],
+        artifactSource: source,
+      );
+
+      final verification = manager.verify('test-model').then((result) {
+        verificationCompleted = true;
+        return result;
+      });
+      await heartbeat.future;
+
+      expect(verificationCompleted, isFalse);
+      expect(await verification, isA<Ok<ModelDescriptor, ModelFailure>>());
+    });
+
     test('rejects an identifier absent from the immutable catalog', () async {
       final manager = RuntimeModelManager(
         manifests: <BundledModelManifest>[_manifest()],

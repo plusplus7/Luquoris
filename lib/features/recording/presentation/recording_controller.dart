@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/recording/application/recording_inventory_synchronizer.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
@@ -15,6 +16,7 @@ final class RecordingViewState {
     this.snapshot,
     this.failure,
     this.persistenceFailure,
+    this.persistencePending = false,
   });
 
   /// Most recent authoritative native snapshot.
@@ -25,6 +27,9 @@ final class RecordingViewState {
 
   /// Last failure synchronizing native authority into local meeting metadata.
   final SessionRepositoryFailure? persistenceFailure;
+
+  /// Whether the current authoritative snapshot is still being persisted.
+  final bool persistencePending;
 
   /// Whether Android still owns an unfinished recording session.
   bool get hasActiveSession => switch (snapshot?.state) {
@@ -41,6 +46,7 @@ final class RecordingViewState {
     AudioCaptureSnapshot? snapshot,
     AudioCaptureFailure? failure,
     SessionRepositoryFailure? persistenceFailure,
+    bool? persistencePending,
     bool clearFailure = false,
     bool clearPersistenceFailure = false,
   }) => RecordingViewState(
@@ -49,6 +55,7 @@ final class RecordingViewState {
     persistenceFailure: clearPersistenceFailure
         ? null
         : persistenceFailure ?? this.persistenceFailure,
+    persistencePending: persistencePending ?? this.persistencePending,
   );
 
   @override
@@ -60,7 +67,8 @@ final class RecordingViewState {
           _repositoryFailureEquals(
             persistenceFailure,
             other.persistenceFailure,
-          );
+          ) &&
+          persistencePending == other.persistencePending;
 
   @override
   int get hashCode => Object.hash(
@@ -74,6 +82,7 @@ final class RecordingViewState {
     failure?.code,
     persistenceFailure.runtimeType,
     persistenceFailure?.code,
+    persistencePending,
   );
 
   static bool _snapshotEquals(
@@ -190,15 +199,16 @@ final class RecordingController extends AsyncNotifier<RecordingViewState> {
     }
     if (!ref.mounted) return;
     final previous = state.value ?? const RecordingViewState();
-    state = AsyncData(
-      switch (result) {
-        Ok(:final value) => _withSnapshot(previous, value),
-        Err(:final failure) => previous.copyWith(failure: failure),
-      },
-    );
+    final next = switch (result) {
+      Ok(:final value) => _withSnapshot(previous, value),
+      Err(:final failure) => previous.copyWith(failure: failure),
+    };
+    state = AsyncData(next);
     if (result case Ok(:final value)) {
-      final accepted = state.value?.snapshot;
-      if (accepted != null && accepted.revision == value.revision) {
+      final accepted = next.snapshot;
+      if (!identical(next, previous) &&
+          accepted != null &&
+          accepted.revision == value.revision) {
         _queueSnapshotSynchronization(value);
       }
     }
@@ -229,9 +239,15 @@ final class RecordingController extends AsyncNotifier<RecordingViewState> {
     if (current != null && incoming.revision < current.revision) {
       return previous;
     }
+    if (current != null &&
+        incoming.revision == current.revision &&
+        RecordingViewState._snapshotEquals(current, incoming)) {
+      return previous;
+    }
     return RecordingViewState(
       snapshot: incoming,
       persistenceFailure: previous.persistenceFailure,
+      persistencePending: true,
     );
   }
 
@@ -240,9 +256,11 @@ final class RecordingController extends AsyncNotifier<RecordingViewState> {
       _serializeSnapshotSynchronization(snapshot).then((failure) {
         if (!ref.mounted) return;
         final current = state.value ?? const RecordingViewState();
+        if (current.snapshot?.revision != snapshot.revision) return;
         state = AsyncData(
           current.copyWith(
             persistenceFailure: failure,
+            persistencePending: false,
             clearPersistenceFailure: failure == null,
           ),
         );
@@ -280,7 +298,12 @@ final class RecordingController extends AsyncNotifier<RecordingViewState> {
           mediaDuration: snapshot.elapsed,
           atUtcMs: ref.read(clockProvider).now().toUtc().millisecondsSinceEpoch,
         );
-    return switch (result) {
+    if (result case Err(:final failure)) return failure;
+    if (snapshot.state != AudioCaptureState.finalized) return null;
+    final inventory = await ref
+        .read(recordingInventorySynchronizerProvider)
+        .synchronize();
+    return switch (inventory) {
       Ok() => null,
       Err(:final failure) => failure,
     };

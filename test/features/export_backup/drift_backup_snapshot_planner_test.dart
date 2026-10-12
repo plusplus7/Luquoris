@@ -76,6 +76,40 @@ void main() {
     ]);
   });
 
+  test('reconciles native inventory before freezing the snapshot', () async {
+    await database.delete(database.audioSegments).go();
+    var reconciliations = 0;
+    final planner = DriftBackupSnapshotPlanner(
+      database,
+      () async => directory,
+      beforeSnapshotCreated: () async {
+        reconciliations += 1;
+        await database
+            .into(database.audioSegments)
+            .insert(
+              db.AudioSegmentsCompanion.insert(
+                id: 'fresh-audio',
+                createdAt: 2,
+                updatedAt: 2,
+                meetingId: 'meeting-1',
+                sequence: 0,
+                relativePath: 'recordings/$_storageKey/segment-00000.adts',
+                mediaStartUs: 0,
+                mediaDurationUs: 1000,
+                committedBytes: 456,
+                state: 'committed',
+              ),
+            );
+      },
+    );
+
+    final result = await planner.create('backup_fresh');
+
+    final plan = (result as Ok<BackupSnapshotPlan, BackupFailure>).value;
+    expect(reconciliations, 1);
+    expect(plan.audioPlan.single.committedBytes, 456);
+  });
+
   test('startup cleaner removes only incomplete backup artifacts', () async {
     final staging = Directory('${directory.path}/backup_staging')..createSync();
     final backups = Directory('${directory.path}/backups')..createSync();

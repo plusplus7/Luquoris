@@ -64,6 +64,7 @@ String? _transcriptionReadyMeetingId(
   final recording = value.value;
   final snapshot = recording?.snapshot;
   return snapshot?.state == AudioCaptureState.finalized &&
+          recording?.persistencePending == false &&
           recording?.persistenceFailure == null
       ? snapshot?.sessionId
       : null;

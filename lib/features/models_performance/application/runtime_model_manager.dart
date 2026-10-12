@@ -1,7 +1,7 @@
-import 'package:crypto/crypto.dart';
 import 'package:loquiris/core/domain/app_relative_path.dart';
 import 'package:loquiris/core/failure.dart';
 import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/models_performance/application/model_artifact_hasher.dart';
 import 'package:loquiris/features/models_performance/domain/model_manifest.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:meta/meta.dart';
@@ -61,11 +61,13 @@ final class RuntimeModelManager implements ModelManager {
   factory RuntimeModelManager({
     required List<BundledModelManifest> manifests,
     required ModelArtifactSource artifactSource,
-  }) => RuntimeModelManager._(manifests, artifactSource);
+    ModelArtifactHasher artifactHasher = const IsolateModelArtifactHasher(),
+  }) => RuntimeModelManager._(manifests, artifactSource, artifactHasher);
 
   RuntimeModelManager._(
     List<BundledModelManifest> manifests,
     this._artifactSource,
+    this._artifactHasher,
   ) {
     final byId = <String, BundledModelManifest>{};
     final duplicates = <String>{};
@@ -78,6 +80,7 @@ final class RuntimeModelManager implements ModelManager {
   }
 
   final ModelArtifactSource _artifactSource;
+  final ModelArtifactHasher _artifactHasher;
   late final Map<String, BundledModelManifest> _manifests;
   late final Set<String> _duplicateIds;
   final Map<String, Future<Result<ModelDescriptor, ModelFailure>>>
@@ -140,20 +143,12 @@ final class RuntimeModelManager implements ModelManager {
     }
     final artifact =
         (opened as Ok<ModelArtifact, ModelArtifactSourceFailure>).value;
-    var observedBytes = 0;
     try {
-      final digest = await sha256
-          .bind(
-            artifact.bytes.map((chunk) {
-              observedBytes += chunk.length;
-              return chunk;
-            }),
-          )
-          .first;
-      if (observedBytes != manifest.bytes) {
+      final hash = await _artifactHasher.hash(artifact.bytes);
+      if (hash.bytes != manifest.bytes) {
         return _unavailable('model_bytes_mismatch');
       }
-      if (digest.toString() != manifest.sha256) {
+      if (hash.sha256 != manifest.sha256) {
         return _unavailable('model_sha256_mismatch');
       }
     } on Object {

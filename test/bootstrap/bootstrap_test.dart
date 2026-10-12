@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +13,11 @@ import 'package:loquiris/bootstrap/diagnostic_log.dart';
 import 'package:loquiris/core/domain/app_relative_path.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/data/database/app_database.dart' hide Meeting;
+import 'package:loquiris/data/files/private_meeting_audio_store.dart';
 import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
 import 'package:loquiris/features/export_backup/application/backup_service_provider.dart';
+import 'package:loquiris/features/export_backup/application/drift_backup_snapshot_planner.dart';
 import 'package:loquiris/features/export_backup/application/local_backup_service.dart';
 import 'package:loquiris/features/export_backup/application/local_benchmark_report_exporter.dart';
 import 'package:loquiris/features/export_backup/application/local_export_service.dart';
@@ -23,6 +27,7 @@ import 'package:loquiris/features/models_performance/application/benchmark_repor
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/features/models_performance/application/runtime_model_manager.dart';
+import 'package:loquiris/features/recording/application/recording_inventory_synchronizer.dart';
 import 'package:loquiris/features/recording/presentation/recording_controller.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/transcript/application/transcription_coordinator.dart';
@@ -289,6 +294,7 @@ void main() {
     tester,
   ) async {
     final capture = FakeAudioCaptureService();
+    final inventory = _ControlledRecordingInventorySynchronizer();
     final jobs = FakeTranscriptionJobRepository();
     final repository = FakeSessionRepository()
       ..savedMeetings.add(
@@ -311,6 +317,9 @@ void main() {
           overrides: [
             audioCaptureServiceProvider.overrideWithValue(capture),
             sessionRepositoryProvider.overrideWithValue(repository),
+            recordingInventorySynchronizerProvider.overrideWithValue(
+              inventory,
+            ),
             transcriptionJobRepositoryProvider.overrideWithValue(jobs),
             transcriptionFinalizationHandlerProvider.overrideWithValue(
               finalizedMeetingIds.add,
@@ -331,11 +340,143 @@ void main() {
         revision: 10,
       ),
     );
+    await tester.pump();
+    capture.emitSnapshot(
+      const AudioCaptureSnapshot(
+        sessionId: 'meeting-1',
+        state: AudioCaptureState.finalized,
+        elapsed: Duration(minutes: 5),
+        bytesWritten: 2400,
+        revision: 10,
+      ),
+    );
+    await tester.pump();
+
+    expect(inventory.calls, 1);
+    expect(finalizedMeetingIds, isEmpty);
+
+    inventory.complete(const Ok(null));
     await tester.pumpAndSettle();
 
     expect(repository.synchronizedRecordingProgress, hasLength(1));
+    expect(inventory.calls, 1);
     expect(finalizedMeetingIds, <String>['meeting-1']);
   });
+
+  test(
+    'fresh finalization inventories Drift audio for transcription and backup',
+    () async {
+      const storageKey =
+          '4fe1c071bc5c3a334a142da5de7ce6e370df307d6c63c689890a41f09ab6350c';
+      final database = AppDatabase(NativeDatabase.memory());
+      final directory = await Directory.systemTemp.createTemp(
+        'loquiris-fresh-finalization-',
+      );
+      final repository = DriftSessionRepository(
+        database,
+        audioStore: PrivateMeetingAudioStore(() async => directory),
+        diagnosticSink: const DisabledDiagnosticLogSink(),
+      );
+      final capture = FakeAudioCaptureService();
+      final gateway = _FakeRecordingRecoveryGateway(
+        RecordingRecoveryInventory(
+          sessions: [
+            RecordingRecoverySessionEvidence(
+              meetingId: 'meeting-1',
+              storageKey: storageKey,
+              segments: [
+                SessionRecoverySegmentEvidence(
+                  sequence: 0,
+                  relativePath: _recoveryPath(
+                    'recordings/$storageKey/segment-00000.adts',
+                  ),
+                  mediaStart: Duration.zero,
+                  mediaDuration: const Duration(minutes: 5),
+                  committedBytes: 2400,
+                  state: AudioSegmentState.committed,
+                ),
+              ],
+            ),
+          ],
+          deletedIncompleteDerivedFiles: 0,
+          issueCodes: const [],
+        ),
+      );
+      final synchronizer = NativeRecordingInventorySynchronizer(
+        recoveryGateway: gateway,
+        sessionRepository: repository,
+        nowUtcMs: () => 3,
+      );
+      final container = ProviderContainer.test(
+        overrides: [
+          audioCaptureServiceProvider.overrideWithValue(capture),
+          sessionRepositoryProvider.overrideWithValue(repository),
+          recordingInventorySynchronizerProvider.overrideWithValue(
+            synchronizer,
+          ),
+        ],
+      );
+      final ready = Completer<void>();
+      final subscription = container.listen(recordingControllerProvider, (
+        previous,
+        next,
+      ) {
+        final value = next.value;
+        if (value?.snapshot?.state == AudioCaptureState.finalized &&
+            value?.persistencePending == false &&
+            !ready.isCompleted) {
+          ready.complete();
+        }
+      });
+      addTearDown(capture.dispose);
+      addTearDown(subscription.close);
+      addTearDown(container.dispose);
+      addTearDown(database.close);
+      addTearDown(() => directory.delete(recursive: true));
+      await repository.saveMeeting(
+        const Meeting(
+          id: 'meeting-1',
+          title: 'Meeting',
+          createdAtUtcMs: 1,
+          mediaDuration: Duration.zero,
+          lifecycle: MeetingLifecycle.preparing,
+          languageMode: MeetingLanguageMode.mixed,
+        ),
+      );
+
+      await container.read(recordingControllerProvider.future);
+
+      capture.emitSnapshot(
+        const AudioCaptureSnapshot(
+          sessionId: 'meeting-1',
+          state: AudioCaptureState.finalized,
+          elapsed: Duration(minutes: 5),
+          bytesWritten: 2400,
+          revision: 10,
+        ),
+      );
+      await ready.future.timeout(const Duration(seconds: 5));
+      final backup = await DriftBackupSnapshotPlanner(
+        database,
+        () async => directory,
+      ).create('fresh_recording');
+
+      expect(
+        container.read(recordingControllerProvider).requireValue,
+        isA<RecordingViewState>()
+            .having((state) => state.persistencePending, 'pending', isFalse)
+            .having((state) => state.persistenceFailure, 'failure', isNull),
+      );
+      expect(
+        (backup as Ok<BackupSnapshotPlan, BackupFailure>)
+            .value
+            .audioPlan
+            .single
+            .relativePath,
+        'recordings/$storageKey/segment-00000.adts',
+      );
+    },
+  );
 }
 
 AssetBundle _modelAssetBundle() => _MemoryAssetBundle(<String, Uint8List>{
@@ -394,6 +535,23 @@ final class _FakeRecordingRecoveryGateway implements RecordingRecoveryGateway {
   @override
   Future<Result<RecordingRecoveryInventory, RecordingRecoveryFailure>>
   scan() async => Ok(inventory);
+}
+
+final class _ControlledRecordingInventorySynchronizer
+    implements RecordingInventorySynchronizer {
+  final Completer<Result<void, SessionRepositoryFailure>> _completion =
+      Completer<Result<void, SessionRepositoryFailure>>();
+  int calls = 0;
+
+  @override
+  Future<Result<void, SessionRepositoryFailure>> synchronize() {
+    calls += 1;
+    return _completion.future;
+  }
+
+  void complete(Result<void, SessionRepositoryFailure> result) {
+    _completion.complete(result);
+  }
 }
 
 AppRelativePath _recoveryPath(String value) =>
