@@ -270,5 +270,30 @@
   "transcriptionFailureUnknown": "Transcription could not finish. Your recording is safe.",
   "transcriptionRetryFailed": "Transcription could not be restarted. You can try again.",
   "transcriptPreviewTitle": "Transcript preview",
-  "transcriptPreviewEmpty": "The completed transcript contains no stable text."
+  "transcriptPreviewEmpty": "The completed transcript contains no stable text.",
+  "liveTranscriptTitle": "Live transcript draft",
+  "liveTranscriptExperimentalLabel": "Experimental · read only",
+  "liveTranscriptWaiting": "Listening for the first local draft…",
+  "liveTranscriptStableLabel": "Stable",
+  "liveTranscriptDraftLabel": "Draft",
+  "liveTranscriptStableSegment": "Stable. {text}",
+  "@liveTranscriptStableSegment": {
+    "description": "Screen-reader label for a stable live transcript segment.",
+    "placeholders": {"text": {"type": "String"}}
+  },
+  "liveTranscriptDraftSegment": "Draft. {text}",
+  "@liveTranscriptDraftSegment": {
+    "description": "Screen-reader label for a replaceable live transcript segment.",
+    "placeholders": {"text": {"type": "String"}}
+  },
+  "liveTranscriptBacklog": "The live draft is about {seconds} seconds behind.",
+  "@liveTranscriptBacklog": {
+    "description": "Visible live-transcription backlog rounded up to whole seconds.",
+    "placeholders": {"seconds": {"type": "int"}}
+  },
+  "liveTranscriptIncomplete": "This live draft may be incomplete.",
+  "liveTranscriptThermalFallback": "Live transcription paused because this device is too warm.",
+  "liveTranscriptModelFallback": "The local model could not start live transcription.",
+  "liveTranscriptGenericFallback": "Live transcription stopped safely.",
+  "liveTranscriptPostSessionFallback": "A complete transcript will run after recording."
 }

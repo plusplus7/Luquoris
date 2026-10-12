@@ -733,6 +733,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The completed transcript contains no stable text.'**
   String get transcriptPreviewEmpty;
+
+  /// No description provided for @liveTranscriptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live transcript draft'**
+  String get liveTranscriptTitle;
+
+  /// No description provided for @liveTranscriptExperimentalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Experimental · read only'**
+  String get liveTranscriptExperimentalLabel;
+
+  /// No description provided for @liveTranscriptWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening for the first local draft…'**
+  String get liveTranscriptWaiting;
+
+  /// No description provided for @liveTranscriptStableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable'**
+  String get liveTranscriptStableLabel;
+
+  /// No description provided for @liveTranscriptDraftLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get liveTranscriptDraftLabel;
+
+  /// Screen-reader label for a stable live transcript segment.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable. {text}'**
+  String liveTranscriptStableSegment(String text);
+
+  /// Screen-reader label for a replaceable live transcript segment.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft. {text}'**
+  String liveTranscriptDraftSegment(String text);
+
+  /// Visible live-transcription backlog rounded up to whole seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'The live draft is about {seconds} seconds behind.'**
+  String liveTranscriptBacklog(int seconds);
+
+  /// No description provided for @liveTranscriptIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'This live draft may be incomplete.'**
+  String get liveTranscriptIncomplete;
+
+  /// No description provided for @liveTranscriptThermalFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Live transcription paused because this device is too warm.'**
+  String get liveTranscriptThermalFallback;
+
+  /// No description provided for @liveTranscriptModelFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'The local model could not start live transcription.'**
+  String get liveTranscriptModelFallback;
+
+  /// No description provided for @liveTranscriptGenericFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Live transcription stopped safely.'**
+  String get liveTranscriptGenericFallback;
+
+  /// No description provided for @liveTranscriptPostSessionFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'A complete transcript will run after recording.'**
+  String get liveTranscriptPostSessionFallback;
 }
 
 class _AppLocalizationsDelegate

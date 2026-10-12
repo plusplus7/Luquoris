@@ -105,5 +105,18 @@
   "transcriptionFailureUnknown": "转写未能完成，录音仍然安全。",
   "transcriptionRetryFailed": "无法重新启动转写，你可以再次重试。",
   "transcriptPreviewTitle": "转写预览",
-  "transcriptPreviewEmpty": "已完成的转写中没有稳定文本。"
+  "transcriptPreviewEmpty": "已完成的转写中没有稳定文本。",
+  "liveTranscriptTitle": "实时转写草稿",
+  "liveTranscriptExperimentalLabel": "实验功能 · 只读",
+  "liveTranscriptWaiting": "正在等待首段本地草稿…",
+  "liveTranscriptStableLabel": "已稳定",
+  "liveTranscriptDraftLabel": "草稿",
+  "liveTranscriptStableSegment": "已稳定。{text}",
+  "liveTranscriptDraftSegment": "草稿。{text}",
+  "liveTranscriptBacklog": "实时草稿大约落后 {seconds} 秒。",
+  "liveTranscriptIncomplete": "这份实时草稿可能不完整。",
+  "liveTranscriptThermalFallback": "设备温度过高，实时转写已暂停。",
+  "liveTranscriptModelFallback": "本地模型无法启动实时转写。",
+  "liveTranscriptGenericFallback": "实时转写已安全停止。",
+  "liveTranscriptPostSessionFallback": "录音结束后将运行完整转写。"
 }

@@ -28,6 +28,29 @@ final transcriptionFinalizationHandlerProvider =
       },
     );
 
+/// One bounded native draft run and its filtered event source.
+final class LiveTranscriptionSession {
+  /// Creates a live session owned by [meetingId].
+  const LiveTranscriptionSession({
+    required this.meetingId,
+    required this.runId,
+    required this.events,
+    required this.release,
+  });
+
+  /// Meeting whose canonical PCM fan-out supplies this draft.
+  final String meetingId;
+
+  /// Stable identity shared by start, events, and stop.
+  final String runId;
+
+  /// Native events for this run. Consumers still reject mismatched identities.
+  final Stream<TranscriptionEvent> events;
+
+  /// Idempotent release bound to the engine that created this session.
+  final Future<Result<void, TranscriptionFailure>> Function() release;
+}
+
 /// Coordinates durable transcription for the lifetime of the application.
 final class TranscriptionCoordinator extends AsyncNotifier<void> {
   final Completer<void> _startupReady = Completer<void>();
@@ -180,6 +203,79 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
       final meetings = _meetingTails.values.toList(growable: false);
       await Future.wait<void>(<Future<void>>[inference, ...meetings]);
       if (identical(inference, _inferenceTail) && _meetingTails.isEmpty) return;
+    }
+  }
+
+  /// Starts an experimental live draft only when the meeting requested it.
+  Future<Result<LiveTranscriptionSession?, TranscriptionFailure>>
+  startLiveDraft(String meetingId) async {
+    await _startupReady.future;
+    final detail = await _loadDetail(meetingId);
+    if (detail == null) {
+      return const Ok(null);
+    }
+    final meeting = detail.meeting;
+    if (meeting.transcriptionMode != MeetingTranscriptionMode.nearRealTime) {
+      return const Ok(null);
+    }
+    if (!_isLiveLifecycle(meeting.lifecycle)) {
+      return const Err(
+        TranscriptionUnavailable('transcription_live_meeting_inactive'),
+      );
+    }
+    try {
+      final manifest = ref.read(transcriptionModelManifestProvider);
+      if (!isSupportedTranscriptionManifest(manifest)) {
+        return const Err(
+          TranscriptionUnavailable('transcription_model_manifest_invalid'),
+        );
+      }
+      final parameters = TranscriptionParameters.forMeeting(
+        meeting: meeting,
+        manifest: manifest,
+      );
+      final runId = transcriptionRunId(
+        meetingId: meetingId,
+        parameters: parameters,
+      );
+      final engine = ref.read(transcriptionEngineProvider);
+      final started = await engine.startDraft(
+        TranscriptionDraftRequest(
+          runId: runId,
+          meetingId: meetingId,
+          modelId: parameters.modelId,
+          languageHint: parameters.languageHint,
+          parameterVersion: parameters.parameterVersion,
+        ),
+      );
+      return switch (started) {
+        Err(:final failure) => Err(failure),
+        Ok() => Ok(
+          LiveTranscriptionSession(
+            meetingId: meetingId,
+            runId: runId,
+            events: engine.eventsFor(runId),
+            release: () => engine.stopDraft(runId),
+          ),
+        ),
+      };
+    } on Object {
+      return const Err(
+        TranscriptionUnavailable('transcription_live_unavailable'),
+      );
+    }
+  }
+
+  /// Stops [session] without affecting capture or the later complete pass.
+  Future<Result<void, TranscriptionFailure>> stopLiveDraft(
+    LiveTranscriptionSession session,
+  ) async {
+    try {
+      return await session.release();
+    } on Object {
+      return const Err(
+        TranscriptionUnavailable('transcription_live_unavailable'),
+      );
     }
   }
 
@@ -427,6 +523,13 @@ int _stableCreationTime(SessionDetail detail) {
   }
   return detail.meeting.createdAtUtcMs;
 }
+
+bool _isLiveLifecycle(MeetingLifecycle lifecycle) => switch (lifecycle) {
+  MeetingLifecycle.recording ||
+  MeetingLifecycle.pausedByUser ||
+  MeetingLifecycle.pausedByInterruption => true,
+  _ => false,
+};
 
 Duration _completedMedia(Duration total, double progress) => Duration(
   microseconds: (total.inMicroseconds * progress).round(),

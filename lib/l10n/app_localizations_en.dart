@@ -382,4 +382,53 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get transcriptPreviewEmpty =>
       'The completed transcript contains no stable text.';
+
+  @override
+  String get liveTranscriptTitle => 'Live transcript draft';
+
+  @override
+  String get liveTranscriptExperimentalLabel => 'Experimental · read only';
+
+  @override
+  String get liveTranscriptWaiting => 'Listening for the first local draft…';
+
+  @override
+  String get liveTranscriptStableLabel => 'Stable';
+
+  @override
+  String get liveTranscriptDraftLabel => 'Draft';
+
+  @override
+  String liveTranscriptStableSegment(String text) {
+    return 'Stable. $text';
+  }
+
+  @override
+  String liveTranscriptDraftSegment(String text) {
+    return 'Draft. $text';
+  }
+
+  @override
+  String liveTranscriptBacklog(int seconds) {
+    return 'The live draft is about $seconds seconds behind.';
+  }
+
+  @override
+  String get liveTranscriptIncomplete => 'This live draft may be incomplete.';
+
+  @override
+  String get liveTranscriptThermalFallback =>
+      'Live transcription paused because this device is too warm.';
+
+  @override
+  String get liveTranscriptModelFallback =>
+      'The local model could not start live transcription.';
+
+  @override
+  String get liveTranscriptGenericFallback =>
+      'Live transcription stopped safely.';
+
+  @override
+  String get liveTranscriptPostSessionFallback =>
+      'A complete transcript will run after recording.';
 }

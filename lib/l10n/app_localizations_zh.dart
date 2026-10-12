@@ -341,5 +341,50 @@ class AppLocalizationsZh extends AppLocalizations {
   String get transcriptPreviewTitle => '转写预览';
 
   @override
+  String get liveTranscriptTitle => '实时转写草稿';
+
+  @override
+  String get liveTranscriptExperimentalLabel => '实验功能 · 只读';
+
+  @override
+  String get liveTranscriptWaiting => '正在等待首段本地草稿…';
+
+  @override
+  String get liveTranscriptStableLabel => '已稳定';
+
+  @override
+  String get liveTranscriptDraftLabel => '草稿';
+
+  @override
+  String liveTranscriptStableSegment(String text) {
+    return '已稳定。$text';
+  }
+
+  @override
+  String liveTranscriptDraftSegment(String text) {
+    return '草稿。$text';
+  }
+
+  @override
+  String liveTranscriptBacklog(int seconds) {
+    return '实时草稿大约落后 $seconds 秒。';
+  }
+
+  @override
+  String get liveTranscriptIncomplete => '这份实时草稿可能不完整。';
+
+  @override
+  String get liveTranscriptThermalFallback => '设备温度过高，实时转写已暂停。';
+
+  @override
+  String get liveTranscriptModelFallback => '本地模型无法启动实时转写。';
+
+  @override
+  String get liveTranscriptGenericFallback => '实时转写已安全停止。';
+
+  @override
+  String get liveTranscriptPostSessionFallback => '录音结束后将运行完整转写。';
+
+  @override
   String get transcriptPreviewEmpty => '已完成的转写中没有稳定文本。';
 }
