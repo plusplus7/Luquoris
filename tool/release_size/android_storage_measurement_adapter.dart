@@ -18,6 +18,7 @@ enum AndroidStorageMeasurementFailureReason {
   cleanInstallNotVerified,
   deviceIdentityMissing,
   invalidByteCount,
+  appBytesUnderreported,
 }
 
 /// Typed, privacy-safe rejection of Android storage evidence.
@@ -48,6 +49,7 @@ final class AndroidStorageMeasurementExpectation {
     required this.deviceModel,
     required this.buildFingerprint,
     required this.installedApkSha256,
+    required this.minimumAppBytes,
     required this.cleanInstallWasVerified,
   });
 
@@ -71,6 +73,9 @@ final class AndroidStorageMeasurementExpectation {
 
   /// SHA-256 of the exact release APK installed by the host.
   final String installedApkSha256;
+
+  /// Host-observed byte length of the exact installed APK.
+  final int minimumAppBytes;
 
   /// Whether the host proved absence before installing the target package.
   final bool cleanInstallWasVerified;
@@ -181,6 +186,11 @@ AndroidStorageMeasurementDocument parseAndroidStorageMeasurement(
       AndroidStorageMeasurementFailureReason.invalidByteCount,
     );
   }
+  if (appBytes < expectation.minimumAppBytes) {
+    throw const AndroidStorageMeasurementFailure(
+      AndroidStorageMeasurementFailureReason.appBytesUnderreported,
+    );
+  }
   if (packageName != expectation.packageName ||
       versionCode != expectation.versionCode ||
       buildId != expectation.buildId ||
@@ -239,6 +249,7 @@ Future<int> runAndroidStorageMeasurementAdapter(
       deviceModel: values['--device-model']!,
       buildFingerprint: values['--build-fingerprint']!,
       installedApkSha256: values['--installed-apk-sha256']!,
+      minimumAppBytes: _parsePositiveInteger(values['--minimum-app-bytes']!),
       cleanInstallWasVerified: switch (values['--clean-install-verified']) {
         'true' => true,
         _ => throw const _AdapterCommandFailure(
@@ -292,6 +303,7 @@ Map<String, String> _parseCommandArguments(List<String> arguments) {
     '--device-model',
     '--build-fingerprint',
     '--installed-apk-sha256',
+    '--minimum-app-bytes',
     '--clean-install-verified',
     '--output',
   };

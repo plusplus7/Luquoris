@@ -238,6 +238,59 @@ void main() {
       );
     });
 
+    test(
+      'adapter rejects storage stats smaller than the installed APK',
+      () async {
+        final projectRoot = await Directory.systemTemp.createTemp(
+          'loquiris-android-footprint-stale-',
+        );
+        addTearDown(() => projectRoot.delete(recursive: true));
+        final raw = File('${projectRoot.path}/build/instrumentation.txt');
+        await raw.create(recursive: true);
+        await raw.writeAsString(_instrumentationOutput(appBytes: 132608));
+        final errors = <String>[];
+
+        final code = await runAndroidStorageMeasurementAdapter(
+          <String>[
+            '--instrumentation-output',
+            'build/instrumentation.txt',
+            '--package-name',
+            'com.loquiris',
+            '--version-code',
+            '1',
+            '--build-id',
+            'release-2026-10-08',
+            '--device-serial',
+            'device-serial',
+            '--device-model',
+            'M2104K10AC',
+            '--build-fingerprint',
+            'redmi/chopin/build:fingerprint',
+            '--installed-apk-sha256',
+            'd' * 64,
+            '--minimum-app-bytes',
+            '85260665',
+            '--clean-install-verified',
+            'true',
+            '--output',
+            'build/installed.json',
+          ],
+          projectRoot: projectRoot,
+          writeOutput: (_) {},
+          writeError: errors.add,
+        );
+
+        expect(code, 65);
+        expect(errors, <String>[
+          'release_footprint.android.appBytesUnderreported',
+        ]);
+        expect(
+          File('${projectRoot.path}/build/installed.json').existsSync(),
+          isFalse,
+        );
+      },
+    );
+
     test('installed value is app plus data while cache stays separate', () {
       final document = parseAndroidStorageMeasurement(
         _instrumentationOutput(
@@ -299,6 +352,8 @@ void main() {
             'redmi/chopin/build:fingerprint',
             '--installed-apk-sha256',
             'd' * 64,
+            '--minimum-app-bytes',
+            '100',
             '--clean-install-verified',
             'true',
             '--output',
@@ -333,6 +388,7 @@ AndroidStorageMeasurementExpectation _androidExpectation() =>
       deviceModel: 'M2104K10AC',
       buildFingerprint: 'redmi/chopin/build:fingerprint',
       installedApkSha256: 'd' * 64,
+      minimumAppBytes: 100,
       cleanInstallWasVerified: true,
     );
 

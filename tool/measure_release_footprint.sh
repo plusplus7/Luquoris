@@ -199,6 +199,9 @@ require_regular_file "$HELPER_APK"
 require_regular_file "$HELPER_TEST_APK"
 
 readonly APK_SHA256="$(hash_file "$APK_PATH")"
+readonly APK_BYTES="$(wc -c < "$APK_PATH" | tr -d '[:space:]')"
+[[ "$APK_BYTES" =~ ^[1-9][0-9]*$ ]] ||
+  fail "release_footprint.artifact_not_regular" 66
 readonly COMMIT_ID="$(cd "$PROJECT_ROOT" && git rev-parse --verify HEAD)"
 readonly BUILD_ID="${COMMIT_ID}-${APK_SHA256:0:12}"
 
@@ -234,6 +237,7 @@ if ! $ADB -s "$DEVICE_SERIAL" shell am instrument -w -r \
   -e targetPackage "$TARGET_PACKAGE" \
   -e buildId "$BUILD_ID" \
   -e installedApkSha256 "$APK_SHA256" \
+  -e minimumAppBytes "$APK_BYTES" \
   -e deviceSerial "$DEVICE_SERIAL" \
   -e cleanInstall true \
   "$HELPER_TEST_PACKAGE/androidx.test.runner.AndroidJUnitRunner" >"$RAW_OUTPUT"; then
@@ -250,6 +254,7 @@ fi
   --device-model "$DEVICE_MODEL" \
   --build-fingerprint "$DEVICE_FINGERPRINT" \
   --installed-apk-sha256 "$APK_SHA256" \
+  --minimum-app-bytes "$APK_BYTES" \
   --clean-install-verified true \
   --output "build/release-footprint/installed.json")
 
