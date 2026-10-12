@@ -4,6 +4,8 @@
 
 **Implementation base:** `e8da984590a49cba1847435c0c7681636d90dfa7`
 
+**Release-footprint revalidation:** `2b8cf015ac6f251e78fe783eb629ddf084a4f8d2`
+
 **Target device:** Xiaomi/Redmi `M2104K10AC` (`chopin`), Android 13 / API 33
 
 **Decision:** OpenSpec Tasks 11.1–11.4 are implemented. Near-real-time remains experimental; Tasks 11.5–11.8 and 12.8 remain open.
@@ -61,11 +63,17 @@ The existing native smoke suite also passed on this device: the authorized WAV p
 
 | Artifact | Bytes | SHA-256 | Limit |
 |---|---:|---|---:|
-| Release APK | 85,260,665 | `b572ee64510c8088cf49c23130d546489a5b355dc113ab0bd464621c4346f603` | 524,288,000 |
-| Release AAB | 81,170,289 | `da01e14070d76a3ad89016ad3da552f9886257b88963ce993baa07e672335a30` | 524,288,000 |
-| Clean installed measurement | 132,608 | tied to the APK hash above | 838,860,800 |
+| Release APK | 85,326,201 | `db4713f84b5732773c2ea7514066231768e54b0f54602e305c88a0fd12d7ec98` | 524,288,000 |
+| Release AAB | 81,192,415 | `a53b3f2c95cb9a9834998a3940aeb52e357b33dbfcd64719a1c1aedd8bb80ef5` | 524,288,000 |
+| Clean installed measurement | 85,476,864 | tied to the APK hash above | 838,860,800 |
 
-The installed-byte adapter reports package-manager storage accounting from the clean measurement environment; it is retained verbatim but should not be interpreted as the uncompressed APK payload. The policy decision is `passed` with no violations.
+The original immediate post-install query returned a stale 132,608-byte
+`StorageStats.appBytes` value and has been invalidated. The revalidated workflow
+uses the exact installed APK byte length as a lower bound, waits for Android's
+package storage accounting to include that APK, and independently rejects an
+underreported result in the host adapter. The clean measurement reported
+85,476,864 installed bytes for the exact 85,326,201-byte APK. The policy
+decision is `passed` with no violations.
 
 The structured source/dependency/manifest policy and final APK scan passed with no `INTERNET` or `ACCESS_NETWORK_STATE` permission. Model import re-verified one 59,707,625-byte artifact. The third-party notice workflow inventoried and rechecked 115 reviewed components; `THIRD_PARTY_NOTICES.md` was byte-identical after regeneration.
 

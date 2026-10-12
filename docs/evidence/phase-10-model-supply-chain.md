@@ -2,13 +2,15 @@
 
 ## Outcome
 
-Phase 10 release-footprint and third-party-notice gates passed on 2026-10-09
-(Asia/Singapore). OpenSpec tasks 10.8 and 10.9 are complete for the current
-Android release inputs.
+Phase 10 release-footprint and third-party-notice gates originally passed on
+2026-10-09 (Asia/Singapore). OpenSpec tasks 10.8 and 10.9 remain complete. The
+release footprint was revalidated on 2026-10-12 after the bundled Whisper model
+integration; the current measurements and stale-`StorageStats` correction are
+recorded in `phase-11-whisper-transcription-spike.md`.
 
 The canonical machine-readable footprint report is
 `docs/evidence/phase-10-release-footprint.json` with SHA-256
-`ddf5ea956a887dbf21baaaf13e4e103ca9c80f326a6e19d9d351487d5264506a`.
+`328ac23008a3e305d343f8dbafda626e54b45914e56c3a3c4171843f457c929e`.
 
 ## Toolchain and target
 
@@ -21,7 +23,7 @@ The canonical machine-readable footprint report is
 - Device build fingerprint
   `Redmi/chopin/chopin:13/TP1A.220624.014/V14.0.8.0.TKPCNXM:user/release-keys`.
 
-## Release-footprint gate
+## Original Phase 10 release-footprint gate
 
 The final clean-install workflow ran `tool/measure_release_footprint.sh`. It
 removed any existing target and helper packages, rebuilt the release APK and
