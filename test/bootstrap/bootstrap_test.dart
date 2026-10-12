@@ -8,18 +8,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:loquiris/app.dart';
 import 'package:loquiris/bootstrap/bootstrap.dart';
 import 'package:loquiris/bootstrap/diagnostic_log.dart';
+import 'package:loquiris/core/domain/app_relative_path.dart';
+import 'package:loquiris/core/result.dart';
 import 'package:loquiris/data/database/app_database.dart' hide Meeting;
 import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
+import 'package:loquiris/features/export_backup/application/backup_service_provider.dart';
+import 'package:loquiris/features/export_backup/application/local_backup_service.dart';
 import 'package:loquiris/features/export_backup/application/local_benchmark_report_exporter.dart';
+import 'package:loquiris/features/export_backup/application/local_export_service.dart';
+import 'package:loquiris/features/export_backup/application/local_restore_service.dart';
+import 'package:loquiris/features/export_backup/application/restore_service_provider.dart';
 import 'package:loquiris/features/models_performance/application/benchmark_report_exporter.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_provider.dart';
 import 'package:loquiris/features/models_performance/application/performance_benchmark_runner.dart';
 import 'package:loquiris/features/models_performance/application/runtime_model_manager.dart';
+import 'package:loquiris/features/recording/presentation/recording_controller.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/transcript/application/transcription_coordinator.dart';
 import 'package:loquiris/native/method_channel_thermal_and_performance_monitor.dart';
 import 'package:loquiris/native/method_channel_transcription_engine.dart';
+import 'package:loquiris/native/native_audio_capture_service.dart';
+import 'package:loquiris/native/recording_recovery_gateway.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
 
@@ -33,7 +43,15 @@ void main() {
     final dependencies = await bootstrap(
       diagnosticLogSink: const DisabledDiagnosticLogSink(),
       openDatabase: () async => database,
+      cleanIncompleteBackups: false,
       modelAssetBundle: _modelAssetBundle(),
+      recoveryGateway: _FakeRecordingRecoveryGateway(
+        RecordingRecoveryInventory(
+          sessions: const [],
+          deletedIncompleteDerivedFiles: 0,
+          issueCodes: const [],
+        ),
+      ),
     );
 
     await tester.pumpWidget(
@@ -42,6 +60,8 @@ void main() {
         child: Consumer(
           builder: (context, ref, child) {
             final installed =
+                ref.read(audioCaptureServiceProvider)
+                    is NativeAudioCaptureService &&
                 ref.read(sessionRepositoryProvider) is DriftSessionRepository &&
                 ref.read(transcriptRepositoryProvider)
                     is DriftTranscriptRepository &&
@@ -51,21 +71,21 @@ void main() {
                 ref.read(modelManagerProvider) is RuntimeModelManager &&
                 ref.read(transcriptionEngineProvider)
                     is MethodChannelTranscriptionEngine &&
-                ref.read(revisionRepositoryProvider) is DriftRevisionRepository;
+                ref.read(revisionRepositoryProvider)
+                    is DriftRevisionRepository &&
+                ref.read(exportServiceProvider) is LocalExportService &&
+                ref.read(backupServiceProvider) is LocalBackupService &&
+                ref.read(restoreServiceProvider) is LocalRestoreService &&
+                ref.read(benchmarkReportExporterProvider)
+                    is LocalBenchmarkReportExporter;
             final benchmarkInstalled =
                 ref.read(performanceBenchmarkRunnerProvider)
                     is UnavailablePerformanceBenchmarkRunner;
             final performanceMonitorInstalled =
                 ref.read(thermalAndPerformanceMonitorProvider)
                     is MethodChannelThermalAndPerformanceMonitor;
-            final benchmarkExporterInstalled =
-                ref.read(benchmarkReportExporterProvider)
-                    is LocalBenchmarkReportExporter;
             return Text(
-              installed &&
-                      benchmarkInstalled &&
-                      performanceMonitorInstalled &&
-                      benchmarkExporterInstalled
+              installed && benchmarkInstalled && performanceMonitorInstalled
                   ? 'installed'
                   : 'missing',
               textDirection: TextDirection.ltr,
@@ -84,6 +104,75 @@ void main() {
           )
           .getSingle(),
       1,
+    );
+  });
+
+  test('bootstrap reconciles native inventory before returning', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final recoveryGateway = _FakeRecordingRecoveryGateway(
+      RecordingRecoveryInventory(
+        sessions: [
+          RecordingRecoverySessionEvidence(
+            meetingId: 'recovered-meeting',
+            storageKey: 'hash',
+            segments: [
+              SessionRecoverySegmentEvidence(
+                sequence: 0,
+                relativePath: _recoveryPath(
+                  'recordings/hash/segment-00000.adts',
+                ),
+                mediaStart: Duration.zero,
+                mediaDuration: const Duration(seconds: 2),
+                committedBytes: 20,
+                state: AudioSegmentState.committed,
+              ),
+            ],
+          ),
+        ],
+        deletedIncompleteDerivedFiles: 0,
+        issueCodes: const [],
+      ),
+    );
+
+    await bootstrap(
+      diagnosticLogSink: const DisabledDiagnosticLogSink(),
+      openDatabase: () async => database,
+      cleanIncompleteBackups: false,
+      recoveryGateway: recoveryGateway,
+      observedAtUtcMs: () => 100,
+    );
+
+    final row = await database
+        .customSelect(
+          "SELECT lifecycle FROM meetings WHERE id = 'recovered-meeting'",
+        )
+        .getSingle();
+    expect(row.read<String>('lifecycle'), 'recoverable');
+  });
+
+  test('bootstrap records privacy-safe native recovery issues', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final diagnostics = _RecordingDiagnosticSink();
+
+    await bootstrap(
+      diagnosticLogSink: diagnostics,
+      openDatabase: () async => database,
+      cleanIncompleteBackups: false,
+      recoveryGateway: _FakeRecordingRecoveryGateway(
+        RecordingRecoveryInventory(
+          sessions: const [],
+          deletedIncompleteDerivedFiles: 1,
+          issueCodes: const ['manifest_invalid'],
+        ),
+      ),
+      observedAtUtcMs: () => 100,
+    );
+
+    expect(
+      diagnostics.events.map((event) => event.code),
+      [DiagnosticCode.startupRecoveryFailed],
     );
   });
 
@@ -136,6 +225,29 @@ void main() {
 
     expect(find.text('No meetings yet'), findsOneWidget);
     expect(find.text('Start a recording'), findsOneWidget);
+    expect(capture.currentCalls, 1);
+
+    capture.emitSnapshot(
+      const AudioCaptureSnapshot(
+        sessionId: 'background-meeting',
+        state: AudioCaptureState.recording,
+        elapsed: Duration(seconds: 2),
+        bytesWritten: 128,
+        revision: 2,
+      ),
+    );
+    await tester.pump();
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(LoquirisApp)),
+    );
+    expect(
+      container
+          .read(recordingControllerProvider)
+          .requireValue
+          .snapshot
+          ?.revision,
+      2,
+    );
   });
 
   testWidgets('root observer flushes on pause and refreshes on resume', (
@@ -274,6 +386,22 @@ final class _MemoryAssetBundle extends CachingAssetBundle {
   }
 }
 
+final class _FakeRecordingRecoveryGateway implements RecordingRecoveryGateway {
+  _FakeRecordingRecoveryGateway(this.inventory);
+
+  final RecordingRecoveryInventory inventory;
+
+  @override
+  Future<Result<RecordingRecoveryInventory, RecordingRecoveryFailure>>
+  scan() async => Ok(inventory);
+}
+
+AppRelativePath _recoveryPath(String value) =>
+    AppRelativePath.tryParse(value).fold(
+      (path) => path,
+      (failure) => throw TestFailure('Invalid path: ${failure.code}'),
+    );
+
 final class _RecordingLifecycleActions implements AppLifecycleActions {
   int flushCalls = 0;
   int refreshCalls = 0;
@@ -287,4 +415,11 @@ final class _RecordingLifecycleActions implements AppLifecycleActions {
   void refresh() {
     refreshCalls += 1;
   }
+}
+
+final class _RecordingDiagnosticSink implements DiagnosticLogSink {
+  final List<DiagnosticEvent> events = [];
+
+  @override
+  void record(DiagnosticEvent event) => events.add(event);
 }

@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loquiris/features/export_backup/presentation/export_screen.dart';
 import 'package:loquiris/features/models_performance/presentation/models_performance_screen.dart';
+import 'package:loquiris/features/recording/presentation/active_recording_screen.dart';
+import 'package:loquiris/features/recording/presentation/new_recording_screen.dart';
+import 'package:loquiris/features/sessions/presentation/session_detail_screen.dart';
 import 'package:loquiris/features/sessions/presentation/session_library_screen.dart';
+import 'package:loquiris/features/storage_privacy/presentation/storage_privacy_screen.dart';
+import 'package:loquiris/features/transcript/presentation/transcript_editor_screen.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
 import 'package:loquiris/routing/app_navigation_shell.dart';
 import 'package:loquiris/routing/routes.dart';
@@ -27,23 +33,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: ':meetingId',
-                    builder: (context, state) => AppRouteScreen(
-                      destination: AppDestination.sessionDetail,
-                      meetingId: state.pathParameters['meetingId'],
+                    builder: (context, state) => SessionDetailScreen(
+                      meetingId: state.pathParameters['meetingId']!,
+                      initialOffset: _parseMediaOffset(
+                        state.uri.queryParameters['atUs'],
+                      ),
                     ),
                     routes: [
                       GoRoute(
                         path: 'edit',
-                        builder: (context, state) => AppRouteScreen(
-                          destination: AppDestination.transcriptEditor,
-                          meetingId: state.pathParameters['meetingId'],
+                        builder: (context, state) => TranscriptEditorScreen(
+                          meetingId: state.pathParameters['meetingId']!,
                         ),
                       ),
                       GoRoute(
                         path: 'export',
-                        builder: (context, state) => AppRouteScreen(
-                          destination: AppDestination.export,
-                          meetingId: state.pathParameters['meetingId'],
+                        builder: (context, state) => ExportScreen(
+                          meetingId: state.pathParameters['meetingId']!,
                         ),
                       ),
                     ],
@@ -56,9 +62,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutes.newRecording,
-                builder: (context, state) => const AppRouteScreen(
-                  destination: AppDestination.newRecording,
-                ),
+                builder: (context, state) => const NewRecordingScreen(),
               ),
             ],
           ),
@@ -70,9 +74,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
               GoRoute(
                 path: AppRoutes.storagePrivacy,
-                builder: (context, state) => const AppRouteScreen(
-                  destination: AppDestination.storagePrivacy,
-                ),
+                builder: (context, state) => const StoragePrivacyScreen(),
               ),
             ],
           ),
@@ -80,9 +82,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/recordings/:meetingId',
-        builder: (context, state) => AppRouteScreen(
-          destination: AppDestination.activeRecording,
-          meetingId: state.pathParameters['meetingId'],
+        builder: (context, state) => ActiveRecordingScreen(
+          meetingId: state.pathParameters['meetingId']!,
         ),
       ),
     ],
@@ -167,3 +168,9 @@ String _keyName(AppDestination destination) => switch (destination) {
   AppDestination.storagePrivacy => 'storage-privacy',
   AppDestination.notFound => 'not-found',
 };
+
+Duration? _parseMediaOffset(String? value) {
+  final microseconds = int.tryParse(value ?? '');
+  if (microseconds == null || microseconds < 0) return null;
+  return Duration(microseconds: microseconds);
+}

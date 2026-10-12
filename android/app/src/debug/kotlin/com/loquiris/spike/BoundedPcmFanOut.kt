@@ -4,6 +4,7 @@ import java.io.Closeable
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -31,6 +32,7 @@ data class PcmFanOutMetrics(
     val canonicalProcessedFrames: Long,
     val canonicalRejectedFrames: Long,
     val canonicalSinkFailures: Long,
+    val canonicalQueueHighWaterMark: Int,
     val inferenceAcceptedFrames: Long,
     val inferenceDroppedFrames: Long,
 )
@@ -48,9 +50,12 @@ class BoundedPcmFanOut(
     private val canonicalProcessedFrameCount = AtomicLong()
     private val canonicalRejectedFrameCount = AtomicLong()
     private val canonicalSinkFailureCount = AtomicLong()
+    private val canonicalQueueHighWaterMark = AtomicInteger()
     private val inferenceAcceptedFrameCount = AtomicLong()
     private val inferenceDroppedFrameCount = AtomicLong()
     private val lifecycleLock = Any()
+    private val canonicalQueueLock = ReentrantLock()
+    private val canonicalQueueChanged = canonicalQueueLock.newCondition()
     private val progressLock = ReentrantLock()
     private val progressChanged = progressLock.newCondition()
     private val canonicalWorker: Thread
@@ -74,6 +79,7 @@ class BoundedPcmFanOut(
                 canonicalProcessedFrames = canonicalProcessedFrameCount.get(),
                 canonicalRejectedFrames = canonicalRejectedFrameCount.get(),
                 canonicalSinkFailures = canonicalSinkFailureCount.get(),
+                canonicalQueueHighWaterMark = canonicalQueueHighWaterMark.get(),
                 inferenceAcceptedFrames = inferenceAcceptedFrameCount.get(),
                 inferenceDroppedFrames = inferenceDroppedFrameCount.get(),
             )
@@ -86,14 +92,18 @@ class BoundedPcmFanOut(
             if (canonicalFailed.get()) {
                 return PcmPublishResult.canonicalSinkFailed
             }
-            if (!canonicalQueue.offer(frame.isolatedCopy())) {
-                canonicalRejectedFrameCount.incrementAndGet()
-                return PcmPublishResult.canonicalQueueFull
+            canonicalQueueLock.withLock {
+                if (!canonicalQueue.offer(frame.isolatedCopy())) {
+                    canonicalRejectedFrameCount.incrementAndGet()
+                    return PcmPublishResult.canonicalQueueFull
+                }
+                canonicalAcceptedFrameCount.incrementAndGet()
+                canonicalQueueHighWaterMark.accumulateAndGet(canonicalQueue.size, ::maxOf)
+                canonicalQueueChanged.signal()
             }
-            canonicalAcceptedFrameCount.incrementAndGet()
         }
 
-        if (inferenceQueue.offer(frame.isolatedCopy())) {
+        if (inferenceQueue.remainingCapacity() > 0 && inferenceQueue.offer(frame.isolatedCopy())) {
             inferenceAcceptedFrameCount.incrementAndGet()
         } else {
             inferenceDroppedFrameCount.incrementAndGet()
@@ -127,21 +137,20 @@ class BoundedPcmFanOut(
     }
 
     override fun close() {
-        val shouldClose = synchronized(lifecycleLock) { closed.compareAndSet(false, true) }
+        val shouldClose =
+            synchronized(lifecycleLock) {
+                closed.compareAndSet(false, true)
+            }
         if (shouldClose) {
+            canonicalQueueLock.withLock { canonicalQueueChanged.signalAll() }
             canonicalWorker.interrupt()
             canonicalWorker.join(WORKER_JOIN_TIMEOUT_MILLIS)
         }
     }
 
     private fun drainCanonical() {
-        while (!closed.get() || canonicalQueue.isNotEmpty()) {
-            val frame =
-                try {
-                    canonicalQueue.poll(WORKER_POLL_MILLIS, TimeUnit.MILLISECONDS)
-                } catch (_: InterruptedException) {
-                    null
-                } ?: continue
+        while (true) {
+            val frame = takeCanonicalFrame() ?: return
             try {
                 canonicalSink(frame)
             } catch (_: Exception) {
@@ -155,6 +164,18 @@ class BoundedPcmFanOut(
             }
         }
     }
+
+    private fun takeCanonicalFrame(): PcmFrame? =
+        canonicalQueueLock.withLock {
+            while (canonicalQueue.isEmpty() && !closed.get()) {
+                try {
+                    canonicalQueueChanged.await(WORKER_POLL_MILLIS, TimeUnit.MILLISECONDS)
+                } catch (_: InterruptedException) {
+                    if (closed.get()) return@withLock null
+                }
+            }
+            canonicalQueue.poll()
+        }
 
     companion object {
         private const val WORKER_POLL_MILLIS = 50L

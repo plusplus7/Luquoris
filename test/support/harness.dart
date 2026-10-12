@@ -44,6 +44,9 @@ extension LoquirisWidgetHarness on WidgetTester {
     await pumpWidget(
       ProviderScope(
         overrides: [
+          audioCaptureServiceProvider.overrideWithValue(
+            FakeAudioCaptureService(),
+          ),
           sessionRepositoryProvider.overrideWithValue(
             FakeSessionRepository(),
           ),

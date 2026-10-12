@@ -14,7 +14,7 @@ void main() {
   tearDown(() => database.close());
 
   test('initial schema contains every durable versioned entity', () async {
-    expect(database.schemaVersion, 1);
+    expect(database.schemaVersion, 4);
 
     final rows = await database
         .customSelect(
@@ -27,7 +27,9 @@ void main() {
       names,
       containsAll(<String>{
         'meetings',
+        'recording_preferences',
         'audio_segments',
+        'recovery_findings',
         'session_events',
         'bookmarks',
         'transcript_runs',
@@ -176,6 +178,7 @@ void main() {
       containsAll(<String>{
         'idx_meetings_created',
         'ux_audio_segments_meeting_sequence',
+        'idx_recovery_findings_meeting_sequence',
         'ux_session_events_meeting_sequence',
         'idx_bookmarks_meeting_media',
         'idx_transcript_runs_meeting_created',

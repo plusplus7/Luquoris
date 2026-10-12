@@ -97,7 +97,10 @@ class AacRoundTripSpike {
         )
     }
 
-    internal fun encode(samples: ShortArray): EncodedAudio {
+    internal fun encode(
+        samples: ShortArray,
+        timeoutMilliseconds: Long = CODEC_TIMEOUT_MILLISECONDS,
+    ): EncodedAudio {
         val codec = MediaCodec.createEncoderByType(MIME_TYPE)
         var started = false
         var primaryFailure: Throwable? = null
@@ -113,7 +116,7 @@ class AacRoundTripSpike {
             var inputEnded = false
             var outputEnded = false
             val bufferInfo = MediaCodec.BufferInfo()
-            val deadline = SystemClock.elapsedRealtime() + CODEC_TIMEOUT_MILLISECONDS
+            val deadline = SystemClock.elapsedRealtime() + timeoutMilliseconds
             while (!outputEnded) {
                 check(SystemClock.elapsedRealtime() < deadline) { "AAC encoder timed out" }
                 if (!inputEnded) {
@@ -197,7 +200,10 @@ class AacRoundTripSpike {
         }
     }
 
-    internal fun decode(encoded: EncodedAudio): DecodedAudio {
+    internal fun decode(
+        encoded: EncodedAudio,
+        timeoutMilliseconds: Long = CODEC_TIMEOUT_MILLISECONDS,
+    ): DecodedAudio {
         val codec = MediaCodec.createDecoderByType(MIME_TYPE)
         var started = false
         var primaryFailure: Throwable? = null
@@ -214,7 +220,7 @@ class AacRoundTripSpike {
             var inputEnded = false
             var outputEnded = false
             val bufferInfo = MediaCodec.BufferInfo()
-            val deadline = SystemClock.elapsedRealtime() + CODEC_TIMEOUT_MILLISECONDS
+            val deadline = SystemClock.elapsedRealtime() + timeoutMilliseconds
             while (!outputEnded) {
                 check(SystemClock.elapsedRealtime() < deadline) { "AAC decoder timed out" }
                 if (!inputEnded) {

@@ -8,7 +8,7 @@ Transcription SHALL run through an injectable engine interface with no UI depend
 - **THEN** recording, session persistence, progress, editing, and export SHALL continue through the same domain contract
 
 ### Requirement: User-selected processing mode
-Before recording, the user SHALL be able to select near-real-time draft or post-session transcription and the application SHALL remember the default. During recording, the application MAY degrade from real-time to post-session but MUST NOT silently change modes.
+Before recording, the user SHALL be able to select near-real-time draft or post-session transcription and the application SHALL remember the mode, language, and speaker-count defaults locally. The selections for the current meeting SHALL be persisted before capture starts. During recording, the application MAY degrade from real-time to post-session but MUST NOT silently change modes.
 
 #### Scenario: Thermal protection pauses live inference
 - **WHEN** the device reaches the configured severe thermal state

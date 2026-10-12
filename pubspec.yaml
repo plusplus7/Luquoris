@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   clock: ^1.1.2
+  crypto: ^3.0.7
   drift: ^2.35.0
   flutter:
     sdk: flutter
@@ -26,6 +27,8 @@ dev_dependencies:
   drift_dev: ^2.35.0
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   sqlite3: ^3.5.2
   very_good_analysis: ^10.3.0
   xml: ^6.6.1
@@ -34,6 +37,8 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
+    - assets/benchmarks/audio/manifest.json
+    - assets/benchmarks/audio/zh_en_mixed_v1.wav
     - build/generated/model_assets/model_manifests/
     - build/generated/model_assets/models/licenses/
     - build/generated/model_assets/models/whisper-base-q5_1/

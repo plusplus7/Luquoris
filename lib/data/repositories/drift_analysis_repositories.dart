@@ -7,6 +7,7 @@ import 'package:loquiris/core/domain/app_relative_path.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/data/database/app_database.dart' as db;
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
+import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/speakers/domain/speaker_entities.dart';
 import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
 import 'package:loquiris/services/analysis_repository_contracts.dart';
@@ -144,11 +145,18 @@ final class DriftTranscriptRepository implements TranscriptRepository {
               variables: <Variable<Object>>[Variable<String>(runRow.id)],
             )
             .get();
+        final segments = segmentRows.map(_readTranscriptSegment).toList();
+        final associations = await _loadVersionAssociations(
+          meetingId,
+          segments,
+        );
         versions.add(
           TranscriptVersion(
             run: _readTranscriptRun(runRow),
-            segments: segmentRows.map(_readTranscriptSegment).toList(),
+            segments: segments,
             isCurrent: selection?.transcriptRunId == runRow.id,
+            languagesBySegmentId: associations.languages,
+            speakersById: associations.speakers,
           ),
         );
       }
@@ -163,6 +171,183 @@ final class DriftTranscriptRepository implements TranscriptRepository {
         ),
       );
     }
+  }
+
+  @override
+  Future<Result<TranscriptEditorDocument, AnalysisRepositoryFailure>>
+  loadEditor(String meetingId) async {
+    try {
+      final document = await database.transaction(() async {
+        final meeting =
+            await (database.select(database.meetings)..where(
+                  (row) =>
+                      row.id.equals(meetingId) & row.isDeleted.equals(false),
+                ))
+                .getSingleOrNull();
+        if (meeting == null) {
+          throw const _AnalysisStateError('analysis_not_found');
+        }
+        final revisionRows =
+            await (database.select(database.revisions)
+                  ..where(
+                    (row) =>
+                        row.meetingId.equals(meetingId) &
+                        row.isDeleted.equals(false),
+                  )
+                  ..orderBy([
+                    (row) => OrderingTerm.asc(row.createdAt),
+                    (row) => OrderingTerm.asc(row.id),
+                  ]))
+                .get();
+        final revisions = revisionRows.map(_readRevision).toList();
+        final selection =
+            await (database.select(
+                  database.meetingTranscriptSelections,
+                )..where(
+                  (row) =>
+                      row.meetingId.equals(meetingId) &
+                      row.isDeleted.equals(false),
+                ))
+                .getSingleOrNull();
+        TranscriptVersion? currentVersion;
+        final languages = <String, LanguageDecision>{};
+        final speakers = <String, Speaker>{};
+        if (selection != null) {
+          final run =
+              await (database.select(database.transcriptRuns)..where(
+                    (row) =>
+                        row.id.equals(selection.transcriptRunId) &
+                        row.meetingId.equals(meetingId) &
+                        row.isDeleted.equals(false),
+                  ))
+                  .getSingleOrNull();
+          if (run == null) {
+            throw const _AnalysisStateError('analysis_not_found');
+          }
+          final segmentRows = await database
+              .customSelect(
+                '''
+                SELECT ts.*, tls.language_decision_id
+                FROM transcript_segments AS ts
+                LEFT JOIN transcript_language_selections AS tls
+                  ON tls.transcript_segment_id = ts.id AND tls.is_deleted = 0
+                WHERE ts.transcript_run_id = ? AND ts.is_deleted = 0
+                ORDER BY ts.start_us, ts.id
+                ''',
+                variables: <Variable<Object>>[
+                  Variable<String>(selection.transcriptRunId),
+                ],
+              )
+              .get();
+          final segments = segmentRows.map(_readTranscriptSegment).toList();
+          for (final segment in segments) {
+            if (segment.languageDecisionId case final decisionId?) {
+              final decision =
+                  await (database.select(database.languageDecisions)..where(
+                        (row) =>
+                            row.id.equals(decisionId) &
+                            row.transcriptSegmentId.equals(segment.id) &
+                            row.isDeleted.equals(false),
+                      ))
+                      .getSingleOrNull();
+              if (decision != null) {
+                languages[segment.id] = _readLanguageDecision(decision);
+              }
+            }
+            if (segment.speakerId case final speakerId?) {
+              if (speakers.containsKey(speakerId)) continue;
+              final speakerRow =
+                  await (database.select(database.speakers)..where(
+                        (row) =>
+                            row.id.equals(speakerId) &
+                            row.meetingId.equals(meetingId) &
+                            row.isDeleted.equals(false),
+                      ))
+                      .getSingleOrNull();
+              if (speakerRow != null) {
+                var speaker = _readSpeaker(speakerRow);
+                for (final revision in revisions) {
+                  if (revision.targetId != speakerId) continue;
+                  if (revision.change case final SpeakerLabelChange change) {
+                    speaker = speaker.copyWith(label: change.revised);
+                  }
+                }
+                speakers[speakerId] = speaker;
+              }
+            }
+          }
+          currentVersion = TranscriptVersion(
+            run: _readTranscriptRun(run),
+            segments: segments,
+            isCurrent: true,
+            languagesBySegmentId: languages,
+            speakersById: speakers,
+          );
+        }
+        return TranscriptEditorDocument(
+          meetingId: meetingId,
+          lifecycle: MeetingLifecycle.values.byName(meeting.lifecycle),
+          currentVersion: currentVersion,
+          languagesBySegmentId: languages,
+          speakersById: speakers,
+          revisions: revisions,
+        );
+      });
+      return Ok(document);
+    } on _AnalysisStateError catch (error) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcript_editor_load_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  Future<
+    ({
+      Map<String, LanguageDecision> languages,
+      Map<String, Speaker> speakers,
+    })
+  >
+  _loadVersionAssociations(
+    String meetingId,
+    List<TranscriptSegment> segments,
+  ) async {
+    final languages = <String, LanguageDecision>{};
+    final speakers = <String, Speaker>{};
+    for (final segment in segments) {
+      if (segment.languageDecisionId case final decisionId?) {
+        final decision =
+            await (database.select(database.languageDecisions)..where(
+                  (row) =>
+                      row.id.equals(decisionId) &
+                      row.transcriptSegmentId.equals(segment.id) &
+                      row.isDeleted.equals(false),
+                ))
+                .getSingleOrNull();
+        if (decision != null) {
+          languages[segment.id] = _readLanguageDecision(decision);
+        }
+      }
+      if (segment.speakerId case final speakerId?) {
+        if (speakers.containsKey(speakerId)) continue;
+        final speaker =
+            await (database.select(database.speakers)..where(
+                  (row) =>
+                      row.id.equals(speakerId) &
+                      row.meetingId.equals(meetingId) &
+                      row.isDeleted.equals(false),
+                ))
+                .getSingleOrNull();
+        if (speaker != null) speakers[speakerId] = _readSpeaker(speaker);
+      }
+    }
+    return (languages: languages, speakers: speakers);
   }
 
   @override
@@ -940,6 +1125,7 @@ final class DriftRevisionRepository implements RevisionRepository {
         if (duplicate != null) {
           throw const _AnalysisStateError('analysis_conflict');
         }
+        await _ensureMeetingEditable(revision.meetingId);
         await _ensureRevisionOrder(revision);
         switch (revision.change) {
           case final TranscriptTextChange change:
@@ -965,6 +1151,23 @@ final class DriftRevisionRepository implements RevisionRepository {
           stackTrace,
         ),
       );
+    }
+  }
+
+  Future<void> _ensureMeetingEditable(String meetingId) async {
+    final meeting =
+        await (database.select(database.meetings)..where(
+              (row) => row.id.equals(meetingId) & row.isDeleted.equals(false),
+            ))
+            .getSingleOrNull();
+    if (meeting == null) {
+      throw const _AnalysisStateError('analysis_not_found');
+    }
+    final lifecycle = MeetingLifecycle.values.byName(meeting.lifecycle);
+    if (lifecycle != MeetingLifecycle.finalized &&
+        lifecycle != MeetingLifecycle.recoverable &&
+        lifecycle != MeetingLifecycle.failedFinalization) {
+      throw const _AnalysisStateError('analysis_editing_locked');
     }
   }
 
@@ -1211,6 +1414,31 @@ final class DriftRevisionRepository implements RevisionRepository {
             .getSingleOrNull();
     if (segment == null) {
       throw const _AnalysisStateError('analysis_not_found');
+    }
+    final selection =
+        await (database.select(database.meetingTranscriptSelections)..where(
+              (row) =>
+                  row.meetingId.equals(revision.meetingId) &
+                  row.isDeleted.equals(false),
+            ))
+            .getSingleOrNull();
+    if (selection == null ||
+        selection.transcriptRunId != segment.transcriptRunId) {
+      throw const _AnalysisStateError('analysis_conflict');
+    }
+    final run =
+        await (database.select(database.transcriptRuns)..where(
+              (row) =>
+                  row.id.equals(segment.transcriptRunId) &
+                  row.meetingId.equals(revision.meetingId) &
+                  row.isDeleted.equals(false),
+            ))
+            .getSingleOrNull();
+    if (run == null) {
+      throw const _AnalysisStateError('analysis_not_found');
+    }
+    if (run.runState != 'completed') {
+      throw const _AnalysisStateError('analysis_editing_locked');
     }
     return segment;
   }
@@ -1463,6 +1691,7 @@ AnalysisRepositoryFailure _stateFailure(_AnalysisStateError error) =>
       'analysis_not_found' => const AnalysisNotFound(),
       'analysis_conflict' => const AnalysisConflict(),
       'analysis_invalid_revision' => const AnalysisInvalidRevision(),
+      'analysis_editing_locked' => const AnalysisEditingLocked(),
       _ => throw StateError('unknown analysis repository state failure'),
     };
 
@@ -1644,6 +1873,15 @@ TranscriptSegment _readTranscriptSegment(QueryRow row) => TranscriptSegment(
   languageDecisionId: row.readNullable<String>('language_decision_id'),
   speakerId: row.readNullable<String>('speaker_id'),
 );
+
+LanguageDecision _readLanguageDecision(db.LanguageDecision row) =>
+    LanguageDecision(
+      id: row.id,
+      transcriptSegmentId: row.transcriptSegmentId,
+      tag: LanguageTag.values.byName(row.tag),
+      source: LanguageDecisionSource.values.byName(row.source),
+      confidence: row.confidence,
+    );
 
 ({String kind, String payload}) _encodedRevision(RevisionChange change) =>
     switch (change) {

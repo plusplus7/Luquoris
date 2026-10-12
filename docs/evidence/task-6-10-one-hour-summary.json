@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-09-30",
+  "status": "passed",
+  "evidenceClass": "preliminary-exploratory",
+  "acceptanceEligible": false,
+  "acceptanceIneligibilityReasons": [
+    "ambient_temperature_not_measured",
+    "usb_power_connected"
+  ],
+  "device": {
+    "model": "M2104K10AC",
+    "product": "chopin",
+    "hardware": "mt6893",
+    "socManufacturer": "Mediatek",
+    "socModel": "MT6891",
+    "fingerprint": "Redmi/chopin/chopin:13/TP1A.220624.014/V14.0.8.0.TKPCNXM:user/release-keys",
+    "securityPatch": "2023-11-01",
+    "sdkInt": 33,
+    "reportedRamBytes": 5753860096
+  },
+  "run": {
+    "instrumentationWallSeconds": 3605.016,
+    "sampleCount": 61,
+    "screenInteractiveSampleCount": 0,
+    "finalState": "finalized",
+    "finalMediaElapsedMilliseconds": 3601378,
+    "finalDirectoryBytes": 29246959,
+    "finalRevision": 3463
+  },
+  "integrity": {
+    "segmentCount": 13,
+    "committedFrames": 56270,
+    "committedBytes": 29204131,
+    "committedSamples": 57620480,
+    "committedDurationMilliseconds": 3601280,
+    "durationDeltaMilliseconds": 98,
+    "orphanFileCount": 0,
+    "uncommittedOrInvalidBytes": 0
+  },
+  "resources": {
+    "processPssKilobytesMin": 303814,
+    "processPssKilobytesMax": 330906,
+    "processPssKilobytesEnd": 328513,
+    "batteryPercentStart": 100,
+    "batteryPercentEnd": 100,
+    "batteryPlugged": 1,
+    "batteryTemperatureTenthsCelsiusMin": 280,
+    "batteryTemperatureTenthsCelsiusMax": 297,
+    "thermalStatusMin": 0,
+    "thermalStatusMax": 0,
+    "privateAvailableBytesConsumed": 30420992
+  },
+  "limitations": [
+    "Uncontrolled room ambience; no speech-intelligibility or playback-quality claim.",
+    "USB power prevents a battery-drain-per-hour claim.",
+    "Ambient room temperature was not measured.",
+    "This one-hour run does not replace the required four-hour release matrix."
+  ]
+}

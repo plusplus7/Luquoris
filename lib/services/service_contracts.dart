@@ -1,5 +1,8 @@
+import 'package:loquiris/core/domain/app_relative_path.dart';
+import 'package:loquiris/core/domain/value_object.dart';
 import 'package:loquiris/core/failure.dart';
 import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:meta/meta.dart';
 
@@ -55,6 +58,65 @@ enum AudioCaptureState {
   failedFinalization,
 }
 
+/// Throttled microphone read-health counters reported by native capture.
+@immutable
+final class AudioInputHealthSnapshot {
+  /// Creates a cumulative input-health snapshot for the active session.
+  const AudioInputHealthSnapshot({
+    required this.readCalls,
+    required this.pcmBytes,
+    required this.shortReads,
+    required this.zeroReads,
+    required this.errorReads,
+    required this.maximumReadGap,
+    required this.timestampRegressions,
+  });
+
+  /// Number of microphone read attempts.
+  final int readCalls;
+
+  /// PCM bytes successfully received from Android's audio source.
+  final int pcmBytes;
+
+  /// Reads that returned fewer bytes than requested.
+  final int shortReads;
+
+  /// Reads that returned no audio data.
+  final int zeroReads;
+
+  /// Reads that failed with an error result.
+  final int errorReads;
+
+  /// Longest observed interval between consecutive reads.
+  final Duration maximumReadGap;
+
+  /// Count of non-monotonic capture timestamps.
+  final int timestampRegressions;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AudioInputHealthSnapshot &&
+          readCalls == other.readCalls &&
+          pcmBytes == other.pcmBytes &&
+          shortReads == other.shortReads &&
+          zeroReads == other.zeroReads &&
+          errorReads == other.errorReads &&
+          maximumReadGap == other.maximumReadGap &&
+          timestampRegressions == other.timestampRegressions;
+
+  @override
+  int get hashCode => Object.hash(
+    readCalls,
+    pcmBytes,
+    shortReads,
+    zeroReads,
+    errorReads,
+    maximumReadGap,
+    timestampRegressions,
+  );
+}
+
 /// A value-only snapshot of authoritative recorder state.
 final class AudioCaptureSnapshot {
   /// Creates a recorder snapshot.
@@ -62,7 +124,13 @@ final class AudioCaptureSnapshot {
     required this.state,
     required this.elapsed,
     required this.bytesWritten,
+    this.sessionId,
+    this.revision = 0,
+    this.inputHealth,
   });
+
+  /// Stable meeting identifier, or null only when [state] is idle.
+  final String? sessionId;
 
   /// Current lifecycle state.
   final AudioCaptureState state;
@@ -72,6 +140,12 @@ final class AudioCaptureSnapshot {
 
   /// Bytes durably written so far.
   final int bytesWritten;
+
+  /// Monotonic native persistence revision used to reject stale observations.
+  final int revision;
+
+  /// Live microphone input health, absent before native capture reports it.
+  final AudioInputHealthSnapshot? inputHealth;
 }
 
 /// Recoverable failures produced by [AudioCaptureService].
@@ -88,15 +162,148 @@ final class AudioCaptureUnavailable extends AudioCaptureFailure {
   const AudioCaptureUnavailable(super.code);
 }
 
+/// Capture was refused because the four-hour storage preflight failed.
+final class AudioCaptureInsufficientStorage extends AudioCaptureFailure {
+  /// Creates a structured storage failure.
+  const AudioCaptureInsufficientStorage({
+    required String code,
+    required this.availableBytes,
+    required this.requiredBytes,
+  }) : super(code);
+
+  /// Free app-private filesystem bytes observed by Android.
+  final int? availableBytes;
+
+  /// Bytes required by the selected capture safety policy.
+  final int requiredBytes;
+}
+
+/// Closed state reported by the local meeting playback boundary.
+enum SessionPlaybackState {
+  /// No validated playback artifact is loaded.
+  unavailable,
+
+  /// A validated artifact is loaded and positioned.
+  ready,
+
+  /// Audio is currently playing.
+  playing,
+
+  /// Playback was explicitly paused.
+  paused,
+
+  /// Playback reached the end of the meeting timeline.
+  completed,
+}
+
+/// Value-only native playback observation that never exposes a file path.
+@immutable
+final class SessionPlaybackSnapshot {
+  /// Creates a playback snapshot.
+  const SessionPlaybackSnapshot({
+    required this.sessionId,
+    required this.state,
+    required this.position,
+    required this.duration,
+  });
+
+  /// Loaded meeting identity.
+  final String sessionId;
+
+  /// Current playback lifecycle.
+  final SessionPlaybackState state;
+
+  /// Pause-free media position.
+  final Duration position;
+
+  /// Validated artifact duration.
+  final Duration duration;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SessionPlaybackSnapshot &&
+          sessionId == other.sessionId &&
+          state == other.state &&
+          position == other.position &&
+          duration == other.duration;
+
+  @override
+  int get hashCode => Object.hash(sessionId, state, position, duration);
+}
+
+/// Typed local playback failure with a stable privacy-safe code.
+final class SessionPlaybackFailure implements Failure {
+  /// Creates a playback failure.
+  const SessionPlaybackFailure(this.code);
+
+  @override
+  final String code;
+}
+
+/// Native playback boundary for generation-validated local meeting audio.
+abstract interface class SessionPlaybackService {
+  /// Loads the current validated playback artifact for [sessionId].
+  @useResult
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> load(
+    String sessionId, {
+    required String ownerId,
+  });
+
+  /// Reads current playback state.
+  @useResult
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> current({
+    required String ownerId,
+  });
+
+  /// Starts or resumes playback.
+  @useResult
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> play({
+    required String ownerId,
+  });
+
+  /// Pauses playback.
+  @useResult
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> pause({
+    required String ownerId,
+  });
+
+  /// Seeks to pause-free [position].
+  @useResult
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> seek(
+    Duration position, {
+    required String ownerId,
+  });
+
+  /// Releases the native player owned by this screen flow.
+  Future<void> release({required String ownerId});
+}
+
 /// Boundary for durable native microphone capture.
 abstract interface class AudioCaptureService {
   /// Recorder snapshots emitted independently of Flutter screen lifecycle.
   Stream<AudioCaptureSnapshot> get snapshots;
 
+  /// Reads the latest authoritative native snapshot for process restoration.
+  @useResult
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> current();
+
   /// Starts a new recording without replacing an active one.
   @useResult
   Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> start(
     AudioCaptureRequest request,
+  );
+
+  /// Finalizes recovered audio without opening the microphone.
+  @useResult
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> saveRecovered(
+    String sessionId,
+  );
+
+  /// Explicitly starts a new segment after a recoverable interruption.
+  @useResult
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> continueRecovered(
+    String sessionId,
   );
 
   /// Pauses the active recording.
@@ -727,17 +934,50 @@ final class SessionLibraryQuery {
   final SessionLibraryCursor? before;
 }
 
-/// One immutable page of full meeting values.
+/// One meeting row projected for the local library.
+@immutable
+final class SessionLibraryItem {
+  /// Creates a library row from a meeting and its derived audio size.
+  const SessionLibraryItem({
+    required this.meeting,
+    required this.committedAudioBytes,
+  }) : assert(
+         committedAudioBytes >= 0,
+         'committedAudioBytes must be non-negative',
+       );
+
+  /// Durable meeting value.
+  final Meeting meeting;
+
+  /// Sum of journal-authorized segment bytes, derived at query time.
+  final int committedAudioBytes;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SessionLibraryItem &&
+          meeting == other.meeting &&
+          committedAudioBytes == other.committedAudioBytes;
+
+  @override
+  int get hashCode => Object.hash(meeting, committedAudioBytes);
+}
+
+/// One immutable page of meeting-library projections.
 @immutable
 final class SessionLibraryPage {
-  /// Creates a page and defensively copies [meetings].
+  /// Creates a page and defensively copies [items].
   SessionLibraryPage({
-    required List<Meeting> meetings,
+    required List<SessionLibraryItem> items,
     required this.nextCursor,
-  }) : meetings = List.unmodifiable(meetings);
+  }) : items = List.unmodifiable(items);
+
+  /// Meeting rows in descending creation order.
+  final List<SessionLibraryItem> items;
 
   /// Meetings in descending creation order.
-  final List<Meeting> meetings;
+  List<Meeting> get meetings =>
+      List<Meeting>.unmodifiable(items.map((item) => item.meeting));
 
   /// Cursor for the next page, or null when the page is exhausted.
   final SessionLibraryCursor? nextCursor;
@@ -751,9 +991,14 @@ final class SessionSearchHit {
     required this.meeting,
     this.transcriptSegmentId,
     this.mediaOffset,
+    this.committedAudioBytes = 0,
   }) : assert(
          (transcriptSegmentId == null) == (mediaOffset == null),
          'transcript anchor and media offset must appear together',
+       ),
+       assert(
+         committedAudioBytes >= 0,
+         'committedAudioBytes must be non-negative',
        );
 
   /// Meeting containing the match.
@@ -764,6 +1009,9 @@ final class SessionSearchHit {
 
   /// Playback position for a transcript match.
   final Duration? mediaOffset;
+
+  /// Sum of journal-authorized segment bytes, derived at query time.
+  final int committedAudioBytes;
 }
 
 /// Authoritative audio bytes grouped by meeting lifecycle.
@@ -785,20 +1033,194 @@ final class SessionStorageAccounting {
   int get totalMeetingBytes => activeMeetingBytes + trashBytes;
 }
 
+/// One manifest-published segment observed during startup reconciliation.
+@immutable
+final class SessionRecoverySegmentEvidence {
+  /// Creates verified metadata for one authoritative segment file.
+  const SessionRecoverySegmentEvidence({
+    required this.sequence,
+    required this.relativePath,
+    required this.mediaStart,
+    required this.mediaDuration,
+    required this.committedBytes,
+    required this.state,
+  });
+
+  /// Manifest order within the meeting.
+  final int sequence;
+
+  /// Validated path below the app-private storage root.
+  final AppRelativePath relativePath;
+
+  /// Start on the pause-free media timeline.
+  final Duration mediaStart;
+
+  /// Journal-authorized media duration.
+  final Duration mediaDuration;
+
+  /// Journal-authorized byte prefix.
+  final int committedBytes;
+
+  /// Reconciled file state.
+  final AudioSegmentState state;
+}
+
+/// Overall integrity of the journal-authorized recovered timeline.
+enum RecoveryIntegrityState {
+  /// Every published segment is present and contiguous with no discarded tail.
+  complete,
+
+  /// Some recording interval is missing, damaged, or was not durably committed.
+  partial,
+}
+
+/// Privacy-safe reason why recovered audio is partial.
+@immutable
+final class SessionRecoveryDiagnostic {
+  /// Creates a stable diagnostic optionally scoped to one manifest segment.
+  const SessionRecoveryDiagnostic({required this.code, this.segmentSequence});
+
+  /// Stable machine-readable recovery code.
+  final String code;
+
+  /// Manifest segment sequence associated with the issue, when applicable.
+  final int? segmentSequence;
+}
+
+/// Exact journal-authorized prefix eligible for raw-segment export.
+@immutable
+final class SessionRecoveryRawExportSegment {
+  /// Creates one ordered raw-export plan entry.
+  const SessionRecoveryRawExportSegment({
+    required this.sequence,
+    required this.relativePath,
+    required this.committedBytes,
+  });
+
+  /// Manifest order within the meeting.
+  final int sequence;
+
+  /// Validated app-private relative path.
+  final AppRelativePath relativePath;
+
+  /// Exact byte prefix authorized by the commit journal.
+  final int committedBytes;
+}
+
+/// Durable recovery explanation and raw-segment export plan for one meeting.
+@immutable
+final class SessionRecoveryDetails {
+  /// Creates immutable recovery details.
+  SessionRecoveryDetails({
+    required this.integrityState,
+    required List<SessionRecoveryDiagnostic> diagnostics,
+    required List<SessionRecoveryRawExportSegment> rawExportSegments,
+  }) : diagnostics = List.unmodifiable(diagnostics),
+       rawExportSegments = List.unmodifiable(rawExportSegments);
+
+  /// Whether all journal-authorized recording intervals remain available.
+  final RecoveryIntegrityState integrityState;
+
+  /// Stable privacy-safe findings retained after startup reconciliation.
+  final List<SessionRecoveryDiagnostic> diagnostics;
+
+  /// Ordered committed prefixes eligible for explicit raw-segment export.
+  final List<SessionRecoveryRawExportSegment> rawExportSegments;
+}
+
+/// Transactionally consistent local projection for one session detail view.
+@immutable
+final class SessionDetail {
+  /// Creates an immutable meeting-local detail projection.
+  SessionDetail({
+    required this.meeting,
+    required List<AudioSegment> segments,
+    required List<SessionEvent> events,
+    required List<Bookmark> bookmarks,
+    required List<ProcessingJob> processingJobs,
+    required List<SessionRecoveryDiagnostic> recoveryDiagnostics,
+  }) : segments = List.unmodifiable(segments),
+       events = List.unmodifiable(events),
+       bookmarks = List.unmodifiable(bookmarks),
+       processingJobs = List.unmodifiable(processingJobs),
+       recoveryDiagnostics = List.unmodifiable(recoveryDiagnostics);
+
+  /// Durable meeting aggregate.
+  final Meeting meeting;
+
+  /// Authoritative audio metadata ordered by manifest sequence.
+  final List<AudioSegment> segments;
+
+  /// Wall-clock capture events ordered by session sequence.
+  final List<SessionEvent> events;
+
+  /// User markers ordered by media time and stable identity.
+  final List<Bookmark> bookmarks;
+
+  /// Latest-first local processing records.
+  final List<ProcessingJob> processingJobs;
+
+  /// Privacy-safe recovery findings ordered by segment and identity.
+  final List<SessionRecoveryDiagnostic> recoveryDiagnostics;
+}
+
 /// Filesystem/native evidence supplied to startup reconciliation.
 @immutable
 final class SessionRecoveryEvidence {
-  /// Creates evidence without exposing file paths through the repository API.
-  const SessionRecoveryEvidence({
+  /// Creates evidence from one valid authoritative manifest.
+  SessionRecoveryEvidence({
     required this.meetingId,
-    required this.hasCommittedAudio,
-  });
+    required this.storageKey,
+    required List<SessionRecoverySegmentEvidence> segments,
+    this.integrityState = RecoveryIntegrityState.complete,
+    List<SessionRecoveryDiagnostic> diagnostics = const [],
+    List<SessionRecoveryRawExportSegment>? rawExportSegments,
+  }) : segments = List.unmodifiable(segments),
+       diagnostics = List.unmodifiable(diagnostics),
+       rawExportSegments = List.unmodifiable(
+         rawExportSegments ??
+             segments
+                 .where(
+                   (segment) =>
+                       segment.state == AudioSegmentState.committed &&
+                       segment.committedBytes > 0,
+                 )
+                 .map(
+                   (segment) => SessionRecoveryRawExportSegment(
+                     sequence: segment.sequence,
+                     relativePath: segment.relativePath,
+                     committedBytes: segment.committedBytes,
+                   ),
+                 ),
+       );
 
   /// Meeting observed in the authoritative manifest.
   final String meetingId;
 
-  /// Whether at least one committed audio segment remains usable.
-  final bool hasCommittedAudio;
+  /// Opaque app-private recording directory key containing the manifest.
+  final String storageKey;
+
+  /// Manifest-published segments in media order.
+  final List<SessionRecoverySegmentEvidence> segments;
+
+  /// Whether the recovered media timeline is complete or only partially usable.
+  final RecoveryIntegrityState integrityState;
+
+  /// Stable privacy-safe reasons for a partial classification.
+  final List<SessionRecoveryDiagnostic> diagnostics;
+
+  /// Ordered journal-authorized prefixes available to explicit export.
+  final List<SessionRecoveryRawExportSegment> rawExportSegments;
+
+  /// Whether users must be warned that some audio is unavailable.
+  bool get isPartial => integrityState == RecoveryIntegrityState.partial;
+
+  /// Whether at least one journal-authorized segment remains usable.
+  bool get hasCommittedAudio => segments.any(
+    (segment) =>
+        segment.state == AudioSegmentState.committed &&
+        segment.committedBytes > 0,
+  );
 }
 
 /// Result of one atomic startup reconciliation pass.
@@ -808,14 +1230,28 @@ final class SessionRecoveryReport {
   SessionRecoveryReport({
     required List<String> markedRecoverableIds,
     required List<String> unchangedIds,
+    List<String> createdRecoverableIds = const <String>[],
+    List<String> partialMeetingIds = const <String>[],
+    this.reconciledSegmentCount = 0,
   }) : markedRecoverableIds = List.unmodifiable(markedRecoverableIds),
+       createdRecoverableIds = List.unmodifiable(createdRecoverableIds),
+       partialMeetingIds = List.unmodifiable(partialMeetingIds),
        unchangedIds = List.unmodifiable(unchangedIds);
 
   /// Meetings newly marked recoverable.
   final List<String> markedRecoverableIds;
 
+  /// Meetings reconstructed from committed audio with no database row.
+  final List<String> createdRecoverableIds;
+
+  /// Meetings whose native recovery evidence is only partially usable.
+  final List<String> partialMeetingIds;
+
   /// Meetings deliberately left unchanged.
   final List<String> unchangedIds;
+
+  /// Authoritative segment rows mirrored from valid manifests.
+  final int reconciledSegmentCount;
 }
 
 /// Recoverable failures produced by [SessionRepository].
@@ -824,6 +1260,15 @@ sealed class SessionRepositoryFailure implements Failure {
 
   @override
   final String code;
+}
+
+/// Explicit user decision for an abnormally interrupted meeting.
+enum RecoveryResolution {
+  /// Keep existing audio and close the meeting without microphone capture.
+  save,
+
+  /// Start a new continuation segment after native safety checks.
+  continueRecording,
 }
 
 /// Requested meeting does not exist locally.
@@ -849,6 +1294,37 @@ final class SessionRepositoryUnavailable extends SessionStoreUnavailable {
   const SessionRepositoryUnavailable(super.code);
 }
 
+/// Defaults remembered locally for the next recording setup.
+@immutable
+final class RecordingDefaults extends ValueObject {
+  /// Creates recording setup defaults.
+  const RecordingDefaults({
+    this.transcriptionMode = MeetingTranscriptionMode.postSession,
+    this.languageMode = MeetingLanguageMode.mixed,
+    this.expectedSpeakerCount,
+  }) : assert(
+         expectedSpeakerCount == null ||
+             (expectedSpeakerCount >= 2 && expectedSpeakerCount <= 6),
+         'expectedSpeakerCount must be null or between two and six',
+       );
+
+  /// Whether draft transcription is requested during or after capture.
+  final MeetingTranscriptionMode transcriptionMode;
+
+  /// Recognition language hint for the next meeting.
+  final MeetingLanguageMode languageMode;
+
+  /// Optional two-to-six-speaker guidance; null means automatic.
+  final int? expectedSpeakerCount;
+
+  @override
+  List<Object?> get equalityValues => <Object?>[
+    transcriptionMode,
+    languageMode,
+    expectedSpeakerCount,
+  ];
+}
+
 /// Boundary for durable local session persistence.
 abstract interface class SessionRepository {
   /// Lists current session projections.
@@ -872,11 +1348,57 @@ abstract interface class SessionRepository {
     SessionLibraryQuery query,
   );
 
+  /// Reads one transactionally consistent meeting-detail projection.
+  @useResult
+  Future<Result<SessionDetail, SessionRepositoryFailure>> loadDetail(
+    String meetingId,
+  );
+
   /// Persists meeting metadata; analysis-version selection has its own writer.
   @useResult
   Future<Result<Meeting, SessionRepositoryFailure>> saveMeeting(
     Meeting meeting,
   );
+
+  /// Durably stores a user marker independently of transcript availability.
+  @useResult
+  Future<Result<Bookmark, SessionRepositoryFailure>> saveBookmark(
+    Bookmark bookmark,
+  );
+
+  /// Reads local defaults for the next recording setup.
+  @useResult
+  Future<Result<RecordingDefaults, SessionRepositoryFailure>>
+  loadRecordingDefaults();
+
+  /// Replaces local defaults for the next recording setup.
+  @useResult
+  Future<Result<RecordingDefaults, SessionRepositoryFailure>>
+  saveRecordingDefaults(RecordingDefaults defaults, {required int atUtcMs});
+
+  /// Applies authoritative native recording state without replacing setup data.
+  @useResult
+  Future<Result<Meeting, SessionRepositoryFailure>>
+  synchronizeRecordingProgress(
+    String meetingId, {
+    required MeetingLifecycle lifecycle,
+    required Duration mediaDuration,
+    required int atUtcMs,
+  });
+
+  /// Deletes an unstarted draft only when no audio row can be lost.
+  @useResult
+  Future<Result<void, SessionRepositoryFailure>> discardUnstartedMeeting(
+    String meetingId,
+  );
+
+  /// Atomically changes only a meeting title, preserving concurrent state.
+  @useResult
+  Future<Result<Meeting, SessionRepositoryFailure>> renameMeeting(
+    String meetingId,
+    String title, {
+    required int atUtcMs,
+  });
 
   /// Searches local titles and the selected transcript version.
   @useResult
@@ -909,19 +1431,37 @@ abstract interface class SessionRepository {
   Future<Result<SessionStorageAccounting, SessionRepositoryFailure>>
   accountStorage();
 
+  /// Reads retained recovery findings and the raw-segment fallback plan.
+  @useResult
+  Future<Result<SessionRecoveryDetails, SessionRepositoryFailure>>
+  recoveryDetails(String meetingId);
+
+  /// Applies an explicit, idempotent recovery lifecycle decision.
+  @useResult
+  Future<Result<Meeting, SessionRepositoryFailure>> resolveRecovery(
+    String meetingId,
+    RecoveryResolution resolution, {
+    required int atUtcMs,
+  });
+
   /// Reconciles persisted lifecycle against externally verified audio evidence.
   @useResult
   Future<Result<SessionRecoveryReport, SessionRepositoryFailure>>
   reconcileRecovery(
     List<SessionRecoveryEvidence> evidence, {
     required int observedAtUtcMs,
+    Set<String> liveMeetingIds = const <String>{},
+    Set<String> invalidStorageKeys = const <String>{},
   });
 }
 
 /// Supported explicit local export formats.
 enum ExportFormat {
-  /// Finalized audio or recoverable segments.
-  audio,
+  /// Finalized or locally rebuilt continuous audio.
+  audioM4a,
+
+  /// Recoverable journal-authorized audio segments in a ZIP container.
+  audioSegments,
 
   /// Plain transcript text.
   text,
@@ -939,7 +1479,18 @@ enum ExportFormat {
 /// A user-authorized export request.
 final class ExportRequest {
   /// Creates an export request.
-  const ExportRequest({required this.sessionId, required this.format});
+  const ExportRequest({
+    required this.operationId,
+    required this.createdAtUtcMs,
+    required this.sessionId,
+    required this.format,
+  });
+
+  /// Internal identity shared by persistence, progress, and cancellation.
+  final String operationId;
+
+  /// UTC instant at which the user started this export attempt.
+  final int createdAtUtcMs;
 
   /// Session to export.
   final String sessionId;
@@ -948,13 +1499,74 @@ final class ExportRequest {
   final ExportFormat format;
 }
 
+/// Native export phase visible while a destination is being produced.
+enum ExportProgressPhase {
+  /// Android's destination picker is awaiting an explicit user choice.
+  selectingDestination,
+
+  /// Local sources are being resolved and validated.
+  preparing,
+
+  /// Bytes are being copied into the selected destination.
+  writing,
+
+  /// The destination stream is closing and publishing its final state.
+  finalizing,
+}
+
+/// Privacy-safe live progress for one local export operation.
+@immutable
+final class ExportProgress {
+  /// Creates an immutable progress snapshot.
+  const ExportProgress({
+    required this.operationId,
+    required this.phase,
+    required this.bytesProcessed,
+    required this.cancellable,
+    this.totalBytes,
+  }) : assert(bytesProcessed >= 0, 'bytesProcessed must be non-negative'),
+       assert(
+         totalBytes == null || totalBytes >= 0,
+         'totalBytes must be valid',
+       );
+
+  /// Internal operation identity.
+  final String operationId;
+
+  /// Current native destination phase.
+  final ExportProgressPhase phase;
+
+  /// Bytes processed so far; for compressed archives this is output progress.
+  final int bytesProcessed;
+
+  /// Known expected byte count when the output size is deterministic.
+  final int? totalBytes;
+
+  /// Whether cooperative cancellation is currently safe.
+  final bool cancellable;
+}
+
 /// Receipt for a completed local export.
 final class ExportReceipt {
   /// Creates an export receipt.
-  const ExportReceipt({required this.outputPath});
+  ExportReceipt({
+    required this.fileName,
+    required this.bytesWritten,
+    this.usedSegmentFallback = false,
+    List<String> warningCodes = const <String>[],
+  }) : warningCodes = List.unmodifiable(warningCodes);
 
-  /// User-selected output path.
-  final String outputPath;
+  /// Display name returned by the user-selected destination.
+  final String fileName;
+
+  /// Bytes durably written before the platform destination was finalized.
+  final int bytesWritten;
+
+  /// Whether continuous audio was unavailable and committed segments were used.
+  final bool usedSegmentFallback;
+
+  /// Stable disclosure codes that contain no user content.
+  final List<String> warningCodes;
 }
 
 /// Recoverable failures produced by [ExportService].
@@ -973,9 +1585,16 @@ final class ExportUnavailable extends ExportFailure {
 
 /// Boundary for explicit user-authorized local exports.
 // The class is intentionally an interface so implementations stay injectable.
-// ignore: one_member_abstracts
 abstract interface class ExportService {
   /// Writes selected session data to the user-selected destination.
   @useResult
   Future<Result<ExportReceipt, ExportFailure>> export(ExportRequest request);
+
+  /// Reads the latest native progress for one active operation.
+  @useResult
+  Future<Result<ExportProgress, ExportFailure>> status(String operationId);
+
+  /// Requests cooperative cancellation when the current phase permits it.
+  @useResult
+  Future<Result<void, ExportFailure>> cancel(String operationId);
 }

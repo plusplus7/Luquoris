@@ -1,5 +1,8 @@
 import 'package:clock/clock.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/storage_privacy/domain/rebuildable_cache.dart';
+import 'package:loquiris/features/storage_privacy/domain/storage_accounting.dart';
 import 'package:loquiris/services/analysis_repository_contracts.dart';
 import 'package:loquiris/services/service_contracts.dart';
 
@@ -9,6 +12,21 @@ final clockProvider = Provider<Clock>((ref) => clock);
 /// Native capture boundary; bootstrap must override this provider.
 final audioCaptureServiceProvider = Provider<AudioCaptureService>(
   (ref) => throw UnimplementedError('AudioCaptureService is not installed'),
+);
+
+/// Native validated local playback boundary; bootstrap must override it.
+final sessionPlaybackServiceProvider = Provider<SessionPlaybackService>(
+  (ref) => throw UnimplementedError('SessionPlaybackService is not installed'),
+);
+
+/// Native application-storage boundary; bootstrap must override this provider.
+final storageMetricsServiceProvider = Provider<StorageMetricsService>(
+  (ref) => throw UnimplementedError('StorageMetricsService is not installed'),
+);
+
+/// Safe derived-cache cleanup boundary; bootstrap must override this provider.
+final rebuildableCacheServiceProvider = Provider<RebuildableCacheService>(
+  (ref) => throw UnimplementedError('RebuildableCacheService is not installed'),
 );
 
 /// Local transcription boundary; bootstrap must override this provider.
@@ -72,4 +90,14 @@ final revisionRepositoryProvider = Provider<RevisionRepository>(
 /// User-authorized export boundary; bootstrap must override this provider.
 final exportServiceProvider = Provider<ExportService>(
   (ref) => throw UnimplementedError('ExportService is not installed'),
+);
+
+/// Reads the newest privacy-safe export failure for one meeting.
+typedef ExportFailureHistoryReader =
+    Future<Result<String?, ExportFailure>> Function(String meetingId);
+
+/// Durable export history; production overrides this with local persistence.
+final exportFailureHistoryProvider = Provider<ExportFailureHistoryReader>(
+  (ref) =>
+      (meetingId) async => const Ok(null),
 );

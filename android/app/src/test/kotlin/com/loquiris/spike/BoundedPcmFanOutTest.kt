@@ -117,6 +117,7 @@ class BoundedPcmFanOutTest {
 
             assertEquals(2L, fanOut.metrics.canonicalAcceptedFrames)
             assertEquals(1L, fanOut.metrics.canonicalRejectedFrames)
+            assertEquals(1, fanOut.metrics.canonicalQueueHighWaterMark)
         } finally {
             releaseSink.countDown()
             fanOut.close()

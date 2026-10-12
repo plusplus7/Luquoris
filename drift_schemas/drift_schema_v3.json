@@ -1,0 +1,4677 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": false
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "meetings",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "title",
+            "getter_name": "title",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "media_duration_us",
+            "getter_name": "mediaDurationUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "lifecycle",
+            "getter_name": "lifecycle",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "language_mode",
+            "getter_name": "languageMode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "transcription_mode",
+            "getter_name": "transcriptionMode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'postSession\\'')",
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "transcriptionMode",
+                        "tag": "transcriptionMode"
+                      },
+                      ".isIn(const <",
+                      {
+                        "lexeme": "String",
+                        "import_uri": "dart:core"
+                      },
+                      ">['nearRealTime','postSession'])"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "expected_speaker_count",
+            "getter_name": "expectedSpeakerCount",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "expectedSpeakerCount",
+                        "tag": "expectedSpeakerCount"
+                      },
+                      ".isNull() | ",
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "expectedSpeakerCount",
+                        "tag": "expectedSpeakerCount"
+                      },
+                      ").isBetweenValues(2,6)"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "trashed_at_utc_ms",
+            "getter_name": "trashedAtUtcMs",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "lifecycle_before_trash",
+            "getter_name": "lifecycleBeforeTrash",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (media_duration_us >= 0)",
+          "CHECK (lifecycle IN ('draft','preparing','recording','pausedByUser','pausedByInterruption','stopping','finalized','recoverable','failedFinalization','trashed','deleting'))",
+          "CHECK (language_mode IN ('chinese','english','mixed'))",
+          "CHECK ((lifecycle IN ('trashed','deleting')) = (trashed_at_utc_ms IS NOT NULL))",
+          "CHECK (lifecycle_before_trash IS NULL OR lifecycle_before_trash IN ('draft','preparing','recording','pausedByUser','pausedByInterruption','stopping','finalized','recoverable','failedFinalization'))",
+          "CHECK ((lifecycle IN ('trashed','deleting')) = (lifecycle_before_trash IS NOT NULL))",
+          "CHECK ((lifecycle IN ('trashed','deleting')) = is_deleted)",
+          "CHECK ((trashed_at_utc_ms IS NULL AND deleted_at IS NULL) OR trashed_at_utc_ms = deleted_at)"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recording_preferences",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "transcription_mode",
+            "getter_name": "transcriptionMode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "language_mode",
+            "getter_name": "languageMode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "expected_speaker_count",
+            "getter_name": "expectedSpeakerCount",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (id = 'recording-defaults')",
+          "CHECK (transcription_mode IN ('nearRealTime','postSession'))",
+          "CHECK (language_mode IN ('chinese','english','mixed'))",
+          "CHECK (expected_speaker_count IS NULL OR expected_speaker_count BETWEEN 2 AND 6)"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [
+        0
+      ],
+      "type": "table",
+      "data": {
+        "name": "audio_segments",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sequence",
+            "getter_name": "sequence",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "relative_path",
+            "getter_name": "relativePath",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "media_start_us",
+            "getter_name": "mediaStartUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "media_duration_us",
+            "getter_name": "mediaDurationUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "committed_bytes",
+            "getter_name": "committedBytes",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "state",
+            "getter_name": "state",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (sequence >= 0)",
+          "CHECK (media_start_us >= 0)",
+          "CHECK (media_duration_us >= 0)",
+          "CHECK (committed_bytes >= 0)",
+          "CHECK (state IN ('open','committed','corrupt','missing'))",
+          "CHECK (length(relative_path) > 0)",
+          "CHECK (relative_path NOT LIKE '/%')",
+          "CHECK (instr(relative_path, char(92)) = 0)",
+          "CHECK (instr(relative_path, char(0)) = 0)",
+          "CHECK (relative_path NOT GLOB '[A-Za-z]:*')",
+          "CHECK (('/' || relative_path || '/') NOT LIKE '%//%')",
+          "CHECK (('/' || relative_path || '/') NOT LIKE '%/../%')",
+          "CHECK (('/' || relative_path || '/') NOT LIKE '%/./%')"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "references": [
+        0
+      ],
+      "type": "table",
+      "data": {
+        "name": "recovery_findings",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "segment_sequence",
+            "getter_name": "segmentSequence",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "code",
+            "getter_name": "code",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (segment_sequence IS NULL OR segment_sequence >= 0)",
+          "CHECK (code IN ('recording_recovery_timeline_gap','recording_recovery_segment_missing','recording_recovery_segment_corrupt','recording_recovery_tail_discarded'))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "references": [
+        0
+      ],
+      "type": "table",
+      "data": {
+        "name": "session_events",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sequence",
+            "getter_name": "sequence",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "type",
+            "getter_name": "type",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "wall_clock_utc_ms",
+            "getter_name": "wallClockUtcMs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "monotonic_elapsed_us",
+            "getter_name": "monotonicElapsedUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "media_offset_us",
+            "getter_name": "mediaOffsetUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (sequence >= 0)",
+          "CHECK (wall_clock_utc_ms >= 0)",
+          "CHECK (monotonic_elapsed_us >= 0)",
+          "CHECK (media_offset_us >= 0)",
+          "CHECK (type IN ('started','pausedByUser','resumedByUser','interrupted','stopped','recovered'))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "references": [
+        0
+      ],
+      "type": "table",
+      "data": {
+        "name": "bookmarks",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "media_offset_us",
+            "getter_name": "mediaOffsetUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "kind",
+            "getter_name": "kind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (media_offset_us >= 0)",
+          "CHECK (kind IN ('bookmark','highlight'))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "model_manifests",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "version",
+            "getter_name": "version",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source",
+            "getter_name": "source",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "sha256",
+            "getter_name": "sha256",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "bytes",
+            "getter_name": "bytes",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "expected_engine_id",
+            "getter_name": "expectedEngineId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "license_id",
+            "getter_name": "licenseId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "license_snapshot_path",
+            "getter_name": "licenseSnapshotPath",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (bytes >= 0)",
+          "CHECK (length(sha256) > 0)",
+          "CHECK (length(license_snapshot_path) > 0)",
+          "CHECK (license_snapshot_path NOT LIKE '/%')",
+          "CHECK (instr(license_snapshot_path, char(92)) = 0)",
+          "CHECK (instr(license_snapshot_path, char(0)) = 0)",
+          "CHECK (license_snapshot_path NOT GLOB '[A-Za-z]:*')",
+          "CHECK (('/' || license_snapshot_path || '/') NOT LIKE '%//%')",
+          "CHECK (('/' || license_snapshot_path || '/') NOT LIKE '%/../%')",
+          "CHECK (('/' || license_snapshot_path || '/') NOT LIKE '%/./%')"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "references": [
+        0,
+        6
+      ],
+      "type": "table",
+      "data": {
+        "name": "transcript_runs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "engine_id",
+            "getter_name": "engineId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "engine_version",
+            "getter_name": "engineVersion",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "model_id",
+            "getter_name": "modelId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES model_manifests (id) ON DELETE RESTRICT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES model_manifests (id) ON DELETE RESTRICT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "model_manifests",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "restrict"
+                }
+              }
+            ]
+          },
+          {
+            "name": "model_version",
+            "getter_name": "modelVersion",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "model_sha256",
+            "getter_name": "modelSha256",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "parameters_json",
+            "getter_name": "parametersJson",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "run_state",
+            "getter_name": "runState",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "started_at_utc_ms",
+            "getter_name": "startedAtUtcMs",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "ended_at_utc_ms",
+            "getter_name": "endedAtUtcMs",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "progress",
+            "getter_name": "progress",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0.0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "failure_code",
+            "getter_name": "failureCode",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY (model_id, model_version, model_sha256, engine_id) REFERENCES model_manifests(id, version, sha256, expected_engine_id) ON DELETE RESTRICT",
+          "CHECK (run_state IN ('queued','running','completed','failed'))",
+          "CHECK (progress BETWEEN 0 AND 1)",
+          "CHECK (json_valid(parameters_json))",
+          "CHECK (started_at_utc_ms IS NULL OR started_at_utc_ms >= 0)",
+          "CHECK (ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms)",
+          "CHECK ((run_state = 'queued' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL) OR (run_state = 'running' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL) OR (run_state = 'completed' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL) OR (run_state = 'failed' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "references": [
+        0,
+        7
+      ],
+      "type": "table",
+      "data": {
+        "name": "meeting_transcript_selections",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "transcript_run_id",
+            "getter_name": "transcriptRunId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES transcript_runs (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES transcript_runs (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "transcript_runs",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY (transcript_run_id, meeting_id) REFERENCES transcript_runs(id, meeting_id) ON DELETE CASCADE"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "references": [
+        0,
+        6
+      ],
+      "type": "table",
+      "data": {
+        "name": "diarization_runs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "engine_id",
+            "getter_name": "engineId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "engine_version",
+            "getter_name": "engineVersion",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "model_id",
+            "getter_name": "modelId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES model_manifests (id) ON DELETE RESTRICT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES model_manifests (id) ON DELETE RESTRICT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "model_manifests",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "restrict"
+                }
+              }
+            ]
+          },
+          {
+            "name": "model_version",
+            "getter_name": "modelVersion",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "model_sha256",
+            "getter_name": "modelSha256",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "parameters_json",
+            "getter_name": "parametersJson",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "run_state",
+            "getter_name": "runState",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "started_at_utc_ms",
+            "getter_name": "startedAtUtcMs",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "ended_at_utc_ms",
+            "getter_name": "endedAtUtcMs",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "progress",
+            "getter_name": "progress",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0.0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "failure_code",
+            "getter_name": "failureCode",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY (model_id, model_version, model_sha256, engine_id) REFERENCES model_manifests(id, version, sha256, expected_engine_id) ON DELETE RESTRICT",
+          "CHECK (run_state IN ('queued','running','completed','failed'))",
+          "CHECK (progress BETWEEN 0 AND 1)",
+          "CHECK (json_valid(parameters_json))",
+          "CHECK (started_at_utc_ms IS NULL OR started_at_utc_ms >= 0)",
+          "CHECK (ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms)",
+          "CHECK ((run_state = 'queued' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL) OR (run_state = 'running' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL) OR (run_state = 'completed' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL) OR (run_state = 'failed' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "references": [
+        0,
+        9
+      ],
+      "type": "table",
+      "data": {
+        "name": "speakers",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "analysis_run_id",
+            "getter_name": "analysisRunId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES diarization_runs (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES diarization_runs (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "diarization_runs",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "label",
+            "getter_name": "label",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY (analysis_run_id, meeting_id) REFERENCES diarization_runs(id, meeting_id) ON DELETE CASCADE"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "references": [
+        0,
+        7,
+        10
+      ],
+      "type": "table",
+      "data": {
+        "name": "transcript_segments",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "transcript_run_id",
+            "getter_name": "transcriptRunId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES transcript_runs (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES transcript_runs (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "transcript_runs",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "start_us",
+            "getter_name": "startUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "end_us",
+            "getter_name": "endUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "raw_model_text",
+            "getter_name": "rawModelText",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "displayed_text",
+            "getter_name": "displayedText",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "revision_state",
+            "getter_name": "revisionState",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "speaker_id",
+            "getter_name": "speakerId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "speaker_meeting_id",
+            "getter_name": "speakerMeetingId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (start_us >= 0)",
+          "CHECK (end_us > start_us)",
+          "CHECK (revision_state IN ('machine','corrected'))",
+          "CHECK ((speaker_id IS NULL) = (speaker_meeting_id IS NULL))",
+          "CHECK (speaker_meeting_id IS NULL OR speaker_meeting_id = meeting_id)",
+          "FOREIGN KEY (transcript_run_id, meeting_id) REFERENCES transcript_runs(id, meeting_id) ON DELETE CASCADE",
+          "FOREIGN KEY (speaker_id, speaker_meeting_id) REFERENCES speakers(id, meeting_id) ON DELETE SET NULL"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "references": [
+        11
+      ],
+      "type": "table",
+      "data": {
+        "name": "language_decisions",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "transcript_segment_id",
+            "getter_name": "transcriptSegmentId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES transcript_segments (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES transcript_segments (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "transcript_segments",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "tag",
+            "getter_name": "tag",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source",
+            "getter_name": "source",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "confidence",
+            "getter_name": "confidence",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (tag IN ('chinese','english','mixed','uncertain'))",
+          "CHECK (source IN ('automatic','manual'))",
+          "CHECK (confidence IS NULL OR confidence BETWEEN 0 AND 1)"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "references": [
+        11,
+        12
+      ],
+      "type": "table",
+      "data": {
+        "name": "transcript_language_selections",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "transcript_segment_id",
+            "getter_name": "transcriptSegmentId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES transcript_segments (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES transcript_segments (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "transcript_segments",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "language_decision_id",
+            "getter_name": "languageDecisionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES language_decisions (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES language_decisions (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "language_decisions",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY (language_decision_id, transcript_segment_id) REFERENCES language_decisions(id, transcript_segment_id) ON DELETE CASCADE"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "references": [
+        0,
+        9,
+        10
+      ],
+      "type": "table",
+      "data": {
+        "name": "speaker_assignments",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "analysis_run_id",
+            "getter_name": "analysisRunId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES diarization_runs (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES diarization_runs (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "diarization_runs",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "speaker_id",
+            "getter_name": "speakerId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "speaker_analysis_run_id",
+            "getter_name": "speakerAnalysisRunId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "start_us",
+            "getter_name": "startUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "end_us",
+            "getter_name": "endUs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "confidence",
+            "getter_name": "confidence",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_overlap",
+            "getter_name": "isOverlap",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_overlap\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_overlap\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "needs_confirmation",
+            "getter_name": "needsConfirmation",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"needs_confirmation\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"needs_confirmation\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (start_us >= 0)",
+          "CHECK (end_us > start_us)",
+          "CHECK (confidence IS NULL OR confidence BETWEEN 0 AND 1)",
+          "CHECK (is_overlap = 0 OR needs_confirmation = 1)",
+          "CHECK ((speaker_id IS NULL) = (speaker_analysis_run_id IS NULL))",
+          "CHECK (speaker_analysis_run_id IS NULL OR speaker_analysis_run_id = analysis_run_id)",
+          "FOREIGN KEY (analysis_run_id, meeting_id) REFERENCES diarization_runs(id, meeting_id) ON DELETE CASCADE",
+          "FOREIGN KEY (speaker_id, speaker_analysis_run_id) REFERENCES speakers(id, analysis_run_id) ON DELETE SET NULL"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "references": [
+        0,
+        11,
+        14,
+        10
+      ],
+      "type": "table",
+      "data": {
+        "name": "revisions",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "transcript_segment_id",
+            "getter_name": "transcriptSegmentId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "speaker_assignment_id",
+            "getter_name": "speakerAssignmentId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "speaker_id",
+            "getter_name": "speakerId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "revision_kind",
+            "getter_name": "revisionKind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payload_json",
+            "getter_name": "payloadJson",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (revision_kind IN ('transcriptText','languageLabel','speakerAssignment','speakerLabel'))",
+          "CHECK ((revision_kind IN ('transcriptText','languageLabel') AND transcript_segment_id IS NOT NULL AND speaker_assignment_id IS NULL AND speaker_id IS NULL) OR (revision_kind = 'speakerAssignment' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NOT NULL AND speaker_id IS NULL) OR (revision_kind = 'speakerLabel' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NULL AND speaker_id IS NOT NULL))",
+          "CHECK (json_valid(payload_json))",
+          "CHECK ((revision_kind = 'transcriptText' AND COALESCE(json_type(payload_json, '$.previousText') = 'text', 0) AND COALESCE(json_type(payload_json, '$.revisedText') = 'text', 0)) OR (revision_kind = 'languageLabel' AND COALESCE(json_extract(payload_json, '$.previous') IN ('chinese','english','mixed','uncertain'), 0) AND COALESCE(json_extract(payload_json, '$.revised') IN ('chinese','english','mixed','uncertain'), 0)) OR (revision_kind = 'speakerAssignment' AND COALESCE(json_type(payload_json, '$.startUs') = 'integer', 0) AND COALESCE(json_type(payload_json, '$.endUs') = 'integer', 0) AND json_extract(payload_json, '$.startUs') >= 0 AND json_extract(payload_json, '$.endUs') > json_extract(payload_json, '$.startUs') AND COALESCE(json_type(payload_json, '$.previousSpeakerId') IN ('text','null'), 0) AND COALESCE(json_type(payload_json, '$.revisedSpeakerId') IN ('text','null'), 0) AND COALESCE(json_type(payload_json, '$.needsConfirmation') IN ('true','false'), 0)) OR (revision_kind = 'speakerLabel' AND COALESCE(json_type(payload_json, '$.previous') = 'text', 0) AND COALESCE(json_type(payload_json, '$.revised') = 'text', 0)))",
+          "FOREIGN KEY (transcript_segment_id, meeting_id) REFERENCES transcript_segments(id, meeting_id) ON DELETE CASCADE",
+          "FOREIGN KEY (speaker_assignment_id, meeting_id) REFERENCES speaker_assignments(id, meeting_id) ON DELETE CASCADE",
+          "FOREIGN KEY (speaker_id, meeting_id) REFERENCES speakers(id, meeting_id) ON DELETE CASCADE"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "references": [
+        0,
+        6,
+        7,
+        9
+      ],
+      "type": "table",
+      "data": {
+        "name": "processing_jobs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "job_kind",
+            "getter_name": "jobKind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "job_state",
+            "getter_name": "jobState",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "progress",
+            "getter_name": "progress",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reason_code",
+            "getter_name": "reasonCode",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "failure_code",
+            "getter_name": "failureCode",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "transcript_run_id",
+            "getter_name": "transcriptRunId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "diarization_run_id",
+            "getter_name": "diarizationRunId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "model_id",
+            "getter_name": "modelId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES model_manifests (id) ON DELETE RESTRICT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES model_manifests (id) ON DELETE RESTRICT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "model_manifests",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "restrict"
+                }
+              }
+            ]
+          },
+          {
+            "name": "checkpoint",
+            "getter_name": "checkpoint",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (job_kind IN ('transcription','languageIdentification','speakerDiarization','audioMerge','waveform'))",
+          "CHECK (job_state IN ('queued','running','paused','succeeded','failed'))",
+          "CHECK (progress IS NULL OR progress BETWEEN 0 AND 1)",
+          "CHECK ((job_kind IN ('transcription','languageIdentification') AND transcript_run_id IS NOT NULL AND diarization_run_id IS NULL AND model_id IS NOT NULL) OR (job_kind = 'speakerDiarization' AND transcript_run_id IS NULL AND diarization_run_id IS NOT NULL AND model_id IS NOT NULL) OR (job_kind IN ('audioMerge','waveform') AND transcript_run_id IS NULL AND diarization_run_id IS NULL AND model_id IS NULL))",
+          "CHECK ((job_state = 'queued' AND progress IS NULL AND reason_code IS NULL AND failure_code IS NULL) OR (job_state = 'running' AND progress IS NOT NULL AND reason_code IS NULL AND failure_code IS NULL) OR (job_state = 'paused' AND length(reason_code) > 0 AND failure_code IS NULL) OR (job_state = 'succeeded' AND reason_code IS NULL AND failure_code IS NULL) OR (job_state = 'failed' AND reason_code IS NULL AND length(failure_code) > 0))",
+          "FOREIGN KEY (transcript_run_id, meeting_id) REFERENCES transcript_runs(id, meeting_id) ON DELETE CASCADE",
+          "FOREIGN KEY (diarization_run_id, meeting_id) REFERENCES diarization_runs(id, meeting_id) ON DELETE CASCADE"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "references": [
+        6
+      ],
+      "type": "table",
+      "data": {
+        "name": "model_capability_entries",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "model_id",
+            "getter_name": "modelId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES model_manifests (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES model_manifests (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "model_manifests",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "capability",
+            "getter_name": "capability",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (capability IN ('transcription','languageIdentification','speakerDiarization'))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "references": [
+        6
+      ],
+      "type": "table",
+      "data": {
+        "name": "model_mode_entries",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "model_id",
+            "getter_name": "modelId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES model_manifests (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES model_manifests (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "model_manifests",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "mode",
+            "getter_name": "mode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (mode IN ('highQuality','balanced','powerSaving','recordingOnly','postSession'))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "references": [
+        0
+      ],
+      "type": "table",
+      "data": {
+        "name": "export_records",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meeting_id",
+            "getter_name": "meetingId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES meetings (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES meetings (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "meetings",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "format",
+            "getter_name": "format",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "export_state",
+            "getter_name": "exportState",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "relative_path",
+            "getter_name": "relativePath",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "bytes",
+            "getter_name": "bytes",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "failure_code",
+            "getter_name": "failureCode",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (format IN ('audio','plainText','subtitles','structuredJson','archive'))",
+          "CHECK (export_state IN ('pending','completed','failed'))",
+          "CHECK (bytes IS NULL OR bytes >= 0)",
+          "CHECK (relative_path IS NULL OR length(relative_path) > 0)",
+          "CHECK (relative_path IS NULL OR relative_path NOT LIKE '/%')",
+          "CHECK (relative_path IS NULL OR instr(relative_path, char(92)) = 0)",
+          "CHECK (relative_path IS NULL OR instr(relative_path, char(0)) = 0)",
+          "CHECK (relative_path IS NULL OR relative_path NOT GLOB '[A-Za-z]:*')",
+          "CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%//%')",
+          "CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/../%')",
+          "CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/./%')",
+          "CHECK ((export_state = 'pending' AND relative_path IS NULL AND bytes IS NULL AND failure_code IS NULL) OR (export_state = 'completed' AND relative_path IS NOT NULL AND bytes IS NOT NULL AND failure_code IS NULL) OR (export_state = 'failed' AND relative_path IS NULL AND bytes IS NULL AND length(failure_code) > 0))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "backup_records",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (created_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (updated_at >= created_at)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (row_revision >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_deleted",
+            "getter_name": "isDeleted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "backup_state",
+            "getter_name": "backupState",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "relative_path",
+            "getter_name": "relativePath",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "sha256",
+            "getter_name": "sha256",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "bytes",
+            "getter_name": "bytes",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "failure_code",
+            "getter_name": "failureCode",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (backup_state IN ('pending','completed','failed'))",
+          "CHECK (bytes IS NULL OR bytes >= 0)",
+          "CHECK (relative_path IS NULL OR length(relative_path) > 0)",
+          "CHECK (relative_path IS NULL OR relative_path NOT LIKE '/%')",
+          "CHECK (relative_path IS NULL OR instr(relative_path, char(92)) = 0)",
+          "CHECK (relative_path IS NULL OR instr(relative_path, char(0)) = 0)",
+          "CHECK (relative_path IS NULL OR relative_path NOT GLOB '[A-Za-z]:*')",
+          "CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%//%')",
+          "CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/../%')",
+          "CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/./%')",
+          "CHECK ((backup_state = 'pending' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND failure_code IS NULL) OR (backup_state = 'completed' AND relative_path IS NOT NULL AND length(sha256) > 0 AND bytes IS NOT NULL AND failure_code IS NULL) OR (backup_state = 'failed' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND length(failure_code) > 0))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "references": [
+        0
+      ],
+      "type": "index",
+      "data": {
+        "on": 0,
+        "name": "idx_meetings_created",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "is_deleted",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": "descending"
+          },
+          {
+            "column": "id",
+            "order_by": "descending"
+          }
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "references": [
+        2
+      ],
+      "type": "index",
+      "data": {
+        "on": 2,
+        "name": "ux_audio_segments_meeting_sequence",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          },
+          {
+            "column": "sequence",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "references": [
+        3
+      ],
+      "type": "index",
+      "data": {
+        "on": 3,
+        "name": "idx_recovery_findings_meeting_sequence",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          },
+          {
+            "column": "segment_sequence",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "references": [
+        4
+      ],
+      "type": "index",
+      "data": {
+        "on": 4,
+        "name": "ux_session_events_meeting_sequence",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          },
+          {
+            "column": "sequence",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "references": [
+        5
+      ],
+      "type": "index",
+      "data": {
+        "on": 5,
+        "name": "idx_bookmarks_meeting_media",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          },
+          {
+            "column": "media_offset_us",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "references": [
+        7
+      ],
+      "type": "index",
+      "data": {
+        "on": 7,
+        "name": "idx_transcript_runs_meeting_created",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": "descending"
+          }
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "references": [
+        7
+      ],
+      "type": "index",
+      "data": {
+        "on": 7,
+        "name": "ux_transcript_run_owner",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "id",
+            "order_by": null
+          },
+          {
+            "column": "meeting_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "references": [
+        8
+      ],
+      "type": "index",
+      "data": {
+        "on": 8,
+        "name": "ux_meeting_transcript_selection",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "references": [
+        11
+      ],
+      "type": "index",
+      "data": {
+        "on": 11,
+        "name": "idx_transcript_segments_run_start",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "transcript_run_id",
+            "order_by": null
+          },
+          {
+            "column": "start_us",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "references": [
+        11
+      ],
+      "type": "index",
+      "data": {
+        "on": 11,
+        "name": "ux_transcript_segment_owner",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "id",
+            "order_by": null
+          },
+          {
+            "column": "meeting_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "references": [
+        12
+      ],
+      "type": "index",
+      "data": {
+        "on": 12,
+        "name": "idx_language_decisions_segment_created",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "transcript_segment_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": "descending"
+          }
+        ]
+      }
+    },
+    {
+      "id": 32,
+      "references": [
+        12
+      ],
+      "type": "index",
+      "data": {
+        "on": 12,
+        "name": "ux_language_decision_owner",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "id",
+            "order_by": null
+          },
+          {
+            "column": "transcript_segment_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 33,
+      "references": [
+        13
+      ],
+      "type": "index",
+      "data": {
+        "on": 13,
+        "name": "ux_transcript_language_selection",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "transcript_segment_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 34,
+      "references": [
+        9
+      ],
+      "type": "index",
+      "data": {
+        "on": 9,
+        "name": "idx_diarization_runs_meeting_created",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": "descending"
+          }
+        ]
+      }
+    },
+    {
+      "id": 35,
+      "references": [
+        9
+      ],
+      "type": "index",
+      "data": {
+        "on": 9,
+        "name": "ux_diarization_run_owner",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "id",
+            "order_by": null
+          },
+          {
+            "column": "meeting_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 36,
+      "references": [
+        10
+      ],
+      "type": "index",
+      "data": {
+        "on": 10,
+        "name": "ux_speakers_run_label",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "analysis_run_id",
+            "order_by": null
+          },
+          {
+            "column": "label",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 37,
+      "references": [
+        10
+      ],
+      "type": "index",
+      "data": {
+        "on": 10,
+        "name": "ux_speaker_run_owner",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "id",
+            "order_by": null
+          },
+          {
+            "column": "analysis_run_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 38,
+      "references": [
+        10
+      ],
+      "type": "index",
+      "data": {
+        "on": 10,
+        "name": "ux_speaker_meeting_owner",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "id",
+            "order_by": null
+          },
+          {
+            "column": "meeting_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 39,
+      "references": [
+        14
+      ],
+      "type": "index",
+      "data": {
+        "on": 14,
+        "name": "idx_speaker_assignments_run_start",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "analysis_run_id",
+            "order_by": null
+          },
+          {
+            "column": "start_us",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 40,
+      "references": [
+        14
+      ],
+      "type": "index",
+      "data": {
+        "on": 14,
+        "name": "ux_speaker_assignment_owner",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "id",
+            "order_by": null
+          },
+          {
+            "column": "meeting_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 41,
+      "references": [
+        15
+      ],
+      "type": "index",
+      "data": {
+        "on": 15,
+        "name": "idx_revisions_meeting_created",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 42,
+      "references": [
+        15
+      ],
+      "type": "index",
+      "data": {
+        "on": 15,
+        "name": "idx_revisions_transcript_target",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "transcript_segment_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 43,
+      "references": [
+        15
+      ],
+      "type": "index",
+      "data": {
+        "on": 15,
+        "name": "idx_revisions_assignment_target",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "speaker_assignment_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 44,
+      "references": [
+        15
+      ],
+      "type": "index",
+      "data": {
+        "on": 15,
+        "name": "idx_revisions_speaker_target",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "speaker_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 45,
+      "references": [
+        16
+      ],
+      "type": "index",
+      "data": {
+        "on": 16,
+        "name": "idx_processing_jobs_meeting_created",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": "descending"
+          }
+        ]
+      }
+    },
+    {
+      "id": 46,
+      "references": [
+        6
+      ],
+      "type": "index",
+      "data": {
+        "on": 6,
+        "name": "ux_model_manifests_hash",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "sha256",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 47,
+      "references": [
+        6
+      ],
+      "type": "index",
+      "data": {
+        "on": 6,
+        "name": "ux_model_manifest_provenance",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "id",
+            "order_by": null
+          },
+          {
+            "column": "version",
+            "order_by": null
+          },
+          {
+            "column": "sha256",
+            "order_by": null
+          },
+          {
+            "column": "expected_engine_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 48,
+      "references": [
+        17
+      ],
+      "type": "index",
+      "data": {
+        "on": 17,
+        "name": "ux_model_capability",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "model_id",
+            "order_by": null
+          },
+          {
+            "column": "capability",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 49,
+      "references": [
+        18
+      ],
+      "type": "index",
+      "data": {
+        "on": 18,
+        "name": "ux_model_mode",
+        "sql": null,
+        "unique": true,
+        "columns": [
+          {
+            "column": "model_id",
+            "order_by": null
+          },
+          {
+            "column": "mode",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 50,
+      "references": [
+        19
+      ],
+      "type": "index",
+      "data": {
+        "on": 19,
+        "name": "idx_export_records_meeting_created",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "meeting_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": "descending"
+          }
+        ]
+      }
+    },
+    {
+      "id": 51,
+      "references": [
+        20
+      ],
+      "type": "index",
+      "data": {
+        "on": 20,
+        "name": "idx_backup_records_created",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "created_at",
+            "order_by": "descending"
+          }
+        ]
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "meetings",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meetings\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"title\" TEXT NOT NULL, \"media_duration_us\" INTEGER NOT NULL DEFAULT 0, \"lifecycle\" TEXT NOT NULL, \"language_mode\" TEXT NOT NULL, \"transcription_mode\" TEXT NOT NULL DEFAULT 'postSession' CHECK(\"transcription_mode\" IN ('nearRealTime', 'postSession')), \"expected_speaker_count\" INTEGER NULL CHECK(\"expected_speaker_count\" IS NULL OR \"expected_speaker_count\" BETWEEN 2 AND 6), \"trashed_at_utc_ms\" INTEGER NULL, \"lifecycle_before_trash\" TEXT NULL, PRIMARY KEY (\"id\"), CHECK (media_duration_us >= 0), CHECK (lifecycle IN ('draft','preparing','recording','pausedByUser','pausedByInterruption','stopping','finalized','recoverable','failedFinalization','trashed','deleting')), CHECK (language_mode IN ('chinese','english','mixed')), CHECK ((lifecycle IN ('trashed','deleting')) = (trashed_at_utc_ms IS NOT NULL)), CHECK (lifecycle_before_trash IS NULL OR lifecycle_before_trash IN ('draft','preparing','recording','pausedByUser','pausedByInterruption','stopping','finalized','recoverable','failedFinalization')), CHECK ((lifecycle IN ('trashed','deleting')) = (lifecycle_before_trash IS NOT NULL)), CHECK ((lifecycle IN ('trashed','deleting')) = is_deleted), CHECK ((trashed_at_utc_ms IS NULL AND deleted_at IS NULL) OR trashed_at_utc_ms = deleted_at)) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "recording_preferences",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recording_preferences\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"transcription_mode\" TEXT NOT NULL, \"language_mode\" TEXT NOT NULL, \"expected_speaker_count\" INTEGER NULL, PRIMARY KEY (\"id\"), CHECK (id = 'recording-defaults'), CHECK (transcription_mode IN ('nearRealTime','postSession')), CHECK (language_mode IN ('chinese','english','mixed')), CHECK (expected_speaker_count IS NULL OR expected_speaker_count BETWEEN 2 AND 6)) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "audio_segments",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"audio_segments\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"sequence\" INTEGER NOT NULL, \"relative_path\" TEXT NOT NULL, \"media_start_us\" INTEGER NOT NULL, \"media_duration_us\" INTEGER NOT NULL, \"committed_bytes\" INTEGER NOT NULL, \"state\" TEXT NOT NULL, PRIMARY KEY (\"id\"), CHECK (sequence >= 0), CHECK (media_start_us >= 0), CHECK (media_duration_us >= 0), CHECK (committed_bytes >= 0), CHECK (state IN ('open','committed','corrupt','missing')), CHECK (length(relative_path) > 0), CHECK (relative_path NOT LIKE '/%'), CHECK (instr(relative_path, char(92)) = 0), CHECK (instr(relative_path, char(0)) = 0), CHECK (relative_path NOT GLOB '[A-Za-z]:*'), CHECK (('/' || relative_path || '/') NOT LIKE '%//%'), CHECK (('/' || relative_path || '/') NOT LIKE '%/../%'), CHECK (('/' || relative_path || '/') NOT LIKE '%/./%')) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "recovery_findings",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recovery_findings\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"segment_sequence\" INTEGER NULL, \"code\" TEXT NOT NULL, PRIMARY KEY (\"id\"), CHECK (segment_sequence IS NULL OR segment_sequence >= 0), CHECK (code IN ('recording_recovery_timeline_gap','recording_recovery_segment_missing','recording_recovery_segment_corrupt','recording_recovery_tail_discarded'))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "session_events",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"session_events\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"sequence\" INTEGER NOT NULL, \"type\" TEXT NOT NULL, \"wall_clock_utc_ms\" INTEGER NOT NULL, \"monotonic_elapsed_us\" INTEGER NOT NULL, \"media_offset_us\" INTEGER NOT NULL, PRIMARY KEY (\"id\"), CHECK (sequence >= 0), CHECK (wall_clock_utc_ms >= 0), CHECK (monotonic_elapsed_us >= 0), CHECK (media_offset_us >= 0), CHECK (type IN ('started','pausedByUser','resumedByUser','interrupted','stopped','recovered'))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "bookmarks",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"bookmarks\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"media_offset_us\" INTEGER NOT NULL, \"kind\" TEXT NOT NULL, PRIMARY KEY (\"id\"), CHECK (media_offset_us >= 0), CHECK (kind IN ('bookmark','highlight'))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "model_manifests",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"model_manifests\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"version\" TEXT NOT NULL, \"source\" TEXT NOT NULL, \"sha256\" TEXT NOT NULL, \"bytes\" INTEGER NOT NULL, \"expected_engine_id\" TEXT NOT NULL, \"license_id\" TEXT NOT NULL, \"license_snapshot_path\" TEXT NOT NULL, PRIMARY KEY (\"id\"), CHECK (bytes >= 0), CHECK (length(sha256) > 0), CHECK (length(license_snapshot_path) > 0), CHECK (license_snapshot_path NOT LIKE '/%'), CHECK (instr(license_snapshot_path, char(92)) = 0), CHECK (instr(license_snapshot_path, char(0)) = 0), CHECK (license_snapshot_path NOT GLOB '[A-Za-z]:*'), CHECK (('/' || license_snapshot_path || '/') NOT LIKE '%//%'), CHECK (('/' || license_snapshot_path || '/') NOT LIKE '%/../%'), CHECK (('/' || license_snapshot_path || '/') NOT LIKE '%/./%')) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "transcript_runs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"transcript_runs\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"engine_id\" TEXT NOT NULL, \"engine_version\" TEXT NOT NULL, \"model_id\" TEXT NOT NULL REFERENCES model_manifests (id) ON DELETE RESTRICT, \"model_version\" TEXT NOT NULL, \"model_sha256\" TEXT NOT NULL, \"parameters_json\" TEXT NOT NULL, \"run_state\" TEXT NOT NULL, \"started_at_utc_ms\" INTEGER NULL, \"ended_at_utc_ms\" INTEGER NULL, \"progress\" REAL NOT NULL DEFAULT 0.0, \"failure_code\" TEXT NULL, PRIMARY KEY (\"id\"), FOREIGN KEY (model_id, model_version, model_sha256, engine_id) REFERENCES model_manifests(id, version, sha256, expected_engine_id) ON DELETE RESTRICT, CHECK (run_state IN ('queued','running','completed','failed')), CHECK (progress BETWEEN 0 AND 1), CHECK (json_valid(parameters_json)), CHECK (started_at_utc_ms IS NULL OR started_at_utc_ms >= 0), CHECK (ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms), CHECK ((run_state = 'queued' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL) OR (run_state = 'running' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL) OR (run_state = 'completed' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL) OR (run_state = 'failed' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "meeting_transcript_selections",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meeting_transcript_selections\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"transcript_run_id\" TEXT NOT NULL REFERENCES transcript_runs (id) ON DELETE CASCADE, PRIMARY KEY (\"id\"), FOREIGN KEY (transcript_run_id, meeting_id) REFERENCES transcript_runs(id, meeting_id) ON DELETE CASCADE) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "diarization_runs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"diarization_runs\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"engine_id\" TEXT NOT NULL, \"engine_version\" TEXT NOT NULL, \"model_id\" TEXT NOT NULL REFERENCES model_manifests (id) ON DELETE RESTRICT, \"model_version\" TEXT NOT NULL, \"model_sha256\" TEXT NOT NULL, \"parameters_json\" TEXT NOT NULL, \"run_state\" TEXT NOT NULL, \"started_at_utc_ms\" INTEGER NULL, \"ended_at_utc_ms\" INTEGER NULL, \"progress\" REAL NOT NULL DEFAULT 0.0, \"failure_code\" TEXT NULL, PRIMARY KEY (\"id\"), FOREIGN KEY (model_id, model_version, model_sha256, engine_id) REFERENCES model_manifests(id, version, sha256, expected_engine_id) ON DELETE RESTRICT, CHECK (run_state IN ('queued','running','completed','failed')), CHECK (progress BETWEEN 0 AND 1), CHECK (json_valid(parameters_json)), CHECK (started_at_utc_ms IS NULL OR started_at_utc_ms >= 0), CHECK (ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms), CHECK ((run_state = 'queued' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL) OR (run_state = 'running' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL) OR (run_state = 'completed' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL) OR (run_state = 'failed' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "speakers",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"speakers\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"analysis_run_id\" TEXT NOT NULL REFERENCES diarization_runs (id) ON DELETE CASCADE, \"label\" TEXT NOT NULL, PRIMARY KEY (\"id\"), FOREIGN KEY (analysis_run_id, meeting_id) REFERENCES diarization_runs(id, meeting_id) ON DELETE CASCADE) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "transcript_segments",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"transcript_segments\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"transcript_run_id\" TEXT NOT NULL REFERENCES transcript_runs (id) ON DELETE CASCADE, \"start_us\" INTEGER NOT NULL, \"end_us\" INTEGER NOT NULL, \"raw_model_text\" TEXT NOT NULL, \"displayed_text\" TEXT NOT NULL, \"revision_state\" TEXT NOT NULL, \"speaker_id\" TEXT NULL, \"speaker_meeting_id\" TEXT NULL, PRIMARY KEY (\"id\"), CHECK (start_us >= 0), CHECK (end_us > start_us), CHECK (revision_state IN ('machine','corrected')), CHECK ((speaker_id IS NULL) = (speaker_meeting_id IS NULL)), CHECK (speaker_meeting_id IS NULL OR speaker_meeting_id = meeting_id), FOREIGN KEY (transcript_run_id, meeting_id) REFERENCES transcript_runs(id, meeting_id) ON DELETE CASCADE, FOREIGN KEY (speaker_id, speaker_meeting_id) REFERENCES speakers(id, meeting_id) ON DELETE SET NULL) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "language_decisions",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"language_decisions\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"transcript_segment_id\" TEXT NOT NULL REFERENCES transcript_segments (id) ON DELETE CASCADE, \"tag\" TEXT NOT NULL, \"source\" TEXT NOT NULL, \"confidence\" REAL NULL, PRIMARY KEY (\"id\"), CHECK (tag IN ('chinese','english','mixed','uncertain')), CHECK (source IN ('automatic','manual')), CHECK (confidence IS NULL OR confidence BETWEEN 0 AND 1)) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "transcript_language_selections",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"transcript_language_selections\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"transcript_segment_id\" TEXT NOT NULL REFERENCES transcript_segments (id) ON DELETE CASCADE, \"language_decision_id\" TEXT NOT NULL REFERENCES language_decisions (id) ON DELETE CASCADE, PRIMARY KEY (\"id\"), FOREIGN KEY (language_decision_id, transcript_segment_id) REFERENCES language_decisions(id, transcript_segment_id) ON DELETE CASCADE) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "speaker_assignments",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"speaker_assignments\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"analysis_run_id\" TEXT NOT NULL REFERENCES diarization_runs (id) ON DELETE CASCADE, \"speaker_id\" TEXT NULL, \"speaker_analysis_run_id\" TEXT NULL, \"start_us\" INTEGER NOT NULL, \"end_us\" INTEGER NOT NULL, \"confidence\" REAL NULL, \"is_overlap\" INTEGER NOT NULL CHECK (\"is_overlap\" IN (0, 1)), \"needs_confirmation\" INTEGER NOT NULL CHECK (\"needs_confirmation\" IN (0, 1)), PRIMARY KEY (\"id\"), CHECK (start_us >= 0), CHECK (end_us > start_us), CHECK (confidence IS NULL OR confidence BETWEEN 0 AND 1), CHECK (is_overlap = 0 OR needs_confirmation = 1), CHECK ((speaker_id IS NULL) = (speaker_analysis_run_id IS NULL)), CHECK (speaker_analysis_run_id IS NULL OR speaker_analysis_run_id = analysis_run_id), FOREIGN KEY (analysis_run_id, meeting_id) REFERENCES diarization_runs(id, meeting_id) ON DELETE CASCADE, FOREIGN KEY (speaker_id, speaker_analysis_run_id) REFERENCES speakers(id, analysis_run_id) ON DELETE SET NULL) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "revisions",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"revisions\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"transcript_segment_id\" TEXT NULL, \"speaker_assignment_id\" TEXT NULL, \"speaker_id\" TEXT NULL, \"revision_kind\" TEXT NOT NULL, \"payload_json\" TEXT NOT NULL, PRIMARY KEY (\"id\"), CHECK (revision_kind IN ('transcriptText','languageLabel','speakerAssignment','speakerLabel')), CHECK ((revision_kind IN ('transcriptText','languageLabel') AND transcript_segment_id IS NOT NULL AND speaker_assignment_id IS NULL AND speaker_id IS NULL) OR (revision_kind = 'speakerAssignment' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NOT NULL AND speaker_id IS NULL) OR (revision_kind = 'speakerLabel' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NULL AND speaker_id IS NOT NULL)), CHECK (json_valid(payload_json)), CHECK ((revision_kind = 'transcriptText' AND COALESCE(json_type(payload_json, '$.previousText') = 'text', 0) AND COALESCE(json_type(payload_json, '$.revisedText') = 'text', 0)) OR (revision_kind = 'languageLabel' AND COALESCE(json_extract(payload_json, '$.previous') IN ('chinese','english','mixed','uncertain'), 0) AND COALESCE(json_extract(payload_json, '$.revised') IN ('chinese','english','mixed','uncertain'), 0)) OR (revision_kind = 'speakerAssignment' AND COALESCE(json_type(payload_json, '$.startUs') = 'integer', 0) AND COALESCE(json_type(payload_json, '$.endUs') = 'integer', 0) AND json_extract(payload_json, '$.startUs') >= 0 AND json_extract(payload_json, '$.endUs') > json_extract(payload_json, '$.startUs') AND COALESCE(json_type(payload_json, '$.previousSpeakerId') IN ('text','null'), 0) AND COALESCE(json_type(payload_json, '$.revisedSpeakerId') IN ('text','null'), 0) AND COALESCE(json_type(payload_json, '$.needsConfirmation') IN ('true','false'), 0)) OR (revision_kind = 'speakerLabel' AND COALESCE(json_type(payload_json, '$.previous') = 'text', 0) AND COALESCE(json_type(payload_json, '$.revised') = 'text', 0))), FOREIGN KEY (transcript_segment_id, meeting_id) REFERENCES transcript_segments(id, meeting_id) ON DELETE CASCADE, FOREIGN KEY (speaker_assignment_id, meeting_id) REFERENCES speaker_assignments(id, meeting_id) ON DELETE CASCADE, FOREIGN KEY (speaker_id, meeting_id) REFERENCES speakers(id, meeting_id) ON DELETE CASCADE) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "processing_jobs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"processing_jobs\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"job_kind\" TEXT NOT NULL, \"job_state\" TEXT NOT NULL, \"progress\" REAL NULL, \"reason_code\" TEXT NULL, \"failure_code\" TEXT NULL, \"transcript_run_id\" TEXT NULL, \"diarization_run_id\" TEXT NULL, \"model_id\" TEXT NULL REFERENCES model_manifests (id) ON DELETE RESTRICT, \"checkpoint\" TEXT NULL, PRIMARY KEY (\"id\"), CHECK (job_kind IN ('transcription','languageIdentification','speakerDiarization','audioMerge','waveform')), CHECK (job_state IN ('queued','running','paused','succeeded','failed')), CHECK (progress IS NULL OR progress BETWEEN 0 AND 1), CHECK ((job_kind IN ('transcription','languageIdentification') AND transcript_run_id IS NOT NULL AND diarization_run_id IS NULL AND model_id IS NOT NULL) OR (job_kind = 'speakerDiarization' AND transcript_run_id IS NULL AND diarization_run_id IS NOT NULL AND model_id IS NOT NULL) OR (job_kind IN ('audioMerge','waveform') AND transcript_run_id IS NULL AND diarization_run_id IS NULL AND model_id IS NULL)), CHECK ((job_state = 'queued' AND progress IS NULL AND reason_code IS NULL AND failure_code IS NULL) OR (job_state = 'running' AND progress IS NOT NULL AND reason_code IS NULL AND failure_code IS NULL) OR (job_state = 'paused' AND length(reason_code) > 0 AND failure_code IS NULL) OR (job_state = 'succeeded' AND reason_code IS NULL AND failure_code IS NULL) OR (job_state = 'failed' AND reason_code IS NULL AND length(failure_code) > 0)), FOREIGN KEY (transcript_run_id, meeting_id) REFERENCES transcript_runs(id, meeting_id) ON DELETE CASCADE, FOREIGN KEY (diarization_run_id, meeting_id) REFERENCES diarization_runs(id, meeting_id) ON DELETE CASCADE) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "model_capability_entries",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"model_capability_entries\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"model_id\" TEXT NOT NULL REFERENCES model_manifests (id) ON DELETE CASCADE, \"capability\" TEXT NOT NULL, PRIMARY KEY (\"id\"), CHECK (capability IN ('transcription','languageIdentification','speakerDiarization'))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "model_mode_entries",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"model_mode_entries\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"model_id\" TEXT NOT NULL REFERENCES model_manifests (id) ON DELETE CASCADE, \"mode\" TEXT NOT NULL, PRIMARY KEY (\"id\"), CHECK (mode IN ('highQuality','balanced','powerSaving','recordingOnly','postSession'))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "export_records",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"export_records\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"meeting_id\" TEXT NOT NULL REFERENCES meetings (id) ON DELETE CASCADE, \"format\" TEXT NOT NULL, \"export_state\" TEXT NOT NULL, \"relative_path\" TEXT NULL, \"bytes\" INTEGER NULL, \"failure_code\" TEXT NULL, PRIMARY KEY (\"id\"), CHECK (format IN ('audio','plainText','subtitles','structuredJson','archive')), CHECK (export_state IN ('pending','completed','failed')), CHECK (bytes IS NULL OR bytes >= 0), CHECK (relative_path IS NULL OR length(relative_path) > 0), CHECK (relative_path IS NULL OR relative_path NOT LIKE '/%'), CHECK (relative_path IS NULL OR instr(relative_path, char(92)) = 0), CHECK (relative_path IS NULL OR instr(relative_path, char(0)) = 0), CHECK (relative_path IS NULL OR relative_path NOT GLOB '[A-Za-z]:*'), CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%//%'), CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/../%'), CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/./%'), CHECK ((export_state = 'pending' AND relative_path IS NULL AND bytes IS NULL AND failure_code IS NULL) OR (export_state = 'completed' AND relative_path IS NOT NULL AND bytes IS NOT NULL AND failure_code IS NULL) OR (export_state = 'failed' AND relative_path IS NULL AND bytes IS NULL AND length(failure_code) > 0))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "backup_records",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"backup_records\" (\"id\" TEXT NOT NULL, \"created_at\" INTEGER NOT NULL CHECK (created_at >= 0), \"updated_at\" INTEGER NOT NULL CHECK (updated_at >= created_at), \"row_revision\" INTEGER NOT NULL DEFAULT 0 CHECK (row_revision >= 0), \"is_deleted\" INTEGER NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL)), \"deleted_at\" INTEGER NULL CHECK (deleted_at IS NULL OR deleted_at >= 0), \"backup_state\" TEXT NOT NULL, \"relative_path\" TEXT NULL, \"sha256\" TEXT NULL, \"bytes\" INTEGER NULL, \"failure_code\" TEXT NULL, PRIMARY KEY (\"id\"), CHECK (backup_state IN ('pending','completed','failed')), CHECK (bytes IS NULL OR bytes >= 0), CHECK (relative_path IS NULL OR length(relative_path) > 0), CHECK (relative_path IS NULL OR relative_path NOT LIKE '/%'), CHECK (relative_path IS NULL OR instr(relative_path, char(92)) = 0), CHECK (relative_path IS NULL OR instr(relative_path, char(0)) = 0), CHECK (relative_path IS NULL OR relative_path NOT GLOB '[A-Za-z]:*'), CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%//%'), CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/../%'), CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/./%'), CHECK ((backup_state = 'pending' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND failure_code IS NULL) OR (backup_state = 'completed' AND relative_path IS NOT NULL AND length(sha256) > 0 AND bytes IS NOT NULL AND failure_code IS NULL) OR (backup_state = 'failed' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND length(failure_code) > 0))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "idx_meetings_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_meetings_created ON meetings (is_deleted, created_at DESC, id DESC)"
+        }
+      ]
+    },
+    {
+      "name": "ux_audio_segments_meeting_sequence",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_audio_segments_meeting_sequence ON audio_segments (meeting_id, sequence)"
+        }
+      ]
+    },
+    {
+      "name": "idx_recovery_findings_meeting_sequence",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_recovery_findings_meeting_sequence ON recovery_findings (meeting_id, segment_sequence)"
+        }
+      ]
+    },
+    {
+      "name": "ux_session_events_meeting_sequence",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_session_events_meeting_sequence ON session_events (meeting_id, sequence)"
+        }
+      ]
+    },
+    {
+      "name": "idx_bookmarks_meeting_media",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_bookmarks_meeting_media ON bookmarks (meeting_id, media_offset_us)"
+        }
+      ]
+    },
+    {
+      "name": "idx_transcript_runs_meeting_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_transcript_runs_meeting_created ON transcript_runs (meeting_id, created_at DESC)"
+        }
+      ]
+    },
+    {
+      "name": "ux_transcript_run_owner",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_transcript_run_owner ON transcript_runs (id, meeting_id)"
+        }
+      ]
+    },
+    {
+      "name": "ux_meeting_transcript_selection",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_meeting_transcript_selection ON meeting_transcript_selections (meeting_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_transcript_segments_run_start",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_transcript_segments_run_start ON transcript_segments (transcript_run_id, start_us)"
+        }
+      ]
+    },
+    {
+      "name": "ux_transcript_segment_owner",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_transcript_segment_owner ON transcript_segments (id, meeting_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_language_decisions_segment_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_language_decisions_segment_created ON language_decisions (transcript_segment_id, created_at DESC)"
+        }
+      ]
+    },
+    {
+      "name": "ux_language_decision_owner",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_language_decision_owner ON language_decisions (id, transcript_segment_id)"
+        }
+      ]
+    },
+    {
+      "name": "ux_transcript_language_selection",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_transcript_language_selection ON transcript_language_selections (transcript_segment_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_diarization_runs_meeting_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_diarization_runs_meeting_created ON diarization_runs (meeting_id, created_at DESC)"
+        }
+      ]
+    },
+    {
+      "name": "ux_diarization_run_owner",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_diarization_run_owner ON diarization_runs (id, meeting_id)"
+        }
+      ]
+    },
+    {
+      "name": "ux_speakers_run_label",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_speakers_run_label ON speakers (analysis_run_id, label)"
+        }
+      ]
+    },
+    {
+      "name": "ux_speaker_run_owner",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_speaker_run_owner ON speakers (id, analysis_run_id)"
+        }
+      ]
+    },
+    {
+      "name": "ux_speaker_meeting_owner",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_speaker_meeting_owner ON speakers (id, meeting_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_speaker_assignments_run_start",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_speaker_assignments_run_start ON speaker_assignments (analysis_run_id, start_us)"
+        }
+      ]
+    },
+    {
+      "name": "ux_speaker_assignment_owner",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_speaker_assignment_owner ON speaker_assignments (id, meeting_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_revisions_meeting_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_revisions_meeting_created ON revisions (meeting_id, created_at)"
+        }
+      ]
+    },
+    {
+      "name": "idx_revisions_transcript_target",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_revisions_transcript_target ON revisions (transcript_segment_id, created_at)"
+        }
+      ]
+    },
+    {
+      "name": "idx_revisions_assignment_target",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_revisions_assignment_target ON revisions (speaker_assignment_id, created_at)"
+        }
+      ]
+    },
+    {
+      "name": "idx_revisions_speaker_target",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_revisions_speaker_target ON revisions (speaker_id, created_at)"
+        }
+      ]
+    },
+    {
+      "name": "idx_processing_jobs_meeting_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_processing_jobs_meeting_created ON processing_jobs (meeting_id, created_at DESC)"
+        }
+      ]
+    },
+    {
+      "name": "ux_model_manifests_hash",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_model_manifests_hash ON model_manifests (sha256)"
+        }
+      ]
+    },
+    {
+      "name": "ux_model_manifest_provenance",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_model_manifest_provenance ON model_manifests (id, version, sha256, expected_engine_id)"
+        }
+      ]
+    },
+    {
+      "name": "ux_model_capability",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_model_capability ON model_capability_entries (model_id, capability)"
+        }
+      ]
+    },
+    {
+      "name": "ux_model_mode",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX ux_model_mode ON model_mode_entries (model_id, mode)"
+        }
+      ]
+    },
+    {
+      "name": "idx_export_records_meeting_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_export_records_meeting_created ON export_records (meeting_id, created_at DESC)"
+        }
+      ]
+    },
+    {
+      "name": "idx_backup_records_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_backup_records_created ON backup_records (created_at DESC)"
+        }
+      ]
+    }
+  ]
+}

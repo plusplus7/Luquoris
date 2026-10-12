@@ -4,17 +4,20 @@ import 'package:meta/meta.dart';
 
 /// User-authorized local export representation.
 enum LocalExportFormat {
-  /// Audio media.
-  audio,
+  /// Continuous M4A audio.
+  audioM4a,
+
+  /// Recoverable committed audio segments.
+  audioSegments,
 
   /// Plain transcript text.
-  plainText,
+  text,
 
   /// Timestamped subtitles.
   subtitles,
 
   /// Structured meeting JSON.
-  structuredJson,
+  json,
 
   /// Checksummed portable archive.
   archive,
@@ -39,11 +42,11 @@ final class ExportPending extends ExportState {
 /// Export completed to an app-relative file.
 final class ExportCompleted extends ExportState {
   /// Creates a completed export result.
-  const ExportCompleted({required this.relativePath, required this.bytes})
+  const ExportCompleted({required this.bytes, this.relativePath})
     : assert(bytes >= 0, 'bytes must be non-negative');
 
-  /// Path relative to the export base directory.
-  final AppRelativePath relativePath;
+  /// Optional path for app-private staging; direct SAF exports omit it.
+  final AppRelativePath? relativePath;
 
   /// Final file size.
   final int bytes;

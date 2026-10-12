@@ -78,4 +78,30 @@ void main() {
     expect(find.byKey(const ValueKey<String>('not-found')), findsOneWidget);
     expect(find.text('Page not found'), findsWidgets);
   });
+
+  testWidgets('storage route presents every explainable accounting category', (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        sessionRepositoryProvider.overrideWithValue(FakeSessionRepository()),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(appRouterProvider).go(AppRoutes.storagePrivacy);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const LoquirisApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Application and models'), findsOneWidget);
+    expect(find.text('Active meetings'), findsOneWidget);
+    expect(find.text('Rebuildable cache'), findsOneWidget);
+    expect(find.text('Trash'), findsOneWidget);
+    expect(find.text('Available device space'), findsOneWidget);
+  });
 }

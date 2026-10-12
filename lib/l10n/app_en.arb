@@ -88,9 +88,552 @@
   "@reviewRecordingAction": {
     "description": "Action opening an interrupted meeting without restarting capture."
   },
+  "saveRecoveredRecordingAction": "Save recovered recording",
+  "@saveRecoveredRecordingAction": {
+    "description": "Finalizes recovered audio without opening the microphone."
+  },
+  "continueRecordingAction": "Continue recording",
+  "@continueRecordingAction": {
+    "description": "Explicitly starts a new continuation segment."
+  },
+  "cancelAction": "Cancel",
+  "@cancelAction": {
+    "description": "Closes a confirmation without changing local state."
+  },
+  "recoveryActionFailed": "Loquiris could not apply that recovery choice. Your saved audio is unchanged.",
+  "@recoveryActionFailed": {
+    "description": "Privacy-safe retryable failure shown when recovery resolution fails."
+  },
   "sessionsLoadingLabel": "Loading meetings",
   "@sessionsLoadingLabel": {
     "description": "Live-region label announced while the local meeting library loads."
+  },
+  "sessionsSearchHint": "Search meetings",
+  "@sessionsSearchHint": {
+    "description": "Hint shown in the local meeting and transcript search field."
+  },
+  "meetingsLibraryTab": "Library",
+  "@meetingsLibraryTab": {
+    "description": "Label for the active-meeting library segment inside the Meetings screen."
+  },
+  "trashTab": "Trash",
+  "@trashTab": {
+    "description": "Label for the local trash segment inside the Meetings screen."
+  },
+  "meetingActionsTooltip": "Meeting actions",
+  "@meetingActionsTooltip": {
+    "description": "Tooltip for the menu containing actions for one meeting."
+  },
+  "renameMeetingAction": "Rename",
+  "@renameMeetingAction": {
+    "description": "Action that changes a meeting title."
+  },
+  "moveToTrashAction": "Move to trash",
+  "@moveToTrashAction": {
+    "description": "Action that moves a meeting into local trash."
+  },
+  "restoreMeetingAction": "Restore",
+  "@restoreMeetingAction": {
+    "description": "Action that restores a meeting from local trash."
+  },
+  "saveAction": "Save",
+  "@saveAction": {
+    "description": "Confirms and saves a local edit."
+  },
+  "meetingTitleLabel": "Meeting title",
+  "@meetingTitleLabel": {
+    "description": "Input label for an editable meeting title."
+  },
+  "trashEmptyTitle": "Trash is empty",
+  "@trashEmptyTitle": {
+    "description": "Heading shown when local meeting trash is empty."
+  },
+  "trashEmptyBody": "Deleted meetings stay here until you permanently remove them.",
+  "trashRetentionNotice": "Seven-day local trash. Nothing is deleted automatically; restore or permanently delete items yourself.",
+  "permanentDeleteMeetingAction": "Delete permanently",
+  "retryPermanentDeleteAction": "Retry permanent deletion",
+  "permanentDeleteTitle": "Permanently delete this meeting?",
+  "permanentDeleteBody": "This removes private audio, transcript, revisions, bookmarks, and meeting metadata from this device. Loquiris cannot delete copies you exported or backed up elsewhere.",
+  "permanentDeletePending": "Deleting private meeting data…",
+  "permanentDeleteFailed": "Deletion did not finish. Your meeting remains locked for a safe retry.",
+  "@trashEmptyBody": {
+    "description": "Explanation shown when local meeting trash is empty."
+  },
+  "searchEmptyTitle": "No local matches",
+  "@searchEmptyTitle": {
+    "description": "Heading shown when local meeting search has no results."
+  },
+  "searchEmptyBody": "Try a meeting title or words from the transcript.",
+  "@searchEmptyBody": {
+    "description": "Suggestion shown when local meeting search has no results."
+  },
+  "meetingStatusDraft": "Draft",
+  "@meetingStatusDraft": {"description": "Badge for a draft meeting."},
+  "meetingStatusPreparing": "Preparing",
+  "@meetingStatusPreparing": {"description": "Badge for a meeting preparing to record."},
+  "meetingStatusRecording": "Recording",
+  "@meetingStatusRecording": {"description": "Badge for an actively recording meeting."},
+  "meetingStatusPaused": "Paused",
+  "@meetingStatusPaused": {"description": "Badge for a paused recording."},
+  "meetingStatusStopping": "Saving",
+  "@meetingStatusStopping": {"description": "Badge for a recording being safely finalized."},
+  "meetingStatusFinished": "Finished",
+  "@meetingStatusFinished": {"description": "Badge for a finalized meeting."},
+  "meetingStatusRecoverable": "Needs review",
+  "@meetingStatusRecoverable": {"description": "Badge for an interrupted meeting requiring review."},
+  "meetingStatusFailed": "Save incomplete",
+  "@meetingStatusFailed": {"description": "Badge for a meeting whose finalization failed."},
+  "meetingStatusTrashed": "In trash",
+  "@meetingStatusTrashed": {"description": "Badge for a meeting in local trash."},
+  "meetingStatusDeleting": "Deleting",
+  "@meetingStatusDeleting": {"description": "Badge for a permanently deleting meeting."},
+  "meetingDefaultTitle": "Meeting {date} {time}",
+  "@meetingDefaultTitle": {
+    "description": "Localized default title created when recording starts without a title.",
+    "placeholders": {
+      "date": {"type": "String", "description": "Localized full date."},
+      "time": {"type": "String", "description": "Localized time of day."}
+    }
+  },
+  "meetingMetadata": "{date} · {duration} · {size}",
+  "@meetingMetadata": {
+    "description": "Compact metadata line shown for one meeting.",
+    "placeholders": {
+      "date": {"type": "String", "description": "Localized creation date."},
+      "duration": {"type": "String", "description": "Formatted media duration."},
+      "size": {"type": "String", "description": "Formatted committed audio size."}
+    }
+  },
+  "transcriptMatchAt": "Transcript match at {offset}",
+  "@transcriptMatchAt": {
+    "description": "Label identifying the media offset of a transcript search result.",
+    "placeholders": {
+      "offset": {"type": "String", "description": "Formatted media-time offset."}
+    }
+  },
+  "newRecordingIntro": "Choose how this meeting will be processed. Audio is always saved locally first.",
+  "@newRecordingIntro": {
+    "description": "Recording setup explanation emphasizing recording-first local behavior."
+  },
+  "transcriptionModeLabel": "Transcription timing",
+  "@transcriptionModeLabel": {
+    "description": "Heading for live-versus-post-session transcription choices."
+  },
+  "nearRealTimeMode": "Near-real-time draft",
+  "@nearRealTimeMode": {
+    "description": "Choice requesting experimental draft transcription during capture."
+  },
+  "nearRealTimeModeDescription": "Experimental. It may pause or fall back to post-session processing to protect the recording.",
+  "@nearRealTimeModeDescription": {
+    "description": "Honest limitation text for near-real-time draft mode."
+  },
+  "postSessionMode": "After recording",
+  "@postSessionMode": {
+    "description": "Choice requesting transcription after capture ends."
+  },
+  "postSessionModeDescription": "Keeps capture resources focused on saving audio, then analyzes the meeting locally.",
+  "@postSessionModeDescription": {
+    "description": "Explanation for post-session transcription mode."
+  },
+  "languageModeLabel": "Spoken language",
+  "@languageModeLabel": {
+    "description": "Heading for recognition-language choices."
+  },
+  "languageChinese": "Chinese",
+  "@languageChinese": {"description": "Chinese recognition-language choice."},
+  "languageEnglish": "English",
+  "@languageEnglish": {"description": "English recognition-language choice."},
+  "languageMixed": "Chinese + English",
+  "@languageMixed": {"description": "Mixed Chinese-English recognition-language choice."},
+  "speakerCountLabel": "Expected speakers",
+  "@speakerCountLabel": {
+    "description": "Heading for optional two-to-six-speaker guidance."
+  },
+  "speakerCountAutomatic": "Automatic",
+  "@speakerCountAutomatic": {
+    "description": "Choice that leaves speaker-count estimation automatic."
+  },
+  "speakerCountOption": "{count}",
+  "@speakerCountOption": {
+    "description": "A selectable expected-speaker count.",
+    "placeholders": {
+      "count": {"type": "int", "description": "Expected number of speakers from two through six."}
+    }
+  },
+  "startRecordingNowAction": "Start recording",
+  "@startRecordingNowAction": {
+    "description": "Runs required preflight and starts capture without another confirmation."
+  },
+  "recordingPreflightProgress": "Checking storage and microphone…",
+  "@recordingPreflightProgress": {
+    "description": "Live status while local recording preflight and startup run."
+  },
+  "newRecordingLoadError": "Loquiris could not load the saved recording defaults.",
+  "@newRecordingLoadError": {
+    "description": "Safe local error shown when recording defaults cannot be read."
+  },
+  "newRecordingStartFailed": "Recording did not start. Check the message and try again; no existing audio was changed.",
+  "@newRecordingStartFailed": {
+    "description": "Safe retry message for persistence or native preflight failure."
+  },
+  "recordingMicrophonePermissionDenied": "Microphone access is required to record. If Android does not show the permission prompt again, enable Microphone for Loquiris in Settings.",
+  "@recordingMicrophonePermissionDenied": {
+    "description": "Actionable guidance after Android refuses the recording microphone permission."
+  },
+  "recordingStoragePreflightFailed": "{available} available · {required} required",
+  "@recordingStoragePreflightFailed": {
+    "description": "Measured and required local space after recording preflight is refused.",
+    "placeholders": {
+      "available": {"type": "String", "description": "Formatted free-space measurement."},
+      "required": {"type": "String", "description": "Formatted required-space measurement."}
+    }
+  },
+  "recordingStorageRequired": "At least {required} is required; available space could not be measured.",
+  "@recordingStorageRequired": {
+    "description": "Required local space when Android could not report free bytes.",
+    "placeholders": {
+      "required": {"type": "String", "description": "Formatted required-space measurement."}
+    }
+  },
+  "recordingStartOutcomeUnknown": "Android has not confirmed whether recording started. Do not start again; check the recording notification or reopen Loquiris.",
+  "@recordingStartOutcomeUnknown": {
+    "description": "Non-retryable message after an ambiguous accepted native start command."
+  },
+  "recordingSetupCleanupFailed": "Loquiris could not prove that this setup is safe to replace. Reopen the app before trying again.",
+  "@recordingSetupCleanupFailed": {
+    "description": "Non-retryable message when guarded zero-audio setup cleanup is refused."
+  },
+  "newRecordingOfflineNote": "No audio or setup choice leaves this device unless you explicitly export it.",
+  "@newRecordingOfflineNote": {
+    "description": "Privacy reminder on the recording setup screen."
+  },
+  "recordingTimerSemantic": "Recorded time {time}",
+  "@recordingTimerSemantic": {
+    "description": "Accessible label for the pause-aware recording timer.",
+    "placeholders": {"time": {"type": "String"}}
+  },
+  "recordingSizeLabel": "Recorded audio size {size}",
+  "@recordingSizeLabel": {
+    "description": "Current durable recording file size.",
+    "placeholders": {"size": {"type": "String"}}
+  },
+  "recordingStatusActive": "Recording now",
+  "recordingStatusPaused": "Recording paused",
+  "recordingStatusInterrupted": "Input interrupted — resume when it is safe",
+  "recordingStatusPreparing": "Preparing recorder",
+  "recordingStatusSaving": "Saving recording safely",
+  "recordingStatusSaved": "Recording saved",
+  "recordingStatusNeedsReview": "Recording needs review",
+  "recordingStatusUnavailable": "No active recording",
+  "recordingInputActive": "Microphone input active",
+  "recordingInputChecking": "Checking microphone input",
+  "recordingInputReceived": "Microphone data received",
+  "recordingInputNeedsAttention": "Microphone input needs attention",
+  "recordingInputUnavailable": "Microphone input unavailable",
+  "recordingInputPaused": "Microphone input paused",
+  "pauseRecordingAction": "Pause",
+  "resumeRecordingAction": "Resume",
+  "stopRecordingAction": "Stop",
+  "addBookmarkAction": "Bookmark",
+  "addHighlightAction": "Highlight",
+  "confirmStopRecordingTitle": "Stop and save this recording?",
+  "confirmStopRecordingBody": "Loquiris will finish writing the audio already recorded on this device.",
+  "confirmStopRecordingAction": "Stop and save",
+  "bookmarkAddedMessage": "Bookmark saved",
+  "highlightAddedMessage": "Highlight saved",
+  "markerAddFailed": "Could not save that marker. Recording continues.",
+  "recordingMetadataSaveWarning": "Recording continues, but local meeting details could not be updated yet.",
+  "recordingControlFailed": "That recording control did not complete. The saved audio is unchanged.",
+  "recordingStateLoading": "Reading recorder state",
+  "recordingStateUnavailable": "This meeting is not the active recording. The microphone was not started.",
+  "sessionDetailLoadFailed": "Loquiris could not read this meeting from local storage.",
+  "sessionDetailMarkersTitle": "Markers",
+  "sessionDetailNoMarkers": "No bookmarks or highlights",
+  "sessionDetailHighlight": "Highlight",
+  "sessionDetailBookmark": "Bookmark",
+  "sessionDetailSegmentsTitle": "Audio segments",
+  "sessionDetailNoSegments": "No committed audio segments",
+  "sessionSegmentOpen": "Recording",
+  "sessionSegmentCommitted": "Saved",
+  "sessionSegmentCorrupt": "Needs review",
+  "sessionSegmentMissing": "Missing",
+  "sessionDetailSegment": "Audio segment {number}",
+  "@sessionDetailSegment": {
+    "description": "One committed audio segment in meeting order.",
+    "placeholders": {"number": {"type": "int"}}
+  },
+  "sessionDetailEventsTitle": "Recording timeline",
+  "sessionDetailNoEvents": "No recording events",
+  "sessionDetailProcessingTitle": "Local processing",
+  "sessionDetailNoProcessing": "No local processing jobs",
+  "sessionJobTranscription": "Transcription",
+  "sessionJobLanguageIdentification": "Language identification",
+  "sessionJobSpeakerDiarization": "Speaker separation",
+  "sessionJobAudioMerge": "Audio preparation",
+  "sessionJobWaveform": "Waveform preparation",
+  "sessionDetailRecoveryTitle": "Recovery notes",
+  "sessionDetailNoRecoveryIssues": "No recovery issues",
+  "sessionDetailPlaybackPosition": "{position} of {duration}",
+  "@sessionDetailPlaybackPosition": {
+    "description": "Accessible current and total playback time.",
+    "placeholders": {
+      "position": {"type": "String"},
+      "duration": {"type": "String"}
+    }
+  },
+  "sessionDetailPause": "Pause playback",
+  "sessionDetailPlay": "Play recording",
+  "sessionEventStarted": "Recording started",
+  "sessionEventPaused": "Recording paused",
+  "sessionEventResumed": "Recording resumed",
+  "sessionEventInterrupted": "Recording interrupted",
+  "sessionEventStopped": "Recording stopped",
+  "sessionEventRecovered": "Recording recovered",
+  "sessionProcessingQueued": "Waiting",
+  "sessionProcessingRunning": "Processing {percent}%",
+  "@sessionProcessingRunning": {
+    "description": "Progress of one local processing job.",
+    "placeholders": {"percent": {"type": "int"}}
+  },
+  "sessionProcessingPaused": "Paused",
+  "sessionProcessingSucceeded": "Completed",
+  "sessionAudioPreparationFailed": "Audio preparation failed. Original audio remains safe.",
+  "sessionProcessingFailed": "Local processing failed. Original audio remains safe.",
+  "transcriptionPreparingModel": "Preparing the offline model",
+  "transcriptionDecodingAudio": "Decoding saved audio",
+  "transcriptionProgress": "Transcribing locally {percent}%",
+  "@transcriptionProgress": {
+    "description": "Durably persisted post-session transcription progress.",
+    "placeholders": {"percent": {"type": "int"}}
+  },
+  "transcriptionDelayed": "Transcription is delayed. Your recording is safe and processing will resume locally.",
+  "transcriptionIncomplete": "The transcript is incomplete. Your recording is safe and you can try again.",
+  "transcriptionRetryAction": "Retry transcription",
+  "transcriptionRetrying": "Retrying transcription…",
+  "transcriptionCancelled": "Transcription was cancelled. Your recording is safe.",
+  "transcriptionCompleted": "Transcription completed",
+  "transcriptionFailureModel": "The bundled transcription model could not be verified. Your recording is safe.",
+  "transcriptionFailureEngine": "The offline transcription engine could not finish. Your recording is safe.",
+  "transcriptionFailureStorage": "Transcription progress could not be saved locally. Your recording is safe.",
+  "transcriptionFailureUnknown": "Transcription could not finish. Your recording is safe.",
+  "transcriptionRetryFailed": "Transcription could not be restarted. You can try again.",
+  "transcriptPreviewTitle": "Transcript preview",
+  "transcriptPreviewEmpty": "The completed transcript contains no stable text.",
+  "sessionRecoveryTailDiscarded": "An uncommitted audio tail was discarded during recovery.",
+  "sessionRecoveryTimelineGap": "A gap was found in the recovered recording timeline.",
+  "sessionRecoverySegmentMissing": "A committed audio segment is missing.",
+  "sessionRecoverySegmentCorrupt": "A committed audio segment could not be validated.",
+  "sessionRecoveryUnknown": "The recording has a recovery note that needs review.",
+  "sessionPlaybackPreparing": "Playback audio is being prepared from saved segments.",
+  "sessionPlaybackUnavailable": "Playback is unavailable. Meeting details and original saved audio are unchanged.",
+  "transcriptEditorLoadFailed": "Loquiris could not read this transcript from local storage.",
+  "transcriptEditorNoTranscript": "No transcript version is selected for this meeting.",
+  "transcriptEditorReadOnly": "This draft is still active. You can review it now and edit it after recording and analysis finish.",
+  "transcriptEditorSegmentsTitle": "Transcript",
+  "transcriptEditorTextLabel": "Transcript text",
+  "transcriptEditorSaveText": "Save text correction",
+  "transcriptEditorLanguageLabel": "Segment language",
+  "languageUncertain": "Uncertain",
+  "transcriptEditorSpeakersTitle": "Speakers",
+  "transcriptEditorRenameSpeaker": "Rename speaker",
+  "transcriptEditorSpeakerName": "Speaker name",
+  "transcriptEditorNoSpeaker": "No speaker label",
+  "transcriptEditorHistoryTitle": "Revision history",
+  "transcriptEditorNoHistory": "No human corrections yet",
+  "transcriptEditorSaveFailed": "That correction could not be saved. The current transcript is unchanged.",
+  "transcriptEditorRefreshAfterSaveFailed": "Correction saved, but the latest data could not be refreshed.",
+  "transcriptEditorRevisionText": "Text corrected",
+  "transcriptEditorRevisionLanguage": "Language corrected",
+  "transcriptEditorRevisionSpeaker": "Speaker corrected",
+  "exportPrivacyWarning": "This export may contain sensitive audio and text. Loquiris writes it only to the destination you choose next.",
+  "@exportPrivacyWarning": {
+    "description": "Privacy warning shown before opening the Android export destination picker."
+  },
+  "exportChooseFormat": "Choose what to export",
+  "@exportChooseFormat": {
+    "description": "Heading above the list of local export formats."
+  },
+  "exportAudioM4a": "Continuous M4A",
+  "@exportAudioM4a": {
+    "description": "Label for exporting continuous M4A audio."
+  },
+  "exportAudioM4aDescription": "Rebuilds a playable audio file from committed recording data when needed.",
+  "@exportAudioM4aDescription": {
+    "description": "Description of continuous M4A export."
+  },
+  "exportAudioSegments": "Recoverable audio segments",
+  "@exportAudioSegments": {
+    "description": "Label for exporting authoritative committed audio segments."
+  },
+  "exportAudioSegmentsDescription": "Packages the committed AAC segments in a ZIP for recovery or advanced use.",
+  "@exportAudioSegmentsDescription": {
+    "description": "Description of committed audio segment export."
+  },
+  "exportPlainText": "Plain text",
+  "@exportPlainText": {
+    "description": "Label for readable transcript text export."
+  },
+  "exportPlainTextDescription": "Timestamped corrected transcript text with speaker labels.",
+  "@exportPlainTextDescription": {
+    "description": "Description of readable transcript text export."
+  },
+  "exportSrt": "SRT subtitles",
+  "@exportSrt": {
+    "description": "Label for SRT subtitle export."
+  },
+  "exportSrtDescription": "Corrected transcript text with millisecond subtitle timestamps.",
+  "@exportSrtDescription": {
+    "description": "Description of SRT subtitle export."
+  },
+  "exportJson": "Structured JSON",
+  "@exportJson": {
+    "description": "Label for structured meeting JSON export."
+  },
+  "exportJsonDescription": "Meeting metadata, transcript, corrections, labels, and model provenance.",
+  "@exportJsonDescription": {
+    "description": "Description of structured meeting JSON export."
+  },
+  "exportArchive": "Complete ZIP package",
+  "@exportArchive": {
+    "description": "Label for a complete local meeting archive."
+  },
+  "exportArchiveDescription": "Audio and available text files. If M4A rebuild fails, committed segments are included with a warning.",
+  "@exportArchiveDescription": {
+    "description": "Description of the complete ZIP meeting export and its audio fallback."
+  },
+  "exportConfirm": "Choose destination and export",
+  "@exportConfirm": {
+    "description": "Button that opens the Android user-selected export destination."
+  },
+  "exportingLabel": "Exporting locally…",
+  "@exportingLabel": {
+    "description": "Status while a local export is being written."
+  },
+  "exportSelectingDestinationLabel": "Choosing export destination…",
+  "@exportSelectingDestinationLabel": {
+    "description": "Status while Android is waiting for the user to choose an export destination."
+  },
+  "exportWritingLabel": "Writing export…",
+  "@exportWritingLabel": {
+    "description": "Status while export bytes are being written to the selected destination."
+  },
+  "exportFinalizingLabel": "Finalizing export…",
+  "@exportFinalizingLabel": {
+    "description": "Status while an export destination is being closed and finalized."
+  },
+  "exportCancelAction": "Cancel export",
+  "@exportCancelAction": {
+    "description": "Action to cooperatively cancel a safe active export write."
+  },
+  "exportCancellingLabel": "Cancelling…",
+  "@exportCancellingLabel": {
+    "description": "Status while an export cancellation request is active."
+  },
+  "exportSucceeded": "Exported {fileName}",
+  "@exportSucceeded": {
+    "description": "Status after a local export completes.",
+    "placeholders": {
+      "fileName": {"type": "String"}
+    }
+  },
+  "exportSegmentsFallbackWarning": "Continuous audio was unavailable, so the package contains recoverable segments.",
+  "@exportSegmentsFallbackWarning": {
+    "description": "Disclosure after a package uses committed audio segments instead of continuous M4A."
+  },
+  "exportPartialAudioWarning": "This recording is partial. The export contains only the audio Loquiris verified as safely committed.",
+  "@exportPartialAudioWarning": {
+    "description": "Disclosure that a local audio export contains only verified committed prefixes from a partial recording."
+  },
+  "exportCancelled": "Export cancelled. Nothing was sent anywhere.",
+  "@exportCancelled": {
+    "description": "Status after the user dismisses the Android destination picker."
+  },
+  "exportFailed": "Export could not be completed. The original meeting is unchanged.",
+  "@exportFailed": {
+    "description": "Generic local export failure message."
+  },
+  "exportIncompleteOutputWarning": "Export stopped, but Android could not remove the incomplete file. Check the destination you selected.",
+  "exportInterruptedOutputWarning": "A previous export was interrupted. An incomplete file may remain in the destination you selected.",
+  "@exportInterruptedOutputWarning": {
+    "description": "Warning restored from durable history after an export process was interrupted."
+  },
+  "@exportIncompleteOutputWarning": {
+    "description": "Warning when a document provider refuses cleanup of an incomplete export."
+  },
+  "exportPersistenceWarning": "The export result could not be recorded locally. Check the destination you selected before trying again.",
+  "@exportPersistenceWarning": {
+    "description": "Warning when durable export-attempt persistence fails."
+  },
+  "restoredCopyTitle": "{title} — Restored copy",
+  "@restoredCopyTitle": {
+    "description": "Meeting title marker applied when restore keeps a conflicting local meeting and imports the backup as a new copy.",
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "transcriptEditorSegmentTime": "{start}–{end}",
+  "@transcriptEditorSegmentTime": {
+    "description": "Pause-free media range for one transcript segment.",
+    "placeholders": {
+      "start": {"type": "String"},
+      "end": {"type": "String"}
+    }
+  },
+  "storageApplicationAndModels": "Application and models",
+  "@storageApplicationAndModels": {
+    "description": "Storage category for the installed app, private support data, and bundled or installed models."
+  },
+  "storageActiveMeetings": "Active meetings",
+  "@storageActiveMeetings": {
+    "description": "Storage category for audio committed to meetings outside trash."
+  },
+  "storageRebuildableCache": "Rebuildable cache",
+  "@storageRebuildableCache": {
+    "description": "Storage category for temporary data the app can recreate."
+  },
+  "storageTrash": "Trash",
+  "@storageTrash": {
+    "description": "Storage category for audio committed to meetings in local trash."
+  },
+  "storageAvailableDeviceSpace": "Available device space",
+  "@storageAvailableDeviceSpace": {
+    "description": "Storage category for space Android reports as available to this app."
+  },
+  "storageAccountingIntro": "These totals stay on this device. Meeting sizes come from Loquiris records; application, cache, and available space come from Android.",
+  "@storageAccountingIntro": {
+    "description": "Explains the two authoritative sources used by the storage screen."
+  },
+  "storageApplicationModelsDetail": "Includes {size} of bundled model files. Bundled models cannot be removed individually in this release; other private support data is grouped here.",
+  "@storageApplicationModelsDetail": {
+    "description": "Explains that the model detail is already included in the application category.",
+    "placeholders": {"size": {"type": "String"}}
+  },
+  "storageActiveMeetingsDetail": "Committed audio for meetings outside Trash.",
+  "storageRebuildableCacheDetail": "Temporary data Loquiris can recreate when needed.",
+  "storageTrashDetail": "Committed audio retained until you permanently delete it.",
+  "storageAvailableDeviceSpaceDetail": "Space Android currently reports as available to Loquiris.",
+  "storageLoadingLabel": "Measuring storage on this device",
+  "storageLoadError": "Loquiris could not measure storage right now. Your local data is unchanged.",
+  "@storageLoadError": {
+    "description": "Privacy-safe retryable failure for storage accounting."
+  },
+  "clearRebuildableCacheAction": "Clear rebuildable cache",
+  "clearRebuildableCacheDescription": "Removes only allowlisted PCM, waveform, search-index, and failed-job temporary files. Meetings, edits, backups, Trash, and unknown cache remain unchanged.",
+  "clearingRebuildableCacheLabel": "Clearing rebuildable cache…",
+  "rebuildableCacheCleared": "Cleared {size} from {count} files.",
+  "@rebuildableCacheCleared": {
+    "description": "Success after explicit allowlisted cache cleanup.",
+    "placeholders": {
+      "size": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "rebuildableCacheNothingCleared": "No allowlisted rebuildable cache needed clearing.",
+  "rebuildableCacheCleanupFailed": "Cache cleanup could not finish. Try again. Meeting data is unchanged.",
+  "rebuildableCacheCleanupPartiallyFailed": "Cleanup stopped after clearing {size}. Try again. Meeting data is unchanged.",
+  "@rebuildableCacheCleanupPartiallyFailed": {
+    "description": "Retryable cleanup failure after some derived bytes were already removed.",
+    "placeholders": {"size": {"type": "String"}}
   },
   "benchmarkIntro": "Run a short offline check to see which local processing mode this device can sustain.",
   "@benchmarkIntro": {
@@ -250,27 +793,6 @@
   },
   "benchmarkExportCancelled": "Export cancelled. No file was saved.",
   "benchmarkExportFailed": "Report could not be exported. Try again.",
-  "sessionJobTranscription": "Transcription",
-  "transcriptionPreparingModel": "Preparing the offline model",
-  "transcriptionDecodingAudio": "Decoding saved audio",
-  "transcriptionProgress": "Transcribing locally {percent}%",
-  "@transcriptionProgress": {
-    "description": "Durably persisted post-session transcription progress.",
-    "placeholders": {"percent": {"type": "int"}}
-  },
-  "transcriptionDelayed": "Transcription is delayed. Your recording is safe and processing will resume locally.",
-  "transcriptionIncomplete": "The transcript is incomplete. Your recording is safe and you can try again.",
-  "transcriptionRetryAction": "Retry transcription",
-  "transcriptionRetrying": "Retrying transcription…",
-  "transcriptionCancelled": "Transcription was cancelled. Your recording is safe.",
-  "transcriptionCompleted": "Transcription completed",
-  "transcriptionFailureModel": "The bundled transcription model could not be verified. Your recording is safe.",
-  "transcriptionFailureEngine": "The offline transcription engine could not finish. Your recording is safe.",
-  "transcriptionFailureStorage": "Transcription progress could not be saved locally. Your recording is safe.",
-  "transcriptionFailureUnknown": "Transcription could not finish. Your recording is safe.",
-  "transcriptionRetryFailed": "Transcription could not be restarted. You can try again.",
-  "transcriptPreviewTitle": "Transcript preview",
-  "transcriptPreviewEmpty": "The completed transcript contains no stable text.",
   "liveTranscriptTitle": "Live transcript draft",
   "liveTranscriptExperimentalLabel": "Experimental · read only",
   "liveTranscriptWaiting": "Listening for the first local draft…",

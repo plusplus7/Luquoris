@@ -7,39 +7,92 @@ import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
 import 'package:loquiris/services/analysis_repository_contracts.dart';
 import 'package:loquiris/services/service_contracts.dart';
 
+typedef SynchronizeRecordingProgressOverride =
+    Future<Result<Meeting, SessionRepositoryFailure>> Function(
+      String meetingId, {
+      required MeetingLifecycle lifecycle,
+      required Duration mediaDuration,
+      required int atUtcMs,
+    });
+
 final class FakeAudioCaptureService implements AudioCaptureService {
   final List<AudioCaptureRequest> startRequests = [];
   final StreamController<AudioCaptureSnapshot> _snapshots =
       StreamController.broadcast(sync: true);
 
+  int currentCalls = 0;
+  int pauseCalls = 0;
+  int resumeCalls = 0;
+  int stopCalls = 0;
+  final List<String> savedRecoveryIds = [];
+  final List<String> continuedRecoveryIds = [];
+  void Function()? beforeCurrentResult;
+
+  Result<AudioCaptureSnapshot, AudioCaptureFailure> currentResult = const Ok(
+    AudioCaptureSnapshot(
+      state: AudioCaptureState.idle,
+      elapsed: Duration.zero,
+      bytesWritten: 0,
+    ),
+  );
+
   Result<AudioCaptureSnapshot, AudioCaptureFailure> startResult = const Ok(
     AudioCaptureSnapshot(
+      sessionId: 'fake-session',
       state: AudioCaptureState.recording,
       elapsed: Duration.zero,
       bytesWritten: 0,
+      revision: 1,
     ),
   );
   Result<AudioCaptureSnapshot, AudioCaptureFailure> pauseResult = const Ok(
     AudioCaptureSnapshot(
+      sessionId: 'fake-session',
       state: AudioCaptureState.pausedByUser,
       elapsed: Duration.zero,
       bytesWritten: 0,
+      revision: 1,
     ),
   );
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>>? pendingPauseResult;
   Result<AudioCaptureSnapshot, AudioCaptureFailure> resumeResult = const Ok(
     AudioCaptureSnapshot(
+      sessionId: 'fake-session',
       state: AudioCaptureState.recording,
       elapsed: Duration.zero,
       bytesWritten: 0,
+      revision: 1,
     ),
   );
   Result<AudioCaptureSnapshot, AudioCaptureFailure> stopResult = const Ok(
     AudioCaptureSnapshot(
+      sessionId: 'fake-session',
       state: AudioCaptureState.finalized,
       elapsed: Duration.zero,
       bytesWritten: 0,
+      revision: 1,
     ),
   );
+  Result<AudioCaptureSnapshot, AudioCaptureFailure> saveRecoveryResult =
+      const Ok(
+        AudioCaptureSnapshot(
+          sessionId: 'fake-session',
+          state: AudioCaptureState.finalized,
+          elapsed: Duration.zero,
+          bytesWritten: 0,
+          revision: 1,
+        ),
+      );
+  Result<AudioCaptureSnapshot, AudioCaptureFailure> continueRecoveryResult =
+      const Ok(
+        AudioCaptureSnapshot(
+          sessionId: 'fake-session',
+          state: AudioCaptureState.recording,
+          elapsed: Duration.zero,
+          bytesWritten: 0,
+          revision: 1,
+        ),
+      );
 
   @override
   Stream<AudioCaptureSnapshot> get snapshots => _snapshots.stream;
@@ -47,6 +100,13 @@ final class FakeAudioCaptureService implements AudioCaptureService {
   void emitSnapshot(AudioCaptureSnapshot snapshot) => _snapshots.add(snapshot);
 
   Future<void> dispose() => _snapshots.close();
+
+  @override
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> current() async {
+    currentCalls += 1;
+    beforeCurrentResult?.call();
+    return currentResult;
+  }
 
   @override
   Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> start(
@@ -57,16 +117,108 @@ final class FakeAudioCaptureService implements AudioCaptureService {
   }
 
   @override
-  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> pause() async =>
-      pauseResult;
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> saveRecovered(
+    String sessionId,
+  ) async {
+    savedRecoveryIds.add(sessionId);
+    return saveRecoveryResult;
+  }
 
   @override
-  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> resume() async =>
-      resumeResult;
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> continueRecovered(
+    String sessionId,
+  ) async {
+    continuedRecoveryIds.add(sessionId);
+    return continueRecoveryResult;
+  }
 
   @override
-  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> stop() async =>
-      stopResult;
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> pause() async {
+    pauseCalls += 1;
+    final pending = pendingPauseResult;
+    if (pending != null) return pending;
+    return pauseResult;
+  }
+
+  @override
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> resume() async {
+    resumeCalls += 1;
+    return resumeResult;
+  }
+
+  @override
+  Future<Result<AudioCaptureSnapshot, AudioCaptureFailure>> stop() async {
+    stopCalls += 1;
+    return stopResult;
+  }
+}
+
+final class FakeSessionPlaybackService implements SessionPlaybackService {
+  final List<String> loadCalls = [];
+  final List<String> ownerCalls = [];
+  final List<Duration> seekCalls = [];
+  int playCalls = 0;
+  int pauseCalls = 0;
+  int releaseCalls = 0;
+
+  Result<SessionPlaybackSnapshot, SessionPlaybackFailure> loadResult =
+      const Err(SessionPlaybackFailure('playback_artifact_unavailable'));
+  Result<SessionPlaybackSnapshot, SessionPlaybackFailure>? currentResult;
+  Result<SessionPlaybackSnapshot, SessionPlaybackFailure>? playResult;
+  Result<SessionPlaybackSnapshot, SessionPlaybackFailure>? pauseResult;
+  Result<SessionPlaybackSnapshot, SessionPlaybackFailure>? seekResult;
+
+  @override
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> load(
+    String sessionId, {
+    required String ownerId,
+  }) async {
+    loadCalls.add(sessionId);
+    ownerCalls.add(ownerId);
+    return loadResult;
+  }
+
+  @override
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> current({
+    required String ownerId,
+  }) async {
+    ownerCalls.add(ownerId);
+    return currentResult ?? loadResult;
+  }
+
+  @override
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> play({
+    required String ownerId,
+  }) async {
+    playCalls += 1;
+    ownerCalls.add(ownerId);
+    return playResult ?? loadResult;
+  }
+
+  @override
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> pause({
+    required String ownerId,
+  }) async {
+    pauseCalls += 1;
+    ownerCalls.add(ownerId);
+    return pauseResult ?? loadResult;
+  }
+
+  @override
+  Future<Result<SessionPlaybackSnapshot, SessionPlaybackFailure>> seek(
+    Duration position, {
+    required String ownerId,
+  }) async {
+    seekCalls.add(position);
+    ownerCalls.add(ownerId);
+    return seekResult ?? loadResult;
+  }
+
+  @override
+  Future<void> release({required String ownerId}) async {
+    releaseCalls += 1;
+    ownerCalls.add(ownerId);
+  }
 }
 
 final class FakeTranscriptionEngine implements TranscriptionEngine {
@@ -529,10 +681,54 @@ final class FakeThermalAndPerformanceMonitor
 
 final class FakeSessionRepository implements SessionRepository {
   final List<SessionSummary> savedSessions = [];
+  final List<Meeting> savedMeetings = [];
+  final List<(String, RecoveryResolution)> recoveryResolutions = [];
+  final List<SessionLibraryQuery> watchedLibraryQueries = [];
+  final List<SessionLibraryQuery> queriedLibraryQueries = [];
+  final List<String> searchQueries = [];
+  final List<String> trashedMeetingIds = [];
+  final List<String> restoredMeetingIds = [];
+  final List<String> permanentlyDeletedMeetingIds = [];
+  final List<Bookmark> savedBookmarks = [];
   Result<SessionCollection, SessionRepositoryFailure> listResult = Ok(
     SessionCollection(sessions: const []),
   );
   Result<SessionSummary, SessionRepositoryFailure>? saveResult;
+  SessionRepositoryFailure? libraryFailure;
+  SessionLibraryPage activeLibraryPage = SessionLibraryPage(
+    items: const [],
+    nextCursor: null,
+  );
+  SessionLibraryPage trashLibraryPage = SessionLibraryPage(
+    items: const [],
+    nextCursor: null,
+  );
+  Result<List<SessionSearchHit>, SessionRepositoryFailure> searchResult =
+      const Ok(<SessionSearchHit>[]);
+  Future<Result<SessionLibraryPage, SessionRepositoryFailure>> Function(
+    SessionLibraryQuery query,
+  )?
+  queryLibraryOverride;
+  RecordingDefaults recordingDefaults = const RecordingDefaults();
+  final List<
+    ({String meetingId, MeetingLifecycle lifecycle, Duration duration})
+  >
+  synchronizedRecordingProgress = [];
+  SessionRepositoryFailure? synchronizeRecordingProgressFailure;
+  SynchronizeRecordingProgressOverride? synchronizeRecordingProgressOverride;
+  final List<String> discardedUnstartedMeetingIds = [];
+  SessionRepositoryFailure? discardUnstartedMeetingFailure;
+  Result<SessionDetail, SessionRepositoryFailure>? detailResult;
+  Result<SessionRecoveryDetails, SessionRepositoryFailure>
+  recoveryDetailsResult = Ok(
+    SessionRecoveryDetails(
+      integrityState: RecoveryIntegrityState.complete,
+      diagnostics: const <SessionRecoveryDiagnostic>[],
+      rawExportSegments: const <SessionRecoveryRawExportSegment>[],
+    ),
+  );
+  Future<Result<void, SessionRepositoryFailure>> Function(String meetingId)?
+  permanentlyDeleteOverride;
 
   @override
   Future<Result<SessionCollection, SessionRepositoryFailure>> list() async =>
@@ -549,41 +745,186 @@ final class FakeSessionRepository implements SessionRepository {
   @override
   Stream<Result<SessionLibraryPage, SessionRepositoryFailure>> watchLibrary(
     SessionLibraryQuery query,
-  ) => Stream.value(
-    Ok(SessionLibraryPage(meetings: const [], nextCursor: null)),
-  );
+  ) {
+    watchedLibraryQueries.add(query);
+    final failure = libraryFailure;
+    if (failure != null) return Stream.value(Err(failure));
+    return Stream.value(
+      Ok(
+        query.kind == SessionLibraryKind.active
+            ? activeLibraryPage
+            : trashLibraryPage,
+      ),
+    );
+  }
 
   @override
   Future<Result<SessionLibraryPage, SessionRepositoryFailure>> queryLibrary(
     SessionLibraryQuery query,
-  ) async => Ok(SessionLibraryPage(meetings: const [], nextCursor: null));
+  ) async {
+    queriedLibraryQueries.add(query);
+    final override = queryLibraryOverride;
+    if (override != null) return override(query);
+    return Ok(
+      query.kind == SessionLibraryKind.active
+          ? activeLibraryPage
+          : trashLibraryPage,
+    );
+  }
+
+  @override
+  Future<Result<SessionDetail, SessionRepositoryFailure>> loadDetail(
+    String meetingId,
+  ) async => detailResult ?? const Err(SessionNotFound());
 
   @override
   Future<Result<Meeting, SessionRepositoryFailure>> saveMeeting(
     Meeting meeting,
-  ) async => Ok(meeting);
+  ) async {
+    savedMeetings.add(meeting);
+    return Ok(meeting);
+  }
+
+  @override
+  Future<Result<Bookmark, SessionRepositoryFailure>> saveBookmark(
+    Bookmark bookmark,
+  ) async {
+    savedBookmarks.add(bookmark);
+    return Ok(bookmark);
+  }
+
+  @override
+  Future<Result<RecordingDefaults, SessionRepositoryFailure>>
+  loadRecordingDefaults() async => Ok(recordingDefaults);
+
+  @override
+  Future<Result<RecordingDefaults, SessionRepositoryFailure>>
+  saveRecordingDefaults(
+    RecordingDefaults defaults, {
+    required int atUtcMs,
+  }) async {
+    recordingDefaults = defaults;
+    return Ok(defaults);
+  }
+
+  @override
+  Future<Result<Meeting, SessionRepositoryFailure>>
+  synchronizeRecordingProgress(
+    String meetingId, {
+    required MeetingLifecycle lifecycle,
+    required Duration mediaDuration,
+    required int atUtcMs,
+  }) async {
+    synchronizedRecordingProgress.add((
+      meetingId: meetingId,
+      lifecycle: lifecycle,
+      duration: mediaDuration,
+    ));
+    final override = synchronizeRecordingProgressOverride;
+    if (override != null) {
+      return override(
+        meetingId,
+        lifecycle: lifecycle,
+        mediaDuration: mediaDuration,
+        atUtcMs: atUtcMs,
+      );
+    }
+    final failure = synchronizeRecordingProgressFailure;
+    if (failure != null) return Err(failure);
+    Meeting? meeting;
+    for (final candidate in savedMeetings.reversed) {
+      if (candidate.id == meetingId) {
+        meeting = candidate;
+        break;
+      }
+    }
+    if (meeting == null) return const Err(SessionNotFound());
+    final updated = meeting.copyWith(
+      lifecycle: lifecycle,
+      mediaDuration: mediaDuration,
+    );
+    savedMeetings.add(updated);
+    return Ok(updated);
+  }
+
+  @override
+  Future<Result<void, SessionRepositoryFailure>> discardUnstartedMeeting(
+    String meetingId,
+  ) async {
+    discardedUnstartedMeetingIds.add(meetingId);
+    final failure = discardUnstartedMeetingFailure;
+    if (failure != null) return Err(failure);
+    savedMeetings.removeWhere((meeting) => meeting.id == meetingId);
+    return const Ok<void, SessionRepositoryFailure>(null);
+  }
+
+  @override
+  Future<Result<Meeting, SessionRepositoryFailure>> renameMeeting(
+    String meetingId,
+    String title, {
+    required int atUtcMs,
+  }) async {
+    final meeting = activeLibraryPage.meetings.singleWhere(
+      (candidate) => candidate.id == meetingId,
+    );
+    final renamed = meeting.copyWith(title: title.trim());
+    savedMeetings.add(renamed);
+    return Ok(renamed);
+  }
 
   @override
   Future<Result<List<SessionSearchHit>, SessionRepositoryFailure>> search(
     String query,
-  ) async => const Ok(<SessionSearchHit>[]);
+  ) async {
+    searchQueries.add(query);
+    return searchResult;
+  }
 
   @override
   Future<Result<Meeting, SessionRepositoryFailure>> moveToTrash(
     String meetingId, {
     required int atUtcMs,
-  }) async => const Err(SessionRepositoryUnavailable('fake_not_configured'));
+  }) async {
+    trashedMeetingIds.add(meetingId);
+    final meeting = activeLibraryPage.meetings.singleWhere(
+      (candidate) => candidate.id == meetingId,
+    );
+    return Ok(
+      meeting.copyWith(
+        lifecycle: MeetingLifecycle.trashed,
+        lifecycleBeforeTrash: meeting.lifecycle,
+        trashedAtUtcMs: atUtcMs,
+      ),
+    );
+  }
 
   @override
   Future<Result<Meeting, SessionRepositoryFailure>> restoreFromTrash(
     String meetingId, {
     required int atUtcMs,
-  }) async => const Err(SessionRepositoryUnavailable('fake_not_configured'));
+  }) async {
+    restoredMeetingIds.add(meetingId);
+    final meeting = trashLibraryPage.meetings.singleWhere(
+      (candidate) => candidate.id == meetingId,
+    );
+    return Ok(
+      meeting.copyWith(
+        lifecycle: meeting.lifecycleBeforeTrash,
+        lifecycleBeforeTrash: null,
+        trashedAtUtcMs: null,
+      ),
+    );
+  }
 
   @override
   Future<Result<void, SessionRepositoryFailure>> permanentlyDelete(
     String meetingId,
-  ) async => const Ok<void, SessionRepositoryFailure>(null);
+  ) async {
+    permanentlyDeletedMeetingIds.add(meetingId);
+    final override = permanentlyDeleteOverride;
+    if (override != null) return override(meetingId);
+    return const Ok<void, SessionRepositoryFailure>(null);
+  }
 
   @override
   Future<Result<SessionStorageAccounting, SessionRepositoryFailure>>
@@ -592,10 +933,38 @@ final class FakeSessionRepository implements SessionRepository {
   );
 
   @override
+  Future<Result<SessionRecoveryDetails, SessionRepositoryFailure>>
+  recoveryDetails(String meetingId) async => recoveryDetailsResult;
+
+  @override
+  Future<Result<Meeting, SessionRepositoryFailure>> resolveRecovery(
+    String meetingId,
+    RecoveryResolution resolution, {
+    required int atUtcMs,
+  }) async {
+    recoveryResolutions.add((meetingId, resolution));
+    return Ok(
+      Meeting(
+        id: meetingId,
+        title: 'Recovered recording',
+        createdAtUtcMs: 0,
+        mediaDuration: Duration.zero,
+        lifecycle: switch (resolution) {
+          RecoveryResolution.save => MeetingLifecycle.finalized,
+          RecoveryResolution.continueRecording => MeetingLifecycle.recording,
+        },
+        languageMode: MeetingLanguageMode.mixed,
+      ),
+    );
+  }
+
+  @override
   Future<Result<SessionRecoveryReport, SessionRepositoryFailure>>
   reconcileRecovery(
     List<SessionRecoveryEvidence> evidence, {
     required int observedAtUtcMs,
+    Set<String> liveMeetingIds = const <String>{},
+    Set<String> invalidStorageKeys = const <String>{},
   }) async => Ok(
     SessionRecoveryReport(
       markedRecoverableIds: const [],
@@ -606,9 +975,20 @@ final class FakeSessionRepository implements SessionRepository {
 
 final class FakeExportService implements ExportService {
   final List<ExportRequest> requests = [];
-  Result<ExportReceipt, ExportFailure> result = const Ok(
-    ExportReceipt(outputPath: '/tmp/loquiris-export'),
+  final List<String> statusRequests = [];
+  final List<String> cancellationRequests = [];
+  Result<ExportReceipt, ExportFailure> result = Ok(
+    ExportReceipt(fileName: 'Loquiris_export.zip', bytesWritten: 0),
   );
+  Result<ExportProgress, ExportFailure> statusResult = const Ok(
+    ExportProgress(
+      operationId: 'export-test',
+      phase: ExportProgressPhase.writing,
+      bytesProcessed: 0,
+      cancellable: true,
+    ),
+  );
+  Result<void, ExportFailure> cancelResult = const Ok(null);
 
   @override
   Future<Result<ExportReceipt, ExportFailure>> export(
@@ -616,5 +996,19 @@ final class FakeExportService implements ExportService {
   ) async {
     requests.add(request);
     return result;
+  }
+
+  @override
+  Future<Result<ExportProgress, ExportFailure>> status(
+    String operationId,
+  ) async {
+    statusRequests.add(operationId);
+    return statusResult;
+  }
+
+  @override
+  Future<Result<void, ExportFailure>> cancel(String operationId) async {
+    cancellationRequests.add(operationId);
+    return cancelResult;
   }
 }

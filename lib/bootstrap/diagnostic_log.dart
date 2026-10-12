@@ -20,6 +20,12 @@ enum DiagnosticCode {
 
   /// An expected local analysis persistence operation failed.
   analysisRepositoryOperationFailed,
+
+  /// Startup could not reconcile native authoritative audio into Drift.
+  startupRecoveryFailed,
+
+  /// A user-authorized local export boundary failed unexpectedly.
+  exportOperationFailed,
 }
 
 /// A structured diagnostic that cannot carry user content.

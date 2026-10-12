@@ -40,62 +40,62 @@
 ## 5. Native Audio Architecture Spike
 
 - [x] 5.1 Build an Android `AudioRecord` spike for mono 16 kHz PCM with device-route and audio-session diagnostics
-- [ ] 5.2 Measure and document AAC-LC 64 kbit/s encoder availability and quality on the selected target device
-- [ ] 5.3 Compare recoverable AAC storage candidates for short durable commits, logical five-minute segments, gap-free playback, and final M4A muxing
-- [ ] 5.4 Force-stop, kill, and truncate the spike at controlled offsets and measure the maximum recoverable loss
-- [ ] 5.5 Measure PCM-to-encoder and bounded fan-out behavior under artificial inference stalls and prove the recorder path does not back-pressure
-- [ ] 5.6 Select or reject the canonical container/commit design using recorded evidence and update design/specs if the AAC target changes
-- [ ] 5.7 Publish spike code, tests, storage calculations, device/firmware details, failures, and recommendation; do not proceed if the five-second loss gate is unmet
+- [x] 5.2 Measure and document AAC-LC 64 kbit/s encoder availability and quality on the selected target device
+- [x] 5.3 Compare recoverable AAC storage candidates for short durable commits, logical five-minute segments, gap-free playback, and final M4A muxing
+- [x] 5.4 Force-stop, kill, and truncate the spike at controlled offsets and measure the maximum recoverable loss
+- [x] 5.5 Measure PCM-to-encoder and bounded fan-out behavior under artificial inference stalls and prove the recorder path does not back-pressure
+- [x] 5.6 Select or reject the canonical container/commit design using recorded evidence and update design/specs if the AAC target changes
+- [x] 5.7 Publish spike code, tests, storage calculations, device/firmware details, failures, and recommendation; do not proceed if the five-second loss gate is unmet
 
 ## 6. Reliable Foreground Recording
 
-- [ ] 6.1 Implement the persisted native recording state machine and idempotent start, pause, resume, stop, and snapshot commands
-- [ ] 6.2 Implement the foreground service, wake lock lifecycle, microphone permission handling, and visible recording notification
-- [ ] 6.3 Implement monotonic duration, file-size snapshots, bookmark action, pause/resume notification action, and return-to-active-session behavior
-- [ ] 6.4 Implement priority audio encoding, durable segment manifests, atomic metadata writes, logical segment rollover, and input-health metrics
-- [ ] 6.5 Implement audio-focus and call interruption events with transient auto-resume and post-call user confirmation rules
-- [ ] 6.6 Implement start-time four-hour storage preflight, active low-space thresholds, safe finalization, and structured failures
-- [ ] 6.7 Implement Flutter `AudioCaptureService` channel adapter, fake adapter, view model, and lifecycle-independent active-state restoration
-- [ ] 6.8 Add Android JVM tests for state transitions, manifests, thresholds, clocks, encoding queues, and interruption policy
-- [ ] 6.9 Add instrumented tests for permission denial, screen lock/background, task dismissal, notification actions, and service process recreation
-- [ ] 6.10 Run a preliminary one-hour physical-device recorder test and publish phase evidence before recovery and four-hour gates
+- [x] 6.1 Implement the persisted native recording state machine and idempotent start, pause, resume, stop, and snapshot commands
+- [x] 6.2 Implement the foreground service, wake lock lifecycle, microphone permission handling, and visible recording notification
+- [x] 6.3 Implement monotonic duration, file-size snapshots, bookmark action, pause/resume notification action, and return-to-active-session behavior
+- [x] 6.4 Implement priority audio encoding, durable segment manifests, atomic metadata writes, logical segment rollover, and input-health metrics
+- [x] 6.5 Implement audio-focus and call interruption events with transient auto-resume and post-call user confirmation rules
+- [x] 6.6 Implement start-time four-hour storage preflight, active low-space thresholds, safe finalization, and structured failures
+- [x] 6.7 Implement Flutter `AudioCaptureService` channel adapter, durable correlated command receipts, fake adapter, app-root recording coordinator, monotonic view model, liveness-aware cold-process recovery, and non-blocking serialized stop finalization
+- [x] 6.8 Add Android JVM tests for state transitions, manifests, thresholds, clocks, encoding queues, and interruption policy
+- [x] 6.9 Add instrumented tests for permission denial, screen lock/background, task dismissal, notification actions, and service process recreation
+- [x] 6.10 Run a preliminary one-hour physical-device recorder test and publish phase evidence before recovery and four-hour gates
 
 ## 7. Recovery, Finalization, and Playback
 
-- [ ] 7.1 Implement startup reconciliation across Drift records, authoritative manifests, segment files, and incomplete derived files
-- [ ] 7.2 Implement recoverable-session UI that never reopens the microphone automatically and supports save or explicit continuation
-- [ ] 7.3 Implement rebuildable continuous playback and final M4A muxing without treating merged output as authoritative
-- [ ] 7.4 Implement gap/corruption detection, partial-session status, structured recovery diagnostics, and raw-segment export fallback
-- [ ] 7.5 Add force-stop, native crash simulation, Flutter process recreation, device restart, truncation, and failed-merge instrumented tests
-- [ ] 7.6 Verify committed segments remain usable and simulated crash loss never exceeds five seconds; publish phase evidence
+- [x] 7.1 Implement startup reconciliation across Drift records, authoritative manifests, segment files, and incomplete derived files
+- [x] 7.2 Implement recoverable-session UI that never reopens the microphone automatically and supports save or explicit continuation
+- [x] 7.3 Implement rebuildable continuous playback and final M4A muxing without treating merged output as authoritative
+- [x] 7.4 Implement gap/corruption detection, partial-session status, structured recovery diagnostics, and raw-segment export fallback
+- [x] 7.5 Add force-stop, native crash simulation, Flutter process recreation, device restart, truncation, and failed-merge instrumented tests
+- [x] 7.6 Verify committed segments remain usable and simulated crash loss never exceeds five seconds; publish phase evidence
 
 ## 8. Session Library and Manual Meeting Tools
 
-- [ ] 8.1 Implement session list, localized default title, rename, state badges, duration/size, local title/transcript search, and trash navigation
-- [ ] 8.2 Implement new-recording mode/language/speaker-count controls with remembered defaults and immediate post-preflight start
-- [ ] 8.3 Implement active recording UI with accessible recording status, timer, size, input activity, pause/resume, confirmed stop, and bookmark/highlight controls
-- [ ] 8.4 Implement session detail with segment-backed playback, event timeline, bookmark navigation, processing state, and failure explanation
-- [ ] 8.5 Implement combined basic transcript/language/speaker editor with revision history and no active-draft editing
-- [ ] 8.6 Implement seven-day trash, explicit permanent deletion, restore, and external-copy disclaimer
-- [ ] 8.7 Add view-model, widget, accessibility, localization, search, edit-conflict, and golden tests; publish phase evidence
+- [x] 8.1 Implement session list, localized default title, rename, state badges, duration/size, local title/transcript search, and trash navigation
+- [x] 8.2 Implement new-recording mode/language/speaker-count controls with remembered defaults and immediate post-preflight start
+- [x] 8.3 Implement active recording UI with accessible recording status, timer, size, input activity, pause/resume, confirmed stop, and bookmark/highlight controls
+- [x] 8.4 Implement session detail with segment-backed playback, event timeline, bookmark navigation, processing state, and failure explanation
+- [x] 8.5 Implement combined basic transcript/language/speaker editor with revision history and no active-draft editing
+- [x] 8.6 Implement seven-day trash, explicit permanent deletion, restore, and external-copy disclaimer
+- [x] 8.7 Add view-model, widget, accessibility, localization, search, edit-conflict, and golden tests; publish phase evidence
 
 ## 9. Export, Backup, Restore, and Storage
 
-- [ ] 9.1 Implement local M4A/segment, TXT, SRT, JSON, and ZIP export with privacy-preserving default names
-- [ ] 9.2 Implement progress, cancellation, structured errors, and cleanup for long export operations
-- [ ] 9.3 Define and implement the checksummed local backup format excluding models, caches, and logs
-- [ ] 9.4 Implement restore validation, identical-content skip, conflicting-ID duplication, and restored-copy labeling
-- [ ] 9.5 Implement storage accounting by application/models, meetings, cache, trash, and free space
-- [ ] 9.6 Implement safe cleanup limited to rebuildable PCM, waveform, index, and failed-job temporary data
-- [ ] 9.7 Add export round-trip, backup/restore collision, low-space, deletion, and sensitive-filename tests
-- [ ] 9.8 Verify Android backup is disabled and uninstall behavior is accurately documented; publish phase evidence
+- [x] 9.1 Implement local M4A/segment, TXT, SRT, JSON, and ZIP export with privacy-preserving default names
+- [x] 9.2 Implement progress, cancellation, structured errors, and cleanup for long export operations
+- [x] 9.3 Define and implement the checksummed local backup format excluding models, caches, and logs
+- [x] 9.4 Implement restore validation, identical-content skip, conflicting-ID duplication, and restored-copy labeling
+- [x] 9.5 Implement storage accounting by application/models, meetings, cache, trash, and free space
+- [x] 9.6 Implement safe cleanup limited to rebuildable PCM, waveform, index, and failed-job temporary data
+- [x] 9.7 Add export round-trip, backup/restore collision, low-space, deletion, and sensitive-filename tests
+- [x] 9.8 Verify Android backup is disabled and uninstall behavior is accurately documented; publish phase evidence
 
 ## 10. Model Supply Chain and Benchmark Harness
 
-- [ ] 10.1 Define the model manifest schema for source, version, SHA-256, bytes, runtime compatibility, license snapshot, and enabled modes
-- [ ] 10.2 Implement build-time model import/verification tooling without committing large model weights to Git
-- [ ] 10.3 Implement runtime model integrity checks that disable dependent AI only and never block recording
-- [ ] 10.4 Add fixed redistributable Chinese/English/mixed benchmark audio and record its provenance, consent, license, and hashes
+- [x] 10.1 Define the model manifest schema for source, version, SHA-256, bytes, runtime compatibility, license snapshot, and enabled modes
+- [x] 10.2 Implement build-time model import/verification tooling without committing large model weights to Git
+- [x] 10.3 Implement runtime model integrity checks that disable dependent AI only and never block recording
+- [x] 10.4 Add fixed redistributable Chinese/English/mixed benchmark audio and record its provenance, consent, license, and hashes
 - [x] 10.5 Implement the 30–60 second first-run benchmark and recommendation UI without microphone activation or automatic setting changes
 - [x] 10.6 Implement CPU/memory/RTF/latency/thermal/energy/backlog metric capture and privacy-safe local result export
 - [x] 10.7 Add high-quality, balanced, power-saving, recording-only, and post-session policy objects with explicit user-visible degradation

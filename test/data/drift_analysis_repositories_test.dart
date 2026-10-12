@@ -679,6 +679,21 @@ void main() {
           storedAtUtcMs: 4,
         ),
       );
+      await _insertSpeakerAnalysis(database);
+      await database.customStatement(
+        "UPDATE transcript_segments SET speaker_id = 'speaker-1', "
+        "speaker_meeting_id = 'meeting-1' WHERE id = 'segment-2'",
+      );
+      await database.customStatement('''
+        INSERT INTO language_decisions (
+          id, created_at, updated_at, transcript_segment_id, tag, source, confidence
+        ) VALUES ('language-run-2', 4, 4, 'segment-2', 'english', 'automatic', 0.8)
+      ''');
+      await database.customStatement('''
+        INSERT INTO transcript_language_selections (
+          id, created_at, updated_at, transcript_segment_id, language_decision_id
+        ) VALUES ('language-selection-run-2', 4, 4, 'segment-2', 'language-run-2')
+      ''');
 
       final retained = await _ok(transcripts.listVersions('meeting-1'));
       expect(retained.map((version) => version.run.id), ['run-2', 'run-1']);
@@ -687,6 +702,13 @@ void main() {
         'run-1',
       );
       expect(retained.last.segments.single.rawModelText, 'first');
+      final nonCurrent = retained.first;
+      expect(nonCurrent.isCurrent, isFalse);
+      expect(nonCurrent.speakersById['speaker-1']?.label, 'Speaker 1');
+      expect(
+        nonCurrent.languagesBySegmentId['segment-2']?.tag,
+        LanguageTag.english,
+      );
 
       await _ok(
         transcripts.selectCurrent('meeting-1', 'run-2', selectedAtUtcMs: 5),
@@ -713,10 +735,13 @@ void main() {
     );
     await _ok(
       transcripts.saveVersion(
-        _run('run-1', createdAt: 2),
+        _completedRun('run-1', createdAt: 2),
         [_segment('segment-1', 'run-1', 'machine text')],
         storedAtUtcMs: 2,
       ),
+    );
+    await _ok(
+      transcripts.selectCurrent('meeting-1', 'run-1', selectedAtUtcMs: 3),
     );
     await _insertAutomaticLanguage(database);
 
@@ -774,6 +799,205 @@ void main() {
           .displayedText,
       'human text',
     );
+  });
+
+  test(
+    'editor projection combines the selected stable transcript and revisions',
+    () async {
+      await _insertMeeting(database, 'meeting-1');
+      await _ok(repository.registerBundled(_model(), observedAtUtcMs: 1));
+      final transcripts = DriftTranscriptRepository(
+        database,
+        diagnosticSink: const DisabledDiagnosticLogSink(),
+      );
+      final revisions = DriftRevisionRepository(
+        database,
+        diagnosticSink: const DisabledDiagnosticLogSink(),
+      );
+      await _ok(
+        transcripts.saveVersion(
+          _completedRun('run-1', createdAt: 2),
+          [_segment('segment-1', 'run-1', 'machine text')],
+          storedAtUtcMs: 2,
+        ),
+      );
+      await _ok(
+        transcripts.selectCurrent('meeting-1', 'run-1', selectedAtUtcMs: 3),
+      );
+      await _insertAutomaticLanguage(database);
+      await _insertSpeakerAnalysis(database);
+      await database.customStatement(
+        "UPDATE transcript_segments SET speaker_id = 'speaker-1', "
+        "speaker_meeting_id = 'meeting-1' WHERE id = 'segment-1'",
+      );
+      await _ok(
+        revisions.apply(
+          const Revision(
+            id: 'revision-speaker-label',
+            meetingId: 'meeting-1',
+            targetId: 'speaker-1',
+            change: SpeakerLabelChange(
+              previous: 'Speaker 1',
+              revised: 'Alice',
+            ),
+            createdAtUtcMs: 4,
+          ),
+        ),
+      );
+
+      final document = await _ok(transcripts.loadEditor('meeting-1'));
+
+      expect(document.canEdit, isTrue);
+      expect(document.currentVersion?.run.id, 'run-1');
+      expect(
+        document.languagesBySegmentId['segment-1']?.tag,
+        LanguageTag.chinese,
+      );
+      expect(document.speakersById['speaker-1']?.label, 'Alice');
+      expect(document.revisions, hasLength(1));
+    },
+  );
+
+  test('active draft corrections are rejected before mutation', () async {
+    await _insertMeeting(database, 'meeting-1');
+    await database.customStatement(
+      "UPDATE meetings SET lifecycle = 'recording' WHERE id = 'meeting-1'",
+    );
+    await _ok(repository.registerBundled(_model(), observedAtUtcMs: 1));
+    final transcripts = DriftTranscriptRepository(
+      database,
+      diagnosticSink: const DisabledDiagnosticLogSink(),
+    );
+    final revisions = DriftRevisionRepository(
+      database,
+      diagnosticSink: const DisabledDiagnosticLogSink(),
+    );
+    await _ok(
+      transcripts.saveVersion(
+        _completedRun('run-1', createdAt: 2),
+        [_segment('segment-1', 'run-1', 'machine text')],
+        storedAtUtcMs: 2,
+      ),
+    );
+
+    final result = await revisions.apply(
+      const Revision(
+        id: 'revision-text',
+        meetingId: 'meeting-1',
+        targetId: 'segment-1',
+        change: TranscriptTextChange(
+          previousText: 'machine text',
+          revisedText: 'must not be stored',
+        ),
+        createdAtUtcMs: 3,
+      ),
+    );
+
+    expect(
+      (result as Err<Revision, AnalysisRepositoryFailure>).failure,
+      isA<AnalysisEditingLocked>(),
+    );
+    expect(await _tableCount(database, 'revisions'), 0);
+    expect(
+      (await _ok(
+        transcripts.listVersions('meeting-1'),
+      )).single.segments.single.displayedText,
+      'machine text',
+    );
+  });
+
+  test(
+    'finalized meetings still reject corrections to an incomplete run',
+    () async {
+      await _insertMeeting(database, 'meeting-1');
+      await _ok(repository.registerBundled(_model(), observedAtUtcMs: 1));
+      final transcripts = DriftTranscriptRepository(
+        database,
+        diagnosticSink: const DisabledDiagnosticLogSink(),
+      );
+      final revisions = DriftRevisionRepository(
+        database,
+        diagnosticSink: const DisabledDiagnosticLogSink(),
+      );
+      await _ok(
+        transcripts.saveVersion(
+          _run('run-1', createdAt: 2),
+          [_segment('segment-1', 'run-1', 'machine text')],
+          storedAtUtcMs: 2,
+        ),
+      );
+      await _ok(
+        transcripts.selectCurrent('meeting-1', 'run-1', selectedAtUtcMs: 3),
+      );
+
+      final result = await revisions.apply(
+        const Revision(
+          id: 'revision-text',
+          meetingId: 'meeting-1',
+          targetId: 'segment-1',
+          change: TranscriptTextChange(
+            previousText: 'machine text',
+            revisedText: 'must not be stored',
+          ),
+          createdAtUtcMs: 4,
+        ),
+      );
+
+      expect(
+        (result as Err<Revision, AnalysisRepositoryFailure>).failure,
+        isA<AnalysisEditingLocked>(),
+      );
+      expect(await _tableCount(database, 'revisions'), 0);
+    },
+  );
+
+  test('corrections to a no-longer-current transcript conflict', () async {
+    await _insertMeeting(database, 'meeting-1');
+    await _ok(repository.registerBundled(_model(), observedAtUtcMs: 1));
+    final transcripts = DriftTranscriptRepository(
+      database,
+      diagnosticSink: const DisabledDiagnosticLogSink(),
+    );
+    final revisions = DriftRevisionRepository(
+      database,
+      diagnosticSink: const DisabledDiagnosticLogSink(),
+    );
+    await _ok(
+      transcripts.saveVersion(
+        _completedRun('run-1', createdAt: 2),
+        [_segment('segment-1', 'run-1', 'old machine text')],
+        storedAtUtcMs: 2,
+      ),
+    );
+    await _ok(
+      transcripts.saveVersion(
+        _completedRun('run-2', createdAt: 3),
+        [_segment('segment-2', 'run-2', 'current machine text')],
+        storedAtUtcMs: 3,
+      ),
+    );
+    await _ok(
+      transcripts.selectCurrent('meeting-1', 'run-2', selectedAtUtcMs: 4),
+    );
+
+    final result = await revisions.apply(
+      const Revision(
+        id: 'revision-text',
+        meetingId: 'meeting-1',
+        targetId: 'segment-1',
+        change: TranscriptTextChange(
+          previousText: 'old machine text',
+          revisedText: 'stale edit',
+        ),
+        createdAtUtcMs: 5,
+      ),
+    );
+
+    expect(
+      (result as Err<Revision, AnalysisRepositoryFailure>).failure,
+      isA<AnalysisConflict>(),
+    );
+    expect(await _tableCount(database, 'revisions'), 0);
   });
 
   test('speaker corrections project without mutating raw analysis', () async {
@@ -943,10 +1167,13 @@ void main() {
     );
     await _ok(
       transcripts.saveVersion(
-        _run('run-1', createdAt: 2),
+        _completedRun('run-1', createdAt: 2),
         [_segment('segment-1', 'run-1', 'machine text')],
         storedAtUtcMs: 2,
       ),
+    );
+    await _ok(
+      transcripts.selectCurrent('meeting-1', 'run-1', selectedAtUtcMs: 3),
     );
     await database.customStatement('''
       CREATE TRIGGER fail_revision_insert
@@ -1022,6 +1249,22 @@ TranscriptRun _run(String id, {required int createdAt}) => TranscriptRun(
   createdAtUtcMs: createdAt,
   state: const AnalysisQueued(),
 );
+
+TranscriptRun _completedRun(String id, {required int createdAt}) =>
+    TranscriptRun(
+      id: id,
+      meetingId: 'meeting-1',
+      provenance: const InferenceProvenance(
+        engineId: 'whisper.cpp',
+        engineVersion: '1',
+        modelId: 'whisper-base-q5',
+        modelVersion: '1',
+        modelSha256: 'verified-hash',
+        parametersJson: '{}',
+      ),
+      createdAtUtcMs: createdAt,
+      state: const AnalysisCompleted(startedAtUtcMs: 2, endedAtUtcMs: 3),
+    );
 
 TranscriptRun _jobRun(String id, {required int createdAt}) => TranscriptRun(
   id: id,

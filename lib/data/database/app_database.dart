@@ -12,7 +12,9 @@ part 'app_database.g.dart';
 @DriftDatabase(
   tables: <Type>[
     Meetings,
+    RecordingPreferences,
     AudioSegments,
+    RecoveryFindings,
     SessionEvents,
     Bookmarks,
     TranscriptRuns,
@@ -45,14 +47,44 @@ final class AppDatabase extends _$AppDatabase {
   ];
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async {
       await migrator.createAll();
     },
-    onUpgrade: stepByStep(),
+    onUpgrade: stepByStep(
+      from1To2: (migrator, schema) async {
+        await migrator.createTable(schema.recoveryFindings);
+        await migrator.createIndex(schema.idxRecoveryFindingsMeetingSequence);
+      },
+      from2To3: (migrator, schema) async {
+        await migrator.addColumn(
+          schema.meetings,
+          schema.meetings.transcriptionMode,
+        );
+        await migrator.addColumn(
+          schema.meetings,
+          schema.meetings.expectedSpeakerCount,
+        );
+        await migrator.createTable(schema.recordingPreferences);
+      },
+      from3To4: (migrator, schema) async {
+        await migrator.alterTable(
+          TableMigration(
+            schema.exportRecords,
+            columnTransformer: {
+              schema.exportRecords.format: const CustomExpression<String>(
+                "CASE format WHEN 'audio' THEN 'audioM4a' "
+                "WHEN 'plainText' THEN 'text' "
+                "WHEN 'structuredJson' THEN 'json' ELSE format END",
+              ),
+            },
+          ),
+        );
+      },
+    ),
     beforeOpen: (details) async {
       for (final pragma in connectionPragmas) {
         await customStatement(pragma);

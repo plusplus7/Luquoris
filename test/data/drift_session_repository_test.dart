@@ -44,7 +44,16 @@ void main() {
     'library is scoped, keyset-paged, and streams committed writes',
     () async {
       await _save(repository, _meeting('older', createdAt: 1));
-      await _save(repository, _meeting('newer', createdAt: 2));
+      await _save(
+        repository,
+        _meeting(
+          'newer',
+          createdAt: 2,
+          transcriptionMode: MeetingTranscriptionMode.nearRealTime,
+          expectedSpeakerCount: 4,
+        ),
+      );
+      await _insertAudio(database, 'audio-newer', 'newer', 1536000);
 
       final firstPage = await _ok(
         repository.queryLibrary(
@@ -52,6 +61,12 @@ void main() {
         ),
       );
       expect(firstPage.meetings.map((meeting) => meeting.id), ['newer']);
+      expect(firstPage.items.single.committedAudioBytes, 1536000);
+      expect(
+        firstPage.meetings.single.transcriptionMode,
+        MeetingTranscriptionMode.nearRealTime,
+      );
+      expect(firstPage.meetings.single.expectedSpeakerCount, 4);
       expect(firstPage.nextCursor, isNotNull);
 
       final secondPage = await _ok(
@@ -101,22 +116,136 @@ void main() {
   });
 
   test(
+    'recording defaults are local, durable, and explicitly replaceable',
+    () async {
+      expect(
+        await _ok(repository.loadRecordingDefaults()),
+        const RecordingDefaults(),
+      );
+
+      const selected = RecordingDefaults(
+        transcriptionMode: MeetingTranscriptionMode.nearRealTime,
+        languageMode: MeetingLanguageMode.english,
+        expectedSpeakerCount: 6,
+      );
+      await _ok(repository.saveRecordingDefaults(selected, atUtcMs: 9));
+
+      expect(await _ok(repository.loadRecordingDefaults()), selected);
+    },
+  );
+
+  test('authoritative recording progress preserves setup metadata', () async {
+    await _save(
+      repository,
+      _meeting(
+        'meeting-progress',
+        createdAt: 1,
+        title: 'Stable setup',
+        lifecycle: MeetingLifecycle.preparing,
+        transcriptionMode: MeetingTranscriptionMode.nearRealTime,
+        expectedSpeakerCount: 4,
+      ),
+    );
+
+    final updated = await _ok(
+      repository.synchronizeRecordingProgress(
+        'meeting-progress',
+        lifecycle: MeetingLifecycle.recording,
+        mediaDuration: const Duration(seconds: 12),
+        atUtcMs: 20,
+      ),
+    );
+
+    expect(updated.title, 'Stable setup');
+    expect(updated.lifecycle, MeetingLifecycle.recording);
+    expect(updated.mediaDuration, const Duration(seconds: 12));
+    expect(updated.transcriptionMode, MeetingTranscriptionMode.nearRealTime);
+    expect(updated.expectedSpeakerCount, 4);
+  });
+
+  test(
+    'unstarted cleanup deletes only zero-audio draft or preparing rows',
+    () async {
+      await _save(
+        repository,
+        _meeting(
+          'empty-preparing',
+          createdAt: 1,
+          lifecycle: MeetingLifecycle.preparing,
+        ),
+      );
+      await _ok(repository.discardUnstartedMeeting('empty-preparing'));
+      expect(await _count(database, 'meetings'), 0);
+
+      await _save(
+        repository,
+        _meeting(
+          'with-audio',
+          createdAt: 2,
+          lifecycle: MeetingLifecycle.preparing,
+        ),
+      );
+      await _insertAudio(database, 'audio-started', 'with-audio', 1024);
+
+      final refused = await repository.discardUnstartedMeeting('with-audio');
+      expect(refused, isA<Err<void, SessionRepositoryFailure>>());
+      expect(
+        (refused as Err<void, SessionRepositoryFailure>).failure.code,
+        'session_invalid_lifecycle',
+      );
+      expect(await _count(database, 'meetings'), 1);
+    },
+  );
+
+  test(
     'search returns title and current-transcript media hits locally',
     () async {
       await _save(
         repository,
         _meeting('meeting-1', createdAt: 1, title: 'Roadmap'),
       );
+      await _insertAudio(database, 'audio-search', 'meeting-1', 2048);
       await _insertCurrentTranscript(database);
 
       final titleHits = await _ok(repository.search('Road'));
       expect(titleHits, hasLength(1));
       expect(titleHits.single.transcriptSegmentId, isNull);
+      expect(titleHits.single.committedAudioBytes, 2048);
 
       final transcriptHits = await _ok(repository.search('世界'));
       expect(transcriptHits, hasLength(1));
       expect(transcriptHits.single.transcriptSegmentId, 'segment-1');
       expect(transcriptHits.single.mediaOffset, const Duration(seconds: 2));
+      expect(transcriptHits.single.committedAudioBytes, 2048);
+    },
+  );
+
+  test(
+    'rename updates only the title after concurrent lifecycle changes',
+    () async {
+      await _save(
+        repository,
+        _meeting(
+          'meeting-1',
+          createdAt: 1,
+          title: 'Original',
+          lifecycle: MeetingLifecycle.recoverable,
+        ),
+      );
+      await _ok(repository.moveToTrash('meeting-1', atUtcMs: 10));
+
+      final renamed = await _ok(
+        repository.renameMeeting(
+          'meeting-1',
+          '  Renamed  ',
+          atUtcMs: 11,
+        ),
+      );
+
+      expect(renamed.title, 'Renamed');
+      expect(renamed.lifecycle, MeetingLifecycle.trashed);
+      expect(renamed.lifecycleBeforeTrash, MeetingLifecycle.recoverable);
+      expect(renamed.trashedAtUtcMs, 10);
     },
   );
 
@@ -183,6 +312,32 @@ void main() {
     },
   );
 
+  test('native-active meetings cannot enter trash', () async {
+    const activeLifecycles = <MeetingLifecycle>[
+      MeetingLifecycle.preparing,
+      MeetingLifecycle.recording,
+      MeetingLifecycle.pausedByUser,
+      MeetingLifecycle.pausedByInterruption,
+      MeetingLifecycle.stopping,
+    ];
+    for (final lifecycle in activeLifecycles) {
+      final meetingId = 'meeting-${lifecycle.name}';
+      await _save(
+        repository,
+        _meeting(meetingId, createdAt: 1, lifecycle: lifecycle),
+      );
+
+      final result = await repository.moveToTrash(meetingId, atUtcMs: 2);
+
+      expect(
+        (result as Err<Meeting, SessionRepositoryFailure>).failure.code,
+        'session_invalid_lifecycle',
+        reason: lifecycle.name,
+      );
+      expect(await _lifecycle(database, meetingId), lifecycle.name);
+    }
+  });
+
   test('permanent deletion keeps metadata when audio removal fails', () async {
     await _save(repository, _meeting('meeting-1', createdAt: 1));
     await _insertAudio(database, 'audio-1', 'meeting-1', 100);
@@ -203,28 +358,42 @@ void main() {
     expect(diagnosticSink.events, hasLength(1));
   });
 
-  test('permanent deletion removes private audio before metadata', () async {
-    final directory = await Directory.systemTemp.createTemp('loquiris-audio-');
-    addTearDown(() async {
-      if (directory.existsSync()) await directory.delete(recursive: true);
-    });
-    final audioFile = File('${directory.path}/meetings/meeting-1/0000.aac');
-    await audioFile.parent.create(recursive: true);
-    await audioFile.writeAsBytes(const <int>[1, 2, 3], flush: true);
-    repository = DriftSessionRepository(
-      database,
-      audioStore: PrivateMeetingAudioStore(() async => directory),
-      diagnosticSink: diagnosticSink,
-    );
-    await _save(repository, _meeting('meeting-1', createdAt: 1));
-    await _insertAudio(database, 'audio-1', 'meeting-1', 3);
-    await _ok(repository.moveToTrash('meeting-1', atUtcMs: 2));
+  test(
+    'permanent deletion removes private audio and preserves external copies',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'loquiris-audio-',
+      );
+      final externalDirectory = await Directory.systemTemp.createTemp(
+        'loquiris-external-export-',
+      );
+      addTearDown(() async {
+        if (directory.existsSync()) await directory.delete(recursive: true);
+        if (externalDirectory.existsSync()) {
+          await externalDirectory.delete(recursive: true);
+        }
+      });
+      final audioFile = File('${directory.path}/meetings/meeting-1/0000.aac');
+      final externalCopy = File('${externalDirectory.path}/exported-copy.m4a');
+      await audioFile.parent.create(recursive: true);
+      await audioFile.writeAsBytes(const <int>[1, 2, 3], flush: true);
+      await externalCopy.writeAsBytes(const <int>[1, 2, 3], flush: true);
+      repository = DriftSessionRepository(
+        database,
+        audioStore: PrivateMeetingAudioStore(() async => directory),
+        diagnosticSink: diagnosticSink,
+      );
+      await _save(repository, _meeting('meeting-1', createdAt: 1));
+      await _insertAudio(database, 'audio-1', 'meeting-1', 3);
+      await _ok(repository.moveToTrash('meeting-1', atUtcMs: 2));
 
-    await _ok(repository.permanentlyDelete('meeting-1'));
+      await _ok(repository.permanentlyDelete('meeting-1'));
 
-    expect(audioFile.existsSync(), isFalse);
-    expect(await _count(database, 'meetings'), 0);
-  });
+      expect(audioFile.existsSync(), isFalse);
+      expect(externalCopy.readAsBytesSync(), const <int>[1, 2, 3]);
+      expect(await _count(database, 'meetings'), 0);
+    },
+  );
 
   test('durable deleting reservation rejects a concurrent restore', () async {
     await _save(repository, _meeting('meeting-1', createdAt: 1));
@@ -423,14 +592,38 @@ void main() {
 
       final report = await _ok(
         repository.reconcileRecovery(
-          const <SessionRecoveryEvidence>[
+          <SessionRecoveryEvidence>[
             SessionRecoveryEvidence(
               meetingId: 'unfinished',
-              hasCommittedAudio: true,
+              storageKey: 'unfinished',
+              segments: <SessionRecoverySegmentEvidence>[
+                SessionRecoverySegmentEvidence(
+                  sequence: 0,
+                  relativePath: _path(
+                    'recordings/unfinished/segment-00000.adts',
+                  ),
+                  mediaStart: Duration.zero,
+                  mediaDuration: const Duration(seconds: 5),
+                  committedBytes: 100,
+                  state: AudioSegmentState.committed,
+                ),
+              ],
             ),
             SessionRecoveryEvidence(
               meetingId: 'final',
-              hasCommittedAudio: true,
+              storageKey: 'final',
+              segments: <SessionRecoverySegmentEvidence>[
+                SessionRecoverySegmentEvidence(
+                  sequence: 0,
+                  relativePath: _path(
+                    'recordings/final/segment-00000.adts',
+                  ),
+                  mediaStart: Duration.zero,
+                  mediaDuration: const Duration(seconds: 5),
+                  committedBytes: 100,
+                  state: AudioSegmentState.committed,
+                ),
+              ],
             ),
           ],
           observedAtUtcMs: 20,
@@ -444,6 +637,419 @@ void main() {
       expect(await _count(database, 'session_events'), 1);
     },
   );
+
+  test(
+    'recovery reconciliation mirrors manifest segments and requeues derived jobs',
+    () async {
+      await _save(
+        repository,
+        _meeting(
+          'unfinished',
+          createdAt: 1,
+          lifecycle: MeetingLifecycle.recording,
+        ),
+      );
+      await _insertAudio(database, 'stale-audio', 'unfinished', 20);
+      await database.customStatement('''
+        INSERT INTO processing_jobs (
+          id, created_at, updated_at, is_deleted, row_revision,
+          meeting_id, job_kind, job_state, progress
+        ) VALUES ('merge-1', 1, 1, 0, 0, 'unfinished', 'audioMerge', 'running', 0.5)
+      ''');
+
+      final report = await _ok(
+        repository.reconcileRecovery(
+          <SessionRecoveryEvidence>[
+            SessionRecoveryEvidence(
+              meetingId: 'unfinished',
+              storageKey: 'hash',
+              segments: <SessionRecoverySegmentEvidence>[
+                SessionRecoverySegmentEvidence(
+                  sequence: 0,
+                  relativePath: _path(
+                    'recordings/hash/segment-00000.adts',
+                  ),
+                  mediaStart: Duration.zero,
+                  mediaDuration: const Duration(seconds: 4),
+                  committedBytes: 40,
+                  state: AudioSegmentState.committed,
+                ),
+                SessionRecoverySegmentEvidence(
+                  sequence: 1,
+                  relativePath: _path(
+                    'recordings/hash/segment-00001.adts',
+                  ),
+                  mediaStart: const Duration(seconds: 4),
+                  mediaDuration: const Duration(seconds: 2),
+                  committedBytes: 20,
+                  state: AudioSegmentState.committed,
+                ),
+              ],
+            ),
+          ],
+          observedAtUtcMs: 20,
+        ),
+      );
+
+      expect(report.markedRecoverableIds, ['unfinished']);
+      expect(report.reconciledSegmentCount, 2);
+      final segments = await database.customSelect('''
+        SELECT sequence, relative_path, media_duration_us, committed_bytes, state
+        FROM audio_segments WHERE meeting_id = 'unfinished' ORDER BY sequence
+      ''').get();
+      expect(segments.map((row) => row.read<int>('sequence')), [0, 1]);
+      expect(
+        segments.map((row) => row.read<String>('relative_path')),
+        [
+          'recordings/hash/segment-00000.adts',
+          'recordings/hash/segment-00001.adts',
+        ],
+      );
+      expect(segments.map((row) => row.read<int>('committed_bytes')), [40, 20]);
+      expect(await _meetingDurationUs(database, 'unfinished'), 6000000);
+      final job = await database
+          .customSelect(
+            "SELECT job_state, progress FROM processing_jobs WHERE id = 'merge-1'",
+          )
+          .getSingle();
+      expect(job.read<String>('job_state'), 'queued');
+      expect(job.readNullable<double>('progress'), isNull);
+    },
+  );
+
+  test(
+    'recovery creates a visible meeting for orphan committed audio',
+    () async {
+      final report = await _ok(
+        repository.reconcileRecovery(
+          <SessionRecoveryEvidence>[
+            SessionRecoveryEvidence(
+              meetingId: 'orphan-meeting',
+              storageKey: 'orphan',
+              segments: <SessionRecoverySegmentEvidence>[
+                SessionRecoverySegmentEvidence(
+                  sequence: 0,
+                  relativePath: _path(
+                    'recordings/orphan/segment-00000.adts',
+                  ),
+                  mediaStart: Duration.zero,
+                  mediaDuration: const Duration(seconds: 3),
+                  committedBytes: 30,
+                  state: AudioSegmentState.committed,
+                ),
+              ],
+            ),
+          ],
+          observedAtUtcMs: 99,
+        ),
+      );
+
+      expect(report.createdRecoverableIds, ['orphan-meeting']);
+      expect(await _lifecycle(database, 'orphan-meeting'), 'recoverable');
+      expect(await _count(database, 'audio_segments'), 1);
+    },
+  );
+
+  test(
+    'recovery invalidates Drift-only audio and requeues derived work',
+    () async {
+      await _save(repository, _meeting('stale-final', createdAt: 1));
+      await _save(
+        repository,
+        _meeting(
+          'empty-active',
+          createdAt: 2,
+          lifecycle: MeetingLifecycle.recording,
+        ),
+      );
+      await _insertAudio(database, 'stale-audio', 'stale-final', 100);
+      await database.customStatement(
+        "UPDATE audio_segments SET relative_path = 'recordings/missing-key/segment-00000.adts' WHERE id = 'stale-audio'",
+      );
+      await database.customStatement('''
+        INSERT INTO processing_jobs (
+          id, created_at, updated_at, is_deleted, row_revision,
+          meeting_id, job_kind, job_state, progress
+        ) VALUES ('orphan-waveform', 1, 1, 0, 0, 'stale-final',
+                  'waveform', 'running', 0.25)
+      ''');
+
+      final report = await _ok(
+        repository.reconcileRecovery(
+          const <SessionRecoveryEvidence>[],
+          observedAtUtcMs: 30,
+          invalidStorageKeys: const <String>{'missing-key'},
+        ),
+      );
+
+      expect(
+        report.markedRecoverableIds,
+        containsAll(<String>['stale-final', 'empty-active']),
+      );
+      final audio = await database
+          .customSelect(
+            "SELECT state, committed_bytes FROM audio_segments WHERE id = 'stale-audio'",
+          )
+          .getSingle();
+      expect(audio.read<String>('state'), 'corrupt');
+      expect(audio.read<int>('committed_bytes'), 0);
+      final job = await database
+          .customSelect(
+            "SELECT job_state, progress FROM processing_jobs WHERE id = 'orphan-waveform'",
+          )
+          .getSingle();
+      expect(job.read<String>('job_state'), 'queued');
+      expect(job.readNullable<double>('progress'), isNull);
+    },
+  );
+
+  test(
+    'repeating identical recovery evidence performs no durable writes',
+    () async {
+      await _save(
+        repository,
+        _meeting(
+          'repeatable',
+          createdAt: 1,
+          lifecycle: MeetingLifecycle.recording,
+        ),
+      );
+      final evidence = <SessionRecoveryEvidence>[
+        SessionRecoveryEvidence(
+          meetingId: 'repeatable',
+          storageKey: 'repeatable-key',
+          segments: <SessionRecoverySegmentEvidence>[
+            SessionRecoverySegmentEvidence(
+              sequence: 0,
+              relativePath: _path(
+                'recordings/repeatable-key/segment-00000.adts',
+              ),
+              mediaStart: Duration.zero,
+              mediaDuration: const Duration(seconds: 4),
+              committedBytes: 40,
+              state: AudioSegmentState.committed,
+            ),
+          ],
+        ),
+      ];
+      await _ok(
+        repository.reconcileRecovery(evidence, observedAtUtcMs: 20),
+      );
+      final before = await _recoveryRevisions(database, 'repeatable');
+
+      final second = await _ok(
+        repository.reconcileRecovery(evidence, observedAtUtcMs: 30),
+      );
+      final after = await _recoveryRevisions(database, 'repeatable');
+
+      expect(second.markedRecoverableIds, isEmpty);
+      expect(after, before);
+      expect(await _count(database, 'session_events'), 1);
+    },
+  );
+
+  test(
+    'finalized meeting becomes recoverable when journal authorizes no audio',
+    () async {
+      await _save(repository, _meeting('false-final', createdAt: 1));
+
+      final report = await _ok(
+        repository.reconcileRecovery(
+          <SessionRecoveryEvidence>[
+            SessionRecoveryEvidence(
+              meetingId: 'false-final',
+              storageKey: 'false-final-key',
+              segments: <SessionRecoverySegmentEvidence>[
+                SessionRecoverySegmentEvidence(
+                  sequence: 0,
+                  relativePath: _path(
+                    'recordings/false-final-key/segment-00000.adts',
+                  ),
+                  mediaStart: Duration.zero,
+                  mediaDuration: Duration.zero,
+                  committedBytes: 0,
+                  state: AudioSegmentState.open,
+                ),
+              ],
+            ),
+          ],
+          observedAtUtcMs: 20,
+        ),
+      );
+
+      expect(report.markedRecoverableIds, ['false-final']);
+      expect(await _lifecycle(database, 'false-final'), 'recoverable');
+      final details = await _ok(repository.recoveryDetails('false-final'));
+      expect(details.integrityState, RecoveryIntegrityState.complete);
+      expect(details.diagnostics, isEmpty);
+      expect(details.rawExportSegments, isEmpty);
+    },
+  );
+
+  test(
+    'finalized meeting becomes recoverable when native timeline is partial',
+    () async {
+      await _save(repository, _meeting('partial-final', createdAt: 1));
+
+      final report = await _ok(
+        repository.reconcileRecovery(
+          <SessionRecoveryEvidence>[
+            SessionRecoveryEvidence(
+              meetingId: 'partial-final',
+              storageKey: 'partial-key',
+              integrityState: RecoveryIntegrityState.partial,
+              diagnostics: const <SessionRecoveryDiagnostic>[
+                SessionRecoveryDiagnostic(
+                  code: 'recording_recovery_timeline_gap',
+                  segmentSequence: 1,
+                ),
+              ],
+              segments: <SessionRecoverySegmentEvidence>[
+                SessionRecoverySegmentEvidence(
+                  sequence: 0,
+                  relativePath: _path(
+                    'recordings/partial-key/segment-00000.adts',
+                  ),
+                  mediaStart: Duration.zero,
+                  mediaDuration: const Duration(seconds: 1),
+                  committedBytes: 10,
+                  state: AudioSegmentState.committed,
+                ),
+              ],
+            ),
+          ],
+          observedAtUtcMs: 20,
+        ),
+      );
+
+      expect(report.markedRecoverableIds, ['partial-final']);
+      expect(report.partialMeetingIds, ['partial-final']);
+      expect(await _lifecycle(database, 'partial-final'), 'recoverable');
+
+      final details = await _ok(
+        repository.recoveryDetails('partial-final'),
+      );
+      expect(details.integrityState, RecoveryIntegrityState.partial);
+      expect(
+        details.diagnostics.single.code,
+        'recording_recovery_timeline_gap',
+      );
+      expect(details.diagnostics.single.segmentSequence, 1);
+      expect(details.rawExportSegments.single.committedBytes, 10);
+
+      await _ok(
+        repository.reconcileRecovery(
+          <SessionRecoveryEvidence>[
+            SessionRecoveryEvidence(
+              meetingId: 'partial-final',
+              storageKey: 'partial-key',
+              segments: <SessionRecoverySegmentEvidence>[
+                SessionRecoverySegmentEvidence(
+                  sequence: 0,
+                  relativePath: _path(
+                    'recordings/partial-key/segment-00000.adts',
+                  ),
+                  mediaStart: Duration.zero,
+                  mediaDuration: const Duration(seconds: 1),
+                  committedBytes: 10,
+                  state: AudioSegmentState.committed,
+                ),
+              ],
+            ),
+          ],
+          observedAtUtcMs: 30,
+        ),
+      );
+      final repaired = await _ok(repository.recoveryDetails('partial-final'));
+      expect(repaired.integrityState, RecoveryIntegrityState.complete);
+      expect(repaired.diagnostics, isEmpty);
+      expect(repaired.rawExportSegments.single.committedBytes, 10);
+    },
+  );
+
+  test(
+    'recovery resolution allows only explicit idempotent outcomes',
+    () async {
+      await _save(
+        repository,
+        _meeting(
+          'resolve-me',
+          createdAt: 1,
+          lifecycle: MeetingLifecycle.recoverable,
+        ),
+      );
+
+      final saved = await _ok(
+        repository.resolveRecovery(
+          'resolve-me',
+          RecoveryResolution.save,
+          atUtcMs: 20,
+        ),
+      );
+      final repeated = await _ok(
+        repository.resolveRecovery(
+          'resolve-me',
+          RecoveryResolution.save,
+          atUtcMs: 30,
+        ),
+      );
+
+      expect(saved.lifecycle, MeetingLifecycle.finalized);
+      expect(repeated.lifecycle, MeetingLifecycle.finalized);
+      expect(await _lifecycle(database, 'resolve-me'), 'finalized');
+    },
+  );
+
+  test(
+    'recovery continuation is idempotent and rejects active sessions',
+    () async {
+      await _save(
+        repository,
+        _meeting(
+          'continue-me',
+          createdAt: 1,
+          lifecycle: MeetingLifecycle.recoverable,
+        ),
+      );
+      await _save(
+        repository,
+        _meeting(
+          'already-final',
+          createdAt: 2,
+        ),
+      );
+
+      final continued = await _ok(
+        repository.resolveRecovery(
+          'continue-me',
+          RecoveryResolution.continueRecording,
+          atUtcMs: 20,
+        ),
+      );
+      final repeated = await _ok(
+        repository.resolveRecovery(
+          'continue-me',
+          RecoveryResolution.continueRecording,
+          atUtcMs: 30,
+        ),
+      );
+      final invalid = await repository.resolveRecovery(
+        'already-final',
+        RecoveryResolution.continueRecording,
+        atUtcMs: 40,
+      );
+
+      expect(continued.lifecycle, MeetingLifecycle.recording);
+      expect(repeated.lifecycle, MeetingLifecycle.recording);
+      expect(await _lifecycle(database, 'continue-me'), 'recording');
+      expect(invalid, isA<Err<Meeting, SessionRepositoryFailure>>());
+      expect(
+        (invalid as Err<Meeting, SessionRepositoryFailure>).failure.code,
+        'session_invalid_lifecycle',
+      );
+      expect(await _lifecycle(database, 'already-final'), 'finalized');
+    },
+  );
 }
 
 Meeting _meeting(
@@ -451,6 +1057,9 @@ Meeting _meeting(
   required int createdAt,
   String? title,
   MeetingLifecycle lifecycle = MeetingLifecycle.finalized,
+  MeetingTranscriptionMode transcriptionMode =
+      MeetingTranscriptionMode.postSession,
+  int? expectedSpeakerCount,
 }) => Meeting(
   id: id,
   title: title ?? id,
@@ -458,6 +1067,8 @@ Meeting _meeting(
   mediaDuration: Duration.zero,
   lifecycle: lifecycle,
   languageMode: MeetingLanguageMode.mixed,
+  transcriptionMode: transcriptionMode,
+  expectedSpeakerCount: expectedSpeakerCount,
 );
 
 Future<void> _save(DriftSessionRepository repository, Meeting meeting) async {
@@ -491,6 +1102,45 @@ Future<String> _lifecycle(db.AppDatabase database, String id) async {
       .getSingle();
   return row.read<String>('lifecycle');
 }
+
+Future<int> _meetingDurationUs(db.AppDatabase database, String id) async {
+  final row = await database
+      .customSelect(
+        'SELECT media_duration_us FROM meetings WHERE id = ?',
+        variables: [Variable<String>(id)],
+      )
+      .getSingle();
+  return row.read<int>('media_duration_us');
+}
+
+Future<List<int>> _recoveryRevisions(
+  db.AppDatabase database,
+  String meetingId,
+) async {
+  final meeting = await database
+      .customSelect(
+        'SELECT updated_at, row_revision FROM meetings WHERE id = ?',
+        variables: [Variable<String>(meetingId)],
+      )
+      .getSingle();
+  final audio = await database
+      .customSelect(
+        'SELECT updated_at, row_revision FROM audio_segments WHERE meeting_id = ?',
+        variables: [Variable<String>(meetingId)],
+      )
+      .getSingle();
+  return <int>[
+    meeting.read<int>('updated_at'),
+    meeting.read<int>('row_revision'),
+    audio.read<int>('updated_at'),
+    audio.read<int>('row_revision'),
+  ];
+}
+
+AppRelativePath _path(String value) => AppRelativePath.tryParse(value).fold(
+  (path) => path,
+  (failure) => throw TestFailure('Invalid fixture path: ${failure.code}'),
+);
 
 Future<void> _insertAudio(
   db.AppDatabase database,

@@ -50,6 +50,15 @@ enum MeetingLanguageMode {
   mixed,
 }
 
+/// User-selected transcription timing for one meeting.
+enum MeetingTranscriptionMode {
+  /// Produce an experimental draft while recording when resources allow.
+  nearRealTime,
+
+  /// Preserve capture resources and transcribe only after recording.
+  postSession,
+}
+
 /// Immutable meeting aggregate root.
 @immutable
 final class Meeting extends ValueObject {
@@ -61,10 +70,17 @@ final class Meeting extends ValueObject {
     required this.mediaDuration,
     required this.lifecycle,
     required this.languageMode,
+    this.transcriptionMode = MeetingTranscriptionMode.postSession,
+    this.expectedSpeakerCount,
     this.currentTranscriptRunId,
     this.lifecycleBeforeTrash,
     this.trashedAtUtcMs,
   }) : assert(createdAtUtcMs >= 0, 'createdAtUtcMs must be non-negative'),
+       assert(
+         expectedSpeakerCount == null ||
+             (expectedSpeakerCount >= 2 && expectedSpeakerCount <= 6),
+         'expectedSpeakerCount must be null or between two and six',
+       ),
        assert(
          (lifecycle == MeetingLifecycle.trashed ||
                  lifecycle == MeetingLifecycle.deleting) ==
@@ -103,6 +119,12 @@ final class Meeting extends ValueObject {
   /// Recognition language hint.
   final MeetingLanguageMode languageMode;
 
+  /// Selected live-draft or post-session transcription timing.
+  final MeetingTranscriptionMode transcriptionMode;
+
+  /// Optional speaker-count guidance; null requests automatic estimation.
+  final int? expectedSpeakerCount;
+
   /// Explicitly selected current transcript version.
   final String? currentTranscriptRunId;
 
@@ -118,6 +140,8 @@ final class Meeting extends ValueObject {
     Duration? mediaDuration,
     MeetingLifecycle? lifecycle,
     MeetingLanguageMode? languageMode,
+    MeetingTranscriptionMode? transcriptionMode,
+    Object? expectedSpeakerCount = _unset,
     Object? currentTranscriptRunId = _unset,
     Object? lifecycleBeforeTrash = _unset,
     Object? trashedAtUtcMs = _unset,
@@ -128,6 +152,10 @@ final class Meeting extends ValueObject {
     mediaDuration: mediaDuration ?? this.mediaDuration,
     lifecycle: lifecycle ?? this.lifecycle,
     languageMode: languageMode ?? this.languageMode,
+    transcriptionMode: transcriptionMode ?? this.transcriptionMode,
+    expectedSpeakerCount: identical(expectedSpeakerCount, _unset)
+        ? this.expectedSpeakerCount
+        : expectedSpeakerCount as int?,
     currentTranscriptRunId: identical(currentTranscriptRunId, _unset)
         ? this.currentTranscriptRunId
         : currentTranscriptRunId as String?,
@@ -147,6 +175,8 @@ final class Meeting extends ValueObject {
     mediaDuration,
     lifecycle,
     languageMode,
+    transcriptionMode,
+    expectedSpeakerCount,
     currentTranscriptRunId,
     lifecycleBeforeTrash,
     trashedAtUtcMs,

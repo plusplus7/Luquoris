@@ -78,7 +78,776 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewRecordingAction => 'Review recording';
 
   @override
+  String get saveRecoveredRecordingAction => 'Save recovered recording';
+
+  @override
+  String get continueRecordingAction => 'Continue recording';
+
+  @override
+  String get cancelAction => 'Cancel';
+
+  @override
+  String get recoveryActionFailed =>
+      'Loquiris could not apply that recovery choice. Your saved audio is unchanged.';
+
+  @override
   String get sessionsLoadingLabel => 'Loading meetings';
+
+  @override
+  String get sessionsSearchHint => 'Search meetings';
+
+  @override
+  String get meetingsLibraryTab => 'Library';
+
+  @override
+  String get trashTab => 'Trash';
+
+  @override
+  String get meetingActionsTooltip => 'Meeting actions';
+
+  @override
+  String get renameMeetingAction => 'Rename';
+
+  @override
+  String get moveToTrashAction => 'Move to trash';
+
+  @override
+  String get restoreMeetingAction => 'Restore';
+
+  @override
+  String get saveAction => 'Save';
+
+  @override
+  String get meetingTitleLabel => 'Meeting title';
+
+  @override
+  String get trashEmptyTitle => 'Trash is empty';
+
+  @override
+  String get trashEmptyBody =>
+      'Deleted meetings stay here until you permanently remove them.';
+
+  @override
+  String get trashRetentionNotice =>
+      'Seven-day local trash. Nothing is deleted automatically; restore or permanently delete items yourself.';
+
+  @override
+  String get permanentDeleteMeetingAction => 'Delete permanently';
+
+  @override
+  String get retryPermanentDeleteAction => 'Retry permanent deletion';
+
+  @override
+  String get permanentDeleteTitle => 'Permanently delete this meeting?';
+
+  @override
+  String get permanentDeleteBody =>
+      'This removes private audio, transcript, revisions, bookmarks, and meeting metadata from this device. Loquiris cannot delete copies you exported or backed up elsewhere.';
+
+  @override
+  String get permanentDeletePending => 'Deleting private meeting data…';
+
+  @override
+  String get permanentDeleteFailed =>
+      'Deletion did not finish. Your meeting remains locked for a safe retry.';
+
+  @override
+  String get searchEmptyTitle => 'No local matches';
+
+  @override
+  String get searchEmptyBody =>
+      'Try a meeting title or words from the transcript.';
+
+  @override
+  String get meetingStatusDraft => 'Draft';
+
+  @override
+  String get meetingStatusPreparing => 'Preparing';
+
+  @override
+  String get meetingStatusRecording => 'Recording';
+
+  @override
+  String get meetingStatusPaused => 'Paused';
+
+  @override
+  String get meetingStatusStopping => 'Saving';
+
+  @override
+  String get meetingStatusFinished => 'Finished';
+
+  @override
+  String get meetingStatusRecoverable => 'Needs review';
+
+  @override
+  String get meetingStatusFailed => 'Save incomplete';
+
+  @override
+  String get meetingStatusTrashed => 'In trash';
+
+  @override
+  String get meetingStatusDeleting => 'Deleting';
+
+  @override
+  String meetingDefaultTitle(String date, String time) {
+    return 'Meeting $date $time';
+  }
+
+  @override
+  String meetingMetadata(String date, String duration, String size) {
+    return '$date · $duration · $size';
+  }
+
+  @override
+  String transcriptMatchAt(String offset) {
+    return 'Transcript match at $offset';
+  }
+
+  @override
+  String get newRecordingIntro =>
+      'Choose how this meeting will be processed. Audio is always saved locally first.';
+
+  @override
+  String get transcriptionModeLabel => 'Transcription timing';
+
+  @override
+  String get nearRealTimeMode => 'Near-real-time draft';
+
+  @override
+  String get nearRealTimeModeDescription =>
+      'Experimental. It may pause or fall back to post-session processing to protect the recording.';
+
+  @override
+  String get postSessionMode => 'After recording';
+
+  @override
+  String get postSessionModeDescription =>
+      'Keeps capture resources focused on saving audio, then analyzes the meeting locally.';
+
+  @override
+  String get languageModeLabel => 'Spoken language';
+
+  @override
+  String get languageChinese => 'Chinese';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageMixed => 'Chinese + English';
+
+  @override
+  String get speakerCountLabel => 'Expected speakers';
+
+  @override
+  String get speakerCountAutomatic => 'Automatic';
+
+  @override
+  String speakerCountOption(int count) {
+    return '$count';
+  }
+
+  @override
+  String get startRecordingNowAction => 'Start recording';
+
+  @override
+  String get recordingPreflightProgress => 'Checking storage and microphone…';
+
+  @override
+  String get newRecordingLoadError =>
+      'Loquiris could not load the saved recording defaults.';
+
+  @override
+  String get newRecordingStartFailed =>
+      'Recording did not start. Check the message and try again; no existing audio was changed.';
+
+  @override
+  String get recordingMicrophonePermissionDenied =>
+      'Microphone access is required to record. If Android does not show the permission prompt again, enable Microphone for Loquiris in Settings.';
+
+  @override
+  String recordingStoragePreflightFailed(String available, String required) {
+    return '$available available · $required required';
+  }
+
+  @override
+  String recordingStorageRequired(String required) {
+    return 'At least $required is required; available space could not be measured.';
+  }
+
+  @override
+  String get recordingStartOutcomeUnknown =>
+      'Android has not confirmed whether recording started. Do not start again; check the recording notification or reopen Loquiris.';
+
+  @override
+  String get recordingSetupCleanupFailed =>
+      'Loquiris could not prove that this setup is safe to replace. Reopen the app before trying again.';
+
+  @override
+  String get newRecordingOfflineNote =>
+      'No audio or setup choice leaves this device unless you explicitly export it.';
+
+  @override
+  String recordingTimerSemantic(String time) {
+    return 'Recorded time $time';
+  }
+
+  @override
+  String recordingSizeLabel(String size) {
+    return 'Recorded audio size $size';
+  }
+
+  @override
+  String get recordingStatusActive => 'Recording now';
+
+  @override
+  String get recordingStatusPaused => 'Recording paused';
+
+  @override
+  String get recordingStatusInterrupted =>
+      'Input interrupted — resume when it is safe';
+
+  @override
+  String get recordingStatusPreparing => 'Preparing recorder';
+
+  @override
+  String get recordingStatusSaving => 'Saving recording safely';
+
+  @override
+  String get recordingStatusSaved => 'Recording saved';
+
+  @override
+  String get recordingStatusNeedsReview => 'Recording needs review';
+
+  @override
+  String get recordingStatusUnavailable => 'No active recording';
+
+  @override
+  String get recordingInputActive => 'Microphone input active';
+
+  @override
+  String get recordingInputChecking => 'Checking microphone input';
+
+  @override
+  String get recordingInputReceived => 'Microphone data received';
+
+  @override
+  String get recordingInputNeedsAttention => 'Microphone input needs attention';
+
+  @override
+  String get recordingInputUnavailable => 'Microphone input unavailable';
+
+  @override
+  String get recordingInputPaused => 'Microphone input paused';
+
+  @override
+  String get pauseRecordingAction => 'Pause';
+
+  @override
+  String get resumeRecordingAction => 'Resume';
+
+  @override
+  String get stopRecordingAction => 'Stop';
+
+  @override
+  String get addBookmarkAction => 'Bookmark';
+
+  @override
+  String get addHighlightAction => 'Highlight';
+
+  @override
+  String get confirmStopRecordingTitle => 'Stop and save this recording?';
+
+  @override
+  String get confirmStopRecordingBody =>
+      'Loquiris will finish writing the audio already recorded on this device.';
+
+  @override
+  String get confirmStopRecordingAction => 'Stop and save';
+
+  @override
+  String get bookmarkAddedMessage => 'Bookmark saved';
+
+  @override
+  String get highlightAddedMessage => 'Highlight saved';
+
+  @override
+  String get markerAddFailed =>
+      'Could not save that marker. Recording continues.';
+
+  @override
+  String get recordingMetadataSaveWarning =>
+      'Recording continues, but local meeting details could not be updated yet.';
+
+  @override
+  String get recordingControlFailed =>
+      'That recording control did not complete. The saved audio is unchanged.';
+
+  @override
+  String get recordingStateLoading => 'Reading recorder state';
+
+  @override
+  String get recordingStateUnavailable =>
+      'This meeting is not the active recording. The microphone was not started.';
+
+  @override
+  String get sessionDetailLoadFailed =>
+      'Loquiris could not read this meeting from local storage.';
+
+  @override
+  String get sessionDetailMarkersTitle => 'Markers';
+
+  @override
+  String get sessionDetailNoMarkers => 'No bookmarks or highlights';
+
+  @override
+  String get sessionDetailHighlight => 'Highlight';
+
+  @override
+  String get sessionDetailBookmark => 'Bookmark';
+
+  @override
+  String get sessionDetailSegmentsTitle => 'Audio segments';
+
+  @override
+  String get sessionDetailNoSegments => 'No committed audio segments';
+
+  @override
+  String get sessionSegmentOpen => 'Recording';
+
+  @override
+  String get sessionSegmentCommitted => 'Saved';
+
+  @override
+  String get sessionSegmentCorrupt => 'Needs review';
+
+  @override
+  String get sessionSegmentMissing => 'Missing';
+
+  @override
+  String sessionDetailSegment(int number) {
+    return 'Audio segment $number';
+  }
+
+  @override
+  String get sessionDetailEventsTitle => 'Recording timeline';
+
+  @override
+  String get sessionDetailNoEvents => 'No recording events';
+
+  @override
+  String get sessionDetailProcessingTitle => 'Local processing';
+
+  @override
+  String get sessionDetailNoProcessing => 'No local processing jobs';
+
+  @override
+  String get sessionJobTranscription => 'Transcription';
+
+  @override
+  String get sessionJobLanguageIdentification => 'Language identification';
+
+  @override
+  String get sessionJobSpeakerDiarization => 'Speaker separation';
+
+  @override
+  String get sessionJobAudioMerge => 'Audio preparation';
+
+  @override
+  String get sessionJobWaveform => 'Waveform preparation';
+
+  @override
+  String get sessionDetailRecoveryTitle => 'Recovery notes';
+
+  @override
+  String get sessionDetailNoRecoveryIssues => 'No recovery issues';
+
+  @override
+  String sessionDetailPlaybackPosition(String position, String duration) {
+    return '$position of $duration';
+  }
+
+  @override
+  String get sessionDetailPause => 'Pause playback';
+
+  @override
+  String get sessionDetailPlay => 'Play recording';
+
+  @override
+  String get sessionEventStarted => 'Recording started';
+
+  @override
+  String get sessionEventPaused => 'Recording paused';
+
+  @override
+  String get sessionEventResumed => 'Recording resumed';
+
+  @override
+  String get sessionEventInterrupted => 'Recording interrupted';
+
+  @override
+  String get sessionEventStopped => 'Recording stopped';
+
+  @override
+  String get sessionEventRecovered => 'Recording recovered';
+
+  @override
+  String get sessionProcessingQueued => 'Waiting';
+
+  @override
+  String sessionProcessingRunning(int percent) {
+    return 'Processing $percent%';
+  }
+
+  @override
+  String get sessionProcessingPaused => 'Paused';
+
+  @override
+  String get sessionProcessingSucceeded => 'Completed';
+
+  @override
+  String get sessionAudioPreparationFailed =>
+      'Audio preparation failed. Original audio remains safe.';
+
+  @override
+  String get sessionProcessingFailed =>
+      'Local processing failed. Original audio remains safe.';
+
+  @override
+  String get transcriptionPreparingModel => 'Preparing the offline model';
+
+  @override
+  String get transcriptionDecodingAudio => 'Decoding saved audio';
+
+  @override
+  String transcriptionProgress(int percent) {
+    return 'Transcribing locally $percent%';
+  }
+
+  @override
+  String get transcriptionDelayed =>
+      'Transcription is delayed. Your recording is safe and processing will resume locally.';
+
+  @override
+  String get transcriptionIncomplete =>
+      'The transcript is incomplete. Your recording is safe and you can try again.';
+
+  @override
+  String get transcriptionRetryAction => 'Retry transcription';
+
+  @override
+  String get transcriptionRetrying => 'Retrying transcription…';
+
+  @override
+  String get transcriptionCancelled =>
+      'Transcription was cancelled. Your recording is safe.';
+
+  @override
+  String get transcriptionCompleted => 'Transcription completed';
+
+  @override
+  String get transcriptionFailureModel =>
+      'The bundled transcription model could not be verified. Your recording is safe.';
+
+  @override
+  String get transcriptionFailureEngine =>
+      'The offline transcription engine could not finish. Your recording is safe.';
+
+  @override
+  String get transcriptionFailureStorage =>
+      'Transcription progress could not be saved locally. Your recording is safe.';
+
+  @override
+  String get transcriptionFailureUnknown =>
+      'Transcription could not finish. Your recording is safe.';
+
+  @override
+  String get transcriptionRetryFailed =>
+      'Transcription could not be restarted. You can try again.';
+
+  @override
+  String get transcriptPreviewTitle => 'Transcript preview';
+
+  @override
+  String get transcriptPreviewEmpty =>
+      'The completed transcript contains no stable text.';
+
+  @override
+  String get sessionRecoveryTailDiscarded =>
+      'An uncommitted audio tail was discarded during recovery.';
+
+  @override
+  String get sessionRecoveryTimelineGap =>
+      'A gap was found in the recovered recording timeline.';
+
+  @override
+  String get sessionRecoverySegmentMissing =>
+      'A committed audio segment is missing.';
+
+  @override
+  String get sessionRecoverySegmentCorrupt =>
+      'A committed audio segment could not be validated.';
+
+  @override
+  String get sessionRecoveryUnknown =>
+      'The recording has a recovery note that needs review.';
+
+  @override
+  String get sessionPlaybackPreparing =>
+      'Playback audio is being prepared from saved segments.';
+
+  @override
+  String get sessionPlaybackUnavailable =>
+      'Playback is unavailable. Meeting details and original saved audio are unchanged.';
+
+  @override
+  String get transcriptEditorLoadFailed =>
+      'Loquiris could not read this transcript from local storage.';
+
+  @override
+  String get transcriptEditorNoTranscript =>
+      'No transcript version is selected for this meeting.';
+
+  @override
+  String get transcriptEditorReadOnly =>
+      'This draft is still active. You can review it now and edit it after recording and analysis finish.';
+
+  @override
+  String get transcriptEditorSegmentsTitle => 'Transcript';
+
+  @override
+  String get transcriptEditorTextLabel => 'Transcript text';
+
+  @override
+  String get transcriptEditorSaveText => 'Save text correction';
+
+  @override
+  String get transcriptEditorLanguageLabel => 'Segment language';
+
+  @override
+  String get languageUncertain => 'Uncertain';
+
+  @override
+  String get transcriptEditorSpeakersTitle => 'Speakers';
+
+  @override
+  String get transcriptEditorRenameSpeaker => 'Rename speaker';
+
+  @override
+  String get transcriptEditorSpeakerName => 'Speaker name';
+
+  @override
+  String get transcriptEditorNoSpeaker => 'No speaker label';
+
+  @override
+  String get transcriptEditorHistoryTitle => 'Revision history';
+
+  @override
+  String get transcriptEditorNoHistory => 'No human corrections yet';
+
+  @override
+  String get transcriptEditorSaveFailed =>
+      'That correction could not be saved. The current transcript is unchanged.';
+
+  @override
+  String get transcriptEditorRefreshAfterSaveFailed =>
+      'Correction saved, but the latest data could not be refreshed.';
+
+  @override
+  String get transcriptEditorRevisionText => 'Text corrected';
+
+  @override
+  String get transcriptEditorRevisionLanguage => 'Language corrected';
+
+  @override
+  String get transcriptEditorRevisionSpeaker => 'Speaker corrected';
+
+  @override
+  String get exportPrivacyWarning =>
+      'This export may contain sensitive audio and text. Loquiris writes it only to the destination you choose next.';
+
+  @override
+  String get exportChooseFormat => 'Choose what to export';
+
+  @override
+  String get exportAudioM4a => 'Continuous M4A';
+
+  @override
+  String get exportAudioM4aDescription =>
+      'Rebuilds a playable audio file from committed recording data when needed.';
+
+  @override
+  String get exportAudioSegments => 'Recoverable audio segments';
+
+  @override
+  String get exportAudioSegmentsDescription =>
+      'Packages the committed AAC segments in a ZIP for recovery or advanced use.';
+
+  @override
+  String get exportPlainText => 'Plain text';
+
+  @override
+  String get exportPlainTextDescription =>
+      'Timestamped corrected transcript text with speaker labels.';
+
+  @override
+  String get exportSrt => 'SRT subtitles';
+
+  @override
+  String get exportSrtDescription =>
+      'Corrected transcript text with millisecond subtitle timestamps.';
+
+  @override
+  String get exportJson => 'Structured JSON';
+
+  @override
+  String get exportJsonDescription =>
+      'Meeting metadata, transcript, corrections, labels, and model provenance.';
+
+  @override
+  String get exportArchive => 'Complete ZIP package';
+
+  @override
+  String get exportArchiveDescription =>
+      'Audio and available text files. If M4A rebuild fails, committed segments are included with a warning.';
+
+  @override
+  String get exportConfirm => 'Choose destination and export';
+
+  @override
+  String get exportingLabel => 'Exporting locally…';
+
+  @override
+  String get exportSelectingDestinationLabel => 'Choosing export destination…';
+
+  @override
+  String get exportWritingLabel => 'Writing export…';
+
+  @override
+  String get exportFinalizingLabel => 'Finalizing export…';
+
+  @override
+  String get exportCancelAction => 'Cancel export';
+
+  @override
+  String get exportCancellingLabel => 'Cancelling…';
+
+  @override
+  String exportSucceeded(String fileName) {
+    return 'Exported $fileName';
+  }
+
+  @override
+  String get exportSegmentsFallbackWarning =>
+      'Continuous audio was unavailable, so the package contains recoverable segments.';
+
+  @override
+  String get exportPartialAudioWarning =>
+      'This recording is partial. The export contains only the audio Loquiris verified as safely committed.';
+
+  @override
+  String get exportCancelled => 'Export cancelled. Nothing was sent anywhere.';
+
+  @override
+  String get exportFailed =>
+      'Export could not be completed. The original meeting is unchanged.';
+
+  @override
+  String get exportIncompleteOutputWarning =>
+      'Export stopped, but Android could not remove the incomplete file. Check the destination you selected.';
+
+  @override
+  String get exportInterruptedOutputWarning =>
+      'A previous export was interrupted. An incomplete file may remain in the destination you selected.';
+
+  @override
+  String get exportPersistenceWarning =>
+      'The export result could not be recorded locally. Check the destination you selected before trying again.';
+
+  @override
+  String restoredCopyTitle(String title) {
+    return '$title — Restored copy';
+  }
+
+  @override
+  String transcriptEditorSegmentTime(String start, String end) {
+    return '$start–$end';
+  }
+
+  @override
+  String get storageApplicationAndModels => 'Application and models';
+
+  @override
+  String get storageActiveMeetings => 'Active meetings';
+
+  @override
+  String get storageRebuildableCache => 'Rebuildable cache';
+
+  @override
+  String get storageTrash => 'Trash';
+
+  @override
+  String get storageAvailableDeviceSpace => 'Available device space';
+
+  @override
+  String get storageAccountingIntro =>
+      'These totals stay on this device. Meeting sizes come from Loquiris records; application, cache, and available space come from Android.';
+
+  @override
+  String storageApplicationModelsDetail(String size) {
+    return 'Includes $size of bundled model files. Bundled models cannot be removed individually in this release; other private support data is grouped here.';
+  }
+
+  @override
+  String get storageActiveMeetingsDetail =>
+      'Committed audio for meetings outside Trash.';
+
+  @override
+  String get storageRebuildableCacheDetail =>
+      'Temporary data Loquiris can recreate when needed.';
+
+  @override
+  String get storageTrashDetail =>
+      'Committed audio retained until you permanently delete it.';
+
+  @override
+  String get storageAvailableDeviceSpaceDetail =>
+      'Space Android currently reports as available to Loquiris.';
+
+  @override
+  String get storageLoadingLabel => 'Measuring storage on this device';
+
+  @override
+  String get storageLoadError =>
+      'Loquiris could not measure storage right now. Your local data is unchanged.';
+
+  @override
+  String get clearRebuildableCacheAction => 'Clear rebuildable cache';
+
+  @override
+  String get clearRebuildableCacheDescription =>
+      'Removes only allowlisted PCM, waveform, search-index, and failed-job temporary files. Meetings, edits, backups, Trash, and unknown cache remain unchanged.';
+
+  @override
+  String get clearingRebuildableCacheLabel => 'Clearing rebuildable cache…';
+
+  @override
+  String rebuildableCacheCleared(String size, int count) {
+    return 'Cleared $size from $count files.';
+  }
+
+  @override
+  String get rebuildableCacheNothingCleared =>
+      'No allowlisted rebuildable cache needed clearing.';
+
+  @override
+  String get rebuildableCacheCleanupFailed =>
+      'Cache cleanup could not finish. Try again. Meeting data is unchanged.';
+
+  @override
+  String rebuildableCacheCleanupPartiallyFailed(String size) {
+    return 'Cleanup stopped after clearing $size. Try again. Meeting data is unchanged.';
+  }
 
   @override
   String get benchmarkIntro =>
@@ -320,68 +1089,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get benchmarkExportFailed =>
       'Report could not be exported. Try again.';
-
-  @override
-  String get sessionJobTranscription => 'Transcription';
-
-  @override
-  String get transcriptionPreparingModel => 'Preparing the offline model';
-
-  @override
-  String get transcriptionDecodingAudio => 'Decoding saved audio';
-
-  @override
-  String transcriptionProgress(int percent) {
-    return 'Transcribing locally $percent%';
-  }
-
-  @override
-  String get transcriptionDelayed =>
-      'Transcription is delayed. Your recording is safe and processing will resume locally.';
-
-  @override
-  String get transcriptionIncomplete =>
-      'The transcript is incomplete. Your recording is safe and you can try again.';
-
-  @override
-  String get transcriptionRetryAction => 'Retry transcription';
-
-  @override
-  String get transcriptionRetrying => 'Retrying transcription…';
-
-  @override
-  String get transcriptionCancelled =>
-      'Transcription was cancelled. Your recording is safe.';
-
-  @override
-  String get transcriptionCompleted => 'Transcription completed';
-
-  @override
-  String get transcriptionFailureModel =>
-      'The bundled transcription model could not be verified. Your recording is safe.';
-
-  @override
-  String get transcriptionFailureEngine =>
-      'The offline transcription engine could not finish. Your recording is safe.';
-
-  @override
-  String get transcriptionFailureStorage =>
-      'Transcription progress could not be saved locally. Your recording is safe.';
-
-  @override
-  String get transcriptionFailureUnknown =>
-      'Transcription could not finish. Your recording is safe.';
-
-  @override
-  String get transcriptionRetryFailed =>
-      'Transcription could not be restarted. You can try again.';
-
-  @override
-  String get transcriptPreviewTitle => 'Transcript preview';
-
-  @override
-  String get transcriptPreviewEmpty =>
-      'The completed transcript contains no stable text.';
 
   @override
   String get liveTranscriptTitle => 'Live transcript draft';

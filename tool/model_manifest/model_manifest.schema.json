@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://loquiris.app/schemas/model-manifest-v1.schema.json",
+  "title": "Loquiris bundled model manifest",
+  "description": "Immutable provenance and runtime compatibility for one model artifact bundled into a Loquiris release.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "version",
+    "source",
+    "artifactPath",
+    "sha256",
+    "bytes",
+    "runtime",
+    "license",
+    "capabilities",
+    "enabledModes"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "description": "Manifest contract revision; increment before making a breaking schema change.",
+      "const": 1
+    },
+    "id": {
+      "description": "Stable identifier recorded in inference provenance.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "version": {
+      "description": "Exact upstream release or immutable revision label.",
+      "$ref": "#/$defs/trimmedNonEmptyString"
+    },
+    "source": {
+      "description": "Absolute HTTPS URI pinned to the exact reviewed upstream artifact; mutable branch or latest-release URLs are forbidden by release review.",
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "artifactPath": {
+      "description": "Application-relative destination of the verified model bytes.",
+      "$ref": "#/$defs/safeRelativePath"
+    },
+    "sha256": {
+      "description": "Lowercase SHA-256 of the exact artifact bytes.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "bytes": {
+      "description": "Exact positive artifact length in bytes.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "runtime": {
+      "description": "Adapter and model format that are allowed to load the artifact.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engineId", "modelFormat"],
+      "properties": {
+        "engineId": {
+          "description": "Stable engine-adapter identifier, such as whisper.cpp.",
+          "$ref": "#/$defs/trimmedNonEmptyString"
+        },
+        "modelFormat": {
+          "description": "Container or tensor format interpreted by the adapter.",
+          "$ref": "#/$defs/trimmedNonEmptyString"
+        }
+      }
+    },
+    "license": {
+      "description": "Fixed terms reviewed for redistribution of these exact bytes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "snapshotPath"],
+      "properties": {
+        "id": {
+          "description": "SPDX identifier or stable reviewed-license key.",
+          "$ref": "#/$defs/trimmedNonEmptyString"
+        },
+        "snapshotPath": {
+          "description": "Application-relative path to the immutable reviewed license text.",
+          "$ref": "#/$defs/safeRelativePath"
+        }
+      }
+    },
+    "capabilities": {
+      "description": "AI capabilities disabled if this artifact fails integrity checks.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "transcription",
+          "languageIdentification",
+          "speakerDiarization"
+        ]
+      }
+    },
+    "enabledModes": {
+      "description": "Operating modes for which this exact artifact passed evidence gates.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "highQuality",
+          "balanced",
+          "powerSaving",
+          "recordingOnly",
+          "postSession"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "trimmedNonEmptyString": {
+      "type": "string",
+      "pattern": "^(?:\\S|\\S.*\\S)$"
+    },
+    "safeRelativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*(?:^|/)(?:\\.{1,2})(?:/|$))(?!.*//)(?!.*\\\\)[^\\u0000]+$"
+    }
+  }
+}

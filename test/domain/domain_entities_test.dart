@@ -15,6 +15,8 @@ void main() {
       mediaDuration: Duration(minutes: 5),
       lifecycle: MeetingLifecycle.finalized,
       languageMode: MeetingLanguageMode.mixed,
+      transcriptionMode: MeetingTranscriptionMode.nearRealTime,
+      expectedSpeakerCount: 4,
       currentTranscriptRunId: 'run-1',
     );
 
@@ -23,6 +25,8 @@ void main() {
     expect(renamed.id, meeting.id);
     expect(renamed.title, 'Planning review');
     expect(renamed.currentTranscriptRunId, 'run-1');
+    expect(renamed.transcriptionMode, MeetingTranscriptionMode.nearRealTime);
+    expect(renamed.expectedSpeakerCount, 4);
     expect(renamed, isNot(meeting));
   });
 
@@ -170,7 +174,7 @@ void main() {
     final export = ExportRecord(
       id: 'export-1',
       meetingId: 'meeting-1',
-      format: LocalExportFormat.structuredJson,
+      format: LocalExportFormat.json,
       createdAtUtcMs: 50,
       state: ExportCompleted(
         relativePath: _path('exports/meeting-1.json'),
@@ -284,7 +288,7 @@ void main() {
     const export = ExportRecord(
       id: 'export-1',
       meetingId: 'meeting-1',
-      format: LocalExportFormat.audio,
+      format: LocalExportFormat.audioM4a,
       createdAtUtcMs: 6,
       state: ExportPending(),
     );

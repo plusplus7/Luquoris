@@ -292,6 +292,8 @@ void main() {
       expect(
         await exports.export(
           const ExportRequest(
+            operationId: 'export-test',
+            createdAtUtcMs: 1,
             sessionId: 'session-1',
             format: ExportFormat.text,
           ),

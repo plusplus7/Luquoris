@@ -129,7 +129,7 @@ class ExportRecords extends Table with AuditColumns {
 
   @override
   List<String> get customConstraints => <String>[
-    "CHECK (format IN ('audio','plainText','subtitles','structuredJson','archive'))",
+    "CHECK (format IN ('audioM4a','audioSegments','text','subtitles','json','archive'))",
     "CHECK (export_state IN ('pending','completed','failed'))",
     'CHECK (bytes IS NULL OR bytes >= 0)',
     'CHECK (relative_path IS NULL OR length(relative_path) > 0)',
@@ -140,7 +140,7 @@ class ExportRecords extends Table with AuditColumns {
     "CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%//%')",
     "CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/../%')",
     "CHECK (relative_path IS NULL OR ('/' || relative_path || '/') NOT LIKE '%/./%')",
-    "CHECK ((export_state = 'pending' AND relative_path IS NULL AND bytes IS NULL AND failure_code IS NULL) OR (export_state = 'completed' AND relative_path IS NOT NULL AND bytes IS NOT NULL AND failure_code IS NULL) OR (export_state = 'failed' AND relative_path IS NULL AND bytes IS NULL AND length(failure_code) > 0))",
+    "CHECK ((export_state = 'pending' AND relative_path IS NULL AND bytes IS NULL AND failure_code IS NULL) OR (export_state = 'completed' AND bytes IS NOT NULL AND failure_code IS NULL) OR (export_state = 'failed' AND relative_path IS NULL AND bytes IS NULL AND length(failure_code) > 0))",
   ];
 }
 

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "zh-en-mixed-v1",
+  "purpose": "firstRunPerformanceBenchmark",
+  "languageCoverage": [
+    "zh-CN",
+    "en",
+    "zh-en-code-switching"
+  ],
+  "annotationVersion": 1,
+  "source": {
+    "kind": "contributor-authorized-recording",
+    "sourceId": "contributor-recording-2026-09-29-2244",
+    "sha256": "8c80e266431445df2dd040b52dac44ba8500c55cdb50509cc9286c25c7532a24",
+    "bytes": 9787192,
+    "container": "aac",
+    "codec": "aac",
+    "sampleRateHz": 48000,
+    "channels": 2,
+    "durationMs": 301577,
+    "segmentStartMs": 0,
+    "segmentDurationMs": 45000
+  },
+  "audio": {
+    "path": "assets/benchmarks/audio/zh_en_mixed_v1.wav",
+    "sha256": "83440d4ccbd82dafd1a88346ab448e1dd309e408c598d665413b910cc92c40a7",
+    "bytes": 1440044,
+    "container": "wav",
+    "codec": "pcm_s16le",
+    "sampleRateHz": 16000,
+    "bitsPerSample": 16,
+    "channels": 1,
+    "durationMs": 45000
+  },
+  "rights": {
+    "license": "CC0-1.0",
+    "licensePath": "assets/benchmarks/licenses/CC0-1.0.txt",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt",
+    "licenseTextSha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+    "attestationDate": "2026-10-01",
+    "rightsHolderAuthorized": true,
+    "allIdentifiableSpeakersConsented": true,
+    "attestationBasis": "The contributor confirmed ownership and consent from every identifiable speaker before the fixed excerpt was added."
+  },
+  "derivation": {
+    "tool": "ffmpeg 9.0.2",
+    "command": "ffmpeg -v error -bitexact -i <source> -map 0:a:0 -af atrim=start=0:end=45,asetpts=PTS-STARTPTS,aresample=16000:resampler=swr:filter_size=32:phase_shift=10:exact_rational=1 -map_metadata -1 -ac 1 -c:a pcm_s16le -bitexact <output>"
+  }
+}

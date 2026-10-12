@@ -24,6 +24,23 @@ class Meetings extends Table with AuditColumns {
   /// User-selected recognition language hint.
   TextColumn get languageMode => text()();
 
+  /// User-selected live draft or post-session transcription timing.
+  TextColumn get transcriptionMode => text()
+      .withDefault(const Constant<String>('postSession'))
+      .check(
+        const CustomExpression<bool>(
+          "transcription_mode IN ('nearRealTime','postSession')",
+        ),
+      )();
+
+  /// Optional two-to-six-speaker analysis guidance.
+  IntColumn get expectedSpeakerCount => integer().nullable().check(
+    const CustomExpression<bool>(
+      'expected_speaker_count IS NULL OR '
+      'expected_speaker_count BETWEEN 2 AND 6',
+    ),
+  )();
+
   /// UTC trash instant used for the seven-day retention period.
   IntColumn get trashedAtUtcMs => integer().nullable()();
 
@@ -40,6 +57,26 @@ class Meetings extends Table with AuditColumns {
     "CHECK ((lifecycle IN ('trashed','deleting')) = (lifecycle_before_trash IS NOT NULL))",
     "CHECK ((lifecycle IN ('trashed','deleting')) = is_deleted)",
     'CHECK ((trashed_at_utc_ms IS NULL AND deleted_at IS NULL) OR trashed_at_utc_ms = deleted_at)',
+  ];
+}
+
+/// Single-row defaults remembered for the next recording setup.
+class RecordingPreferences extends Table with AuditColumns {
+  /// Default live draft or post-session transcription timing.
+  TextColumn get transcriptionMode => text()();
+
+  /// Default recognition language hint.
+  TextColumn get languageMode => text()();
+
+  /// Default speaker guidance; null requests automatic estimation.
+  IntColumn get expectedSpeakerCount => integer().nullable()();
+
+  @override
+  List<String> get customConstraints => <String>[
+    "CHECK (id = 'recording-defaults')",
+    "CHECK (transcription_mode IN ('nearRealTime','postSession'))",
+    "CHECK (language_mode IN ('chinese','english','mixed'))",
+    'CHECK (expected_speaker_count IS NULL OR expected_speaker_count BETWEEN 2 AND 6)',
   ];
 }
 
@@ -90,6 +127,32 @@ class AudioSegments extends Table with AuditColumns {
     "CHECK (('/' || relative_path || '/') NOT LIKE '%//%')",
     "CHECK (('/' || relative_path || '/') NOT LIKE '%/../%')",
     "CHECK (('/' || relative_path || '/') NOT LIKE '%/./%')",
+  ];
+}
+
+/// Privacy-safe recovery findings retained for partial-session explanation.
+@TableIndex(
+  name: 'idx_recovery_findings_meeting_sequence',
+  columns: {#meetingId, #segmentSequence},
+)
+class RecoveryFindings extends Table with AuditColumns {
+  /// Owning meeting.
+  TextColumn get meetingId => text().references(
+    Meetings,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
+
+  /// Manifest segment associated with the finding, when applicable.
+  IntColumn get segmentSequence => integer().nullable()();
+
+  /// Stable privacy-safe diagnostic code.
+  TextColumn get code => text()();
+
+  @override
+  List<String> get customConstraints => <String>[
+    'CHECK (segment_sequence IS NULL OR segment_sequence >= 0)',
+    "CHECK (code IN ('recording_recovery_timeline_gap','recording_recovery_segment_missing','recording_recovery_segment_corrupt','recording_recovery_tail_discarded'))",
   ];
 }
 

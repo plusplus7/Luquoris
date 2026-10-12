@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording_notification_channel_name">Recording</string>
+    <string name="recording_notification_channel_description">Keeps an active local recording visible</string>
+    <string name="recording_notification_title">Loquiris recording</string>
+    <string name="recording_notification_preparing">Preparing local recording…</string>
+    <string name="recording_notification_active">Recording locally</string>
+    <string name="recording_notification_paused">Recording paused</string>
+    <string name="recording_notification_confirmation_required">Recording paused · open Loquiris to confirm resume</string>
+    <string name="recording_notification_low_storage">%1$s · low storage</string>
+    <string name="recording_notification_progress">%1$s · %2$s · %3$s</string>
+    <string name="recording_notification_pause">Pause</string>
+    <string name="recording_notification_resume">Resume</string>
+    <string name="recording_notification_bookmark">Bookmark</string>
+</resources>

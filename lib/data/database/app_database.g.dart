@@ -123,6 +123,36 @@ class $MeetingsTable extends Meetings with TableInfo<$MeetingsTable, Meeting> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _transcriptionModeMeta = const VerificationMeta(
+    'transcriptionMode',
+  );
+  @override
+  late final GeneratedColumn<String> transcriptionMode =
+      GeneratedColumn<String>(
+        'transcription_mode',
+        aliasedName,
+        false,
+        check: () => const CustomExpression<bool>(
+          "transcription_mode IN ('nearRealTime','postSession')",
+        ),
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant<String>('postSession'),
+      );
+  static const VerificationMeta _expectedSpeakerCountMeta =
+      const VerificationMeta('expectedSpeakerCount');
+  @override
+  late final GeneratedColumn<int> expectedSpeakerCount = GeneratedColumn<int>(
+    'expected_speaker_count',
+    aliasedName,
+    true,
+    check: () => const CustomExpression<bool>(
+      'expected_speaker_count IS NULL OR '
+      'expected_speaker_count BETWEEN 2 AND 6',
+    ),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _trashedAtUtcMsMeta = const VerificationMeta(
     'trashedAtUtcMs',
   );
@@ -157,6 +187,8 @@ class $MeetingsTable extends Meetings with TableInfo<$MeetingsTable, Meeting> {
     mediaDurationUs,
     lifecycle,
     languageMode,
+    transcriptionMode,
+    expectedSpeakerCount,
     trashedAtUtcMs,
     lifecycleBeforeTrash,
   ];
@@ -250,6 +282,24 @@ class $MeetingsTable extends Meetings with TableInfo<$MeetingsTable, Meeting> {
     } else if (isInserting) {
       context.missing(_languageModeMeta);
     }
+    if (data.containsKey('transcription_mode')) {
+      context.handle(
+        _transcriptionModeMeta,
+        transcriptionMode.isAcceptableOrUnknown(
+          data['transcription_mode']!,
+          _transcriptionModeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('expected_speaker_count')) {
+      context.handle(
+        _expectedSpeakerCountMeta,
+        expectedSpeakerCount.isAcceptableOrUnknown(
+          data['expected_speaker_count']!,
+          _expectedSpeakerCountMeta,
+        ),
+      );
+    }
     if (data.containsKey('trashed_at_utc_ms')) {
       context.handle(
         _trashedAtUtcMsMeta,
@@ -317,6 +367,14 @@ class $MeetingsTable extends Meetings with TableInfo<$MeetingsTable, Meeting> {
         DriftSqlType.string,
         data['${effectivePrefix}language_mode'],
       )!,
+      transcriptionMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transcription_mode'],
+      )!,
+      expectedSpeakerCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expected_speaker_count'],
+      ),
       trashedAtUtcMs: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}trashed_at_utc_ms'],
@@ -368,6 +426,12 @@ class Meeting extends DataClass implements Insertable<Meeting> {
   /// User-selected recognition language hint.
   final String languageMode;
 
+  /// User-selected live draft or post-session transcription timing.
+  final String transcriptionMode;
+
+  /// Optional two-to-six-speaker analysis guidance.
+  final int? expectedSpeakerCount;
+
   /// UTC trash instant used for the seven-day retention period.
   final int? trashedAtUtcMs;
 
@@ -384,6 +448,8 @@ class Meeting extends DataClass implements Insertable<Meeting> {
     required this.mediaDurationUs,
     required this.lifecycle,
     required this.languageMode,
+    required this.transcriptionMode,
+    this.expectedSpeakerCount,
     this.trashedAtUtcMs,
     this.lifecycleBeforeTrash,
   });
@@ -402,6 +468,10 @@ class Meeting extends DataClass implements Insertable<Meeting> {
     map['media_duration_us'] = Variable<int>(mediaDurationUs);
     map['lifecycle'] = Variable<String>(lifecycle);
     map['language_mode'] = Variable<String>(languageMode);
+    map['transcription_mode'] = Variable<String>(transcriptionMode);
+    if (!nullToAbsent || expectedSpeakerCount != null) {
+      map['expected_speaker_count'] = Variable<int>(expectedSpeakerCount);
+    }
     if (!nullToAbsent || trashedAtUtcMs != null) {
       map['trashed_at_utc_ms'] = Variable<int>(trashedAtUtcMs);
     }
@@ -425,6 +495,10 @@ class Meeting extends DataClass implements Insertable<Meeting> {
       mediaDurationUs: Value(mediaDurationUs),
       lifecycle: Value(lifecycle),
       languageMode: Value(languageMode),
+      transcriptionMode: Value(transcriptionMode),
+      expectedSpeakerCount: expectedSpeakerCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expectedSpeakerCount),
       trashedAtUtcMs: trashedAtUtcMs == null && nullToAbsent
           ? const Value.absent()
           : Value(trashedAtUtcMs),
@@ -450,6 +524,10 @@ class Meeting extends DataClass implements Insertable<Meeting> {
       mediaDurationUs: serializer.fromJson<int>(json['mediaDurationUs']),
       lifecycle: serializer.fromJson<String>(json['lifecycle']),
       languageMode: serializer.fromJson<String>(json['languageMode']),
+      transcriptionMode: serializer.fromJson<String>(json['transcriptionMode']),
+      expectedSpeakerCount: serializer.fromJson<int?>(
+        json['expectedSpeakerCount'],
+      ),
       trashedAtUtcMs: serializer.fromJson<int?>(json['trashedAtUtcMs']),
       lifecycleBeforeTrash: serializer.fromJson<String?>(
         json['lifecycleBeforeTrash'],
@@ -470,6 +548,8 @@ class Meeting extends DataClass implements Insertable<Meeting> {
       'mediaDurationUs': serializer.toJson<int>(mediaDurationUs),
       'lifecycle': serializer.toJson<String>(lifecycle),
       'languageMode': serializer.toJson<String>(languageMode),
+      'transcriptionMode': serializer.toJson<String>(transcriptionMode),
+      'expectedSpeakerCount': serializer.toJson<int?>(expectedSpeakerCount),
       'trashedAtUtcMs': serializer.toJson<int?>(trashedAtUtcMs),
       'lifecycleBeforeTrash': serializer.toJson<String?>(lifecycleBeforeTrash),
     };
@@ -486,6 +566,8 @@ class Meeting extends DataClass implements Insertable<Meeting> {
     int? mediaDurationUs,
     String? lifecycle,
     String? languageMode,
+    String? transcriptionMode,
+    Value<int?> expectedSpeakerCount = const Value.absent(),
     Value<int?> trashedAtUtcMs = const Value.absent(),
     Value<String?> lifecycleBeforeTrash = const Value.absent(),
   }) => Meeting(
@@ -499,6 +581,10 @@ class Meeting extends DataClass implements Insertable<Meeting> {
     mediaDurationUs: mediaDurationUs ?? this.mediaDurationUs,
     lifecycle: lifecycle ?? this.lifecycle,
     languageMode: languageMode ?? this.languageMode,
+    transcriptionMode: transcriptionMode ?? this.transcriptionMode,
+    expectedSpeakerCount: expectedSpeakerCount.present
+        ? expectedSpeakerCount.value
+        : this.expectedSpeakerCount,
     trashedAtUtcMs: trashedAtUtcMs.present
         ? trashedAtUtcMs.value
         : this.trashedAtUtcMs,
@@ -524,6 +610,12 @@ class Meeting extends DataClass implements Insertable<Meeting> {
       languageMode: data.languageMode.present
           ? data.languageMode.value
           : this.languageMode,
+      transcriptionMode: data.transcriptionMode.present
+          ? data.transcriptionMode.value
+          : this.transcriptionMode,
+      expectedSpeakerCount: data.expectedSpeakerCount.present
+          ? data.expectedSpeakerCount.value
+          : this.expectedSpeakerCount,
       trashedAtUtcMs: data.trashedAtUtcMs.present
           ? data.trashedAtUtcMs.value
           : this.trashedAtUtcMs,
@@ -546,6 +638,8 @@ class Meeting extends DataClass implements Insertable<Meeting> {
           ..write('mediaDurationUs: $mediaDurationUs, ')
           ..write('lifecycle: $lifecycle, ')
           ..write('languageMode: $languageMode, ')
+          ..write('transcriptionMode: $transcriptionMode, ')
+          ..write('expectedSpeakerCount: $expectedSpeakerCount, ')
           ..write('trashedAtUtcMs: $trashedAtUtcMs, ')
           ..write('lifecycleBeforeTrash: $lifecycleBeforeTrash')
           ..write(')'))
@@ -564,6 +658,8 @@ class Meeting extends DataClass implements Insertable<Meeting> {
     mediaDurationUs,
     lifecycle,
     languageMode,
+    transcriptionMode,
+    expectedSpeakerCount,
     trashedAtUtcMs,
     lifecycleBeforeTrash,
   );
@@ -581,6 +677,8 @@ class Meeting extends DataClass implements Insertable<Meeting> {
           other.mediaDurationUs == this.mediaDurationUs &&
           other.lifecycle == this.lifecycle &&
           other.languageMode == this.languageMode &&
+          other.transcriptionMode == this.transcriptionMode &&
+          other.expectedSpeakerCount == this.expectedSpeakerCount &&
           other.trashedAtUtcMs == this.trashedAtUtcMs &&
           other.lifecycleBeforeTrash == this.lifecycleBeforeTrash);
 }
@@ -596,6 +694,8 @@ class MeetingsCompanion extends UpdateCompanion<Meeting> {
   final Value<int> mediaDurationUs;
   final Value<String> lifecycle;
   final Value<String> languageMode;
+  final Value<String> transcriptionMode;
+  final Value<int?> expectedSpeakerCount;
   final Value<int?> trashedAtUtcMs;
   final Value<String?> lifecycleBeforeTrash;
   final Value<int> rowid;
@@ -610,6 +710,8 @@ class MeetingsCompanion extends UpdateCompanion<Meeting> {
     this.mediaDurationUs = const Value.absent(),
     this.lifecycle = const Value.absent(),
     this.languageMode = const Value.absent(),
+    this.transcriptionMode = const Value.absent(),
+    this.expectedSpeakerCount = const Value.absent(),
     this.trashedAtUtcMs = const Value.absent(),
     this.lifecycleBeforeTrash = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -625,6 +727,8 @@ class MeetingsCompanion extends UpdateCompanion<Meeting> {
     this.mediaDurationUs = const Value.absent(),
     required String lifecycle,
     required String languageMode,
+    this.transcriptionMode = const Value.absent(),
+    this.expectedSpeakerCount = const Value.absent(),
     this.trashedAtUtcMs = const Value.absent(),
     this.lifecycleBeforeTrash = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -645,6 +749,8 @@ class MeetingsCompanion extends UpdateCompanion<Meeting> {
     Expression<int>? mediaDurationUs,
     Expression<String>? lifecycle,
     Expression<String>? languageMode,
+    Expression<String>? transcriptionMode,
+    Expression<int>? expectedSpeakerCount,
     Expression<int>? trashedAtUtcMs,
     Expression<String>? lifecycleBeforeTrash,
     Expression<int>? rowid,
@@ -660,6 +766,9 @@ class MeetingsCompanion extends UpdateCompanion<Meeting> {
       if (mediaDurationUs != null) 'media_duration_us': mediaDurationUs,
       if (lifecycle != null) 'lifecycle': lifecycle,
       if (languageMode != null) 'language_mode': languageMode,
+      if (transcriptionMode != null) 'transcription_mode': transcriptionMode,
+      if (expectedSpeakerCount != null)
+        'expected_speaker_count': expectedSpeakerCount,
       if (trashedAtUtcMs != null) 'trashed_at_utc_ms': trashedAtUtcMs,
       if (lifecycleBeforeTrash != null)
         'lifecycle_before_trash': lifecycleBeforeTrash,
@@ -678,6 +787,8 @@ class MeetingsCompanion extends UpdateCompanion<Meeting> {
     Value<int>? mediaDurationUs,
     Value<String>? lifecycle,
     Value<String>? languageMode,
+    Value<String>? transcriptionMode,
+    Value<int?>? expectedSpeakerCount,
     Value<int?>? trashedAtUtcMs,
     Value<String?>? lifecycleBeforeTrash,
     Value<int>? rowid,
@@ -693,6 +804,8 @@ class MeetingsCompanion extends UpdateCompanion<Meeting> {
       mediaDurationUs: mediaDurationUs ?? this.mediaDurationUs,
       lifecycle: lifecycle ?? this.lifecycle,
       languageMode: languageMode ?? this.languageMode,
+      transcriptionMode: transcriptionMode ?? this.transcriptionMode,
+      expectedSpeakerCount: expectedSpeakerCount ?? this.expectedSpeakerCount,
       trashedAtUtcMs: trashedAtUtcMs ?? this.trashedAtUtcMs,
       lifecycleBeforeTrash: lifecycleBeforeTrash ?? this.lifecycleBeforeTrash,
       rowid: rowid ?? this.rowid,
@@ -732,6 +845,12 @@ class MeetingsCompanion extends UpdateCompanion<Meeting> {
     if (languageMode.present) {
       map['language_mode'] = Variable<String>(languageMode.value);
     }
+    if (transcriptionMode.present) {
+      map['transcription_mode'] = Variable<String>(transcriptionMode.value);
+    }
+    if (expectedSpeakerCount.present) {
+      map['expected_speaker_count'] = Variable<int>(expectedSpeakerCount.value);
+    }
     if (trashedAtUtcMs.present) {
       map['trashed_at_utc_ms'] = Variable<int>(trashedAtUtcMs.value);
     }
@@ -759,8 +878,621 @@ class MeetingsCompanion extends UpdateCompanion<Meeting> {
           ..write('mediaDurationUs: $mediaDurationUs, ')
           ..write('lifecycle: $lifecycle, ')
           ..write('languageMode: $languageMode, ')
+          ..write('transcriptionMode: $transcriptionMode, ')
+          ..write('expectedSpeakerCount: $expectedSpeakerCount, ')
           ..write('trashedAtUtcMs: $trashedAtUtcMs, ')
           ..write('lifecycleBeforeTrash: $lifecycleBeforeTrash, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RecordingPreferencesTable extends RecordingPreferences
+    with TableInfo<$RecordingPreferencesTable, RecordingPreference> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecordingPreferencesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (created_at >= 0)',
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (updated_at >= created_at)',
+  );
+  static const VerificationMeta _rowRevisionMeta = const VerificationMeta(
+    'rowRevision',
+  );
+  @override
+  late final GeneratedColumn<int> rowRevision = GeneratedColumn<int>(
+    'row_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (row_revision >= 0)',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)',
+  );
+  static const VerificationMeta _transcriptionModeMeta = const VerificationMeta(
+    'transcriptionMode',
+  );
+  @override
+  late final GeneratedColumn<String> transcriptionMode =
+      GeneratedColumn<String>(
+        'transcription_mode',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _languageModeMeta = const VerificationMeta(
+    'languageMode',
+  );
+  @override
+  late final GeneratedColumn<String> languageMode = GeneratedColumn<String>(
+    'language_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _expectedSpeakerCountMeta =
+      const VerificationMeta('expectedSpeakerCount');
+  @override
+  late final GeneratedColumn<int> expectedSpeakerCount = GeneratedColumn<int>(
+    'expected_speaker_count',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    transcriptionMode,
+    languageMode,
+    expectedSpeakerCount,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recording_preferences';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecordingPreference> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('row_revision')) {
+      context.handle(
+        _rowRevisionMeta,
+        rowRevision.isAcceptableOrUnknown(
+          data['row_revision']!,
+          _rowRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('transcription_mode')) {
+      context.handle(
+        _transcriptionModeMeta,
+        transcriptionMode.isAcceptableOrUnknown(
+          data['transcription_mode']!,
+          _transcriptionModeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_transcriptionModeMeta);
+    }
+    if (data.containsKey('language_mode')) {
+      context.handle(
+        _languageModeMeta,
+        languageMode.isAcceptableOrUnknown(
+          data['language_mode']!,
+          _languageModeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_languageModeMeta);
+    }
+    if (data.containsKey('expected_speaker_count')) {
+      context.handle(
+        _expectedSpeakerCountMeta,
+        expectedSpeakerCount.isAcceptableOrUnknown(
+          data['expected_speaker_count']!,
+          _expectedSpeakerCountMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecordingPreference map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecordingPreference(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      rowRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_revision'],
+      )!,
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      transcriptionMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transcription_mode'],
+      )!,
+      languageMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}language_mode'],
+      )!,
+      expectedSpeakerCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expected_speaker_count'],
+      ),
+    );
+  }
+
+  @override
+  $RecordingPreferencesTable createAlias(String alias) {
+    return $RecordingPreferencesTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class RecordingPreference extends DataClass
+    implements Insertable<RecordingPreference> {
+  /// Stable UUID-style identifier.
+  final String id;
+
+  /// UTC creation instant in epoch milliseconds.
+  final int createdAt;
+
+  /// UTC last-update instant in epoch milliseconds.
+  final int updatedAt;
+
+  /// Monotonic row revision used by restore conflict handling.
+  final int rowRevision;
+
+  /// Whether this row is hidden by a soft delete.
+  final bool isDeleted;
+
+  /// UTC soft-delete instant in epoch milliseconds.
+  final int? deletedAt;
+
+  /// Default live draft or post-session transcription timing.
+  final String transcriptionMode;
+
+  /// Default recognition language hint.
+  final String languageMode;
+
+  /// Default speaker guidance; null requests automatic estimation.
+  final int? expectedSpeakerCount;
+  const RecordingPreference({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.rowRevision,
+    required this.isDeleted,
+    this.deletedAt,
+    required this.transcriptionMode,
+    required this.languageMode,
+    this.expectedSpeakerCount,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    map['row_revision'] = Variable<int>(rowRevision);
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['transcription_mode'] = Variable<String>(transcriptionMode);
+    map['language_mode'] = Variable<String>(languageMode);
+    if (!nullToAbsent || expectedSpeakerCount != null) {
+      map['expected_speaker_count'] = Variable<int>(expectedSpeakerCount);
+    }
+    return map;
+  }
+
+  RecordingPreferencesCompanion toCompanion(bool nullToAbsent) {
+    return RecordingPreferencesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      rowRevision: Value(rowRevision),
+      isDeleted: Value(isDeleted),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      transcriptionMode: Value(transcriptionMode),
+      languageMode: Value(languageMode),
+      expectedSpeakerCount: expectedSpeakerCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expectedSpeakerCount),
+    );
+  }
+
+  factory RecordingPreference.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecordingPreference(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      rowRevision: serializer.fromJson<int>(json['rowRevision']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      transcriptionMode: serializer.fromJson<String>(json['transcriptionMode']),
+      languageMode: serializer.fromJson<String>(json['languageMode']),
+      expectedSpeakerCount: serializer.fromJson<int?>(
+        json['expectedSpeakerCount'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'rowRevision': serializer.toJson<int>(rowRevision),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'transcriptionMode': serializer.toJson<String>(transcriptionMode),
+      'languageMode': serializer.toJson<String>(languageMode),
+      'expectedSpeakerCount': serializer.toJson<int?>(expectedSpeakerCount),
+    };
+  }
+
+  RecordingPreference copyWith({
+    String? id,
+    int? createdAt,
+    int? updatedAt,
+    int? rowRevision,
+    bool? isDeleted,
+    Value<int?> deletedAt = const Value.absent(),
+    String? transcriptionMode,
+    String? languageMode,
+    Value<int?> expectedSpeakerCount = const Value.absent(),
+  }) => RecordingPreference(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    rowRevision: rowRevision ?? this.rowRevision,
+    isDeleted: isDeleted ?? this.isDeleted,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    transcriptionMode: transcriptionMode ?? this.transcriptionMode,
+    languageMode: languageMode ?? this.languageMode,
+    expectedSpeakerCount: expectedSpeakerCount.present
+        ? expectedSpeakerCount.value
+        : this.expectedSpeakerCount,
+  );
+  RecordingPreference copyWithCompanion(RecordingPreferencesCompanion data) {
+    return RecordingPreference(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      rowRevision: data.rowRevision.present
+          ? data.rowRevision.value
+          : this.rowRevision,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      transcriptionMode: data.transcriptionMode.present
+          ? data.transcriptionMode.value
+          : this.transcriptionMode,
+      languageMode: data.languageMode.present
+          ? data.languageMode.value
+          : this.languageMode,
+      expectedSpeakerCount: data.expectedSpeakerCount.present
+          ? data.expectedSpeakerCount.value
+          : this.expectedSpeakerCount,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecordingPreference(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('transcriptionMode: $transcriptionMode, ')
+          ..write('languageMode: $languageMode, ')
+          ..write('expectedSpeakerCount: $expectedSpeakerCount')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    transcriptionMode,
+    languageMode,
+    expectedSpeakerCount,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecordingPreference &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.rowRevision == this.rowRevision &&
+          other.isDeleted == this.isDeleted &&
+          other.deletedAt == this.deletedAt &&
+          other.transcriptionMode == this.transcriptionMode &&
+          other.languageMode == this.languageMode &&
+          other.expectedSpeakerCount == this.expectedSpeakerCount);
+}
+
+class RecordingPreferencesCompanion
+    extends UpdateCompanion<RecordingPreference> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowRevision;
+  final Value<bool> isDeleted;
+  final Value<int?> deletedAt;
+  final Value<String> transcriptionMode;
+  final Value<String> languageMode;
+  final Value<int?> expectedSpeakerCount;
+  final Value<int> rowid;
+  const RecordingPreferencesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.transcriptionMode = const Value.absent(),
+    this.languageMode = const Value.absent(),
+    this.expectedSpeakerCount = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecordingPreferencesCompanion.insert({
+    required String id,
+    required int createdAt,
+    required int updatedAt,
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required String transcriptionMode,
+    required String languageMode,
+    this.expectedSpeakerCount = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       transcriptionMode = Value(transcriptionMode),
+       languageMode = Value(languageMode);
+  static Insertable<RecordingPreference> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowRevision,
+    Expression<bool>? isDeleted,
+    Expression<int>? deletedAt,
+    Expression<String>? transcriptionMode,
+    Expression<String>? languageMode,
+    Expression<int>? expectedSpeakerCount,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowRevision != null) 'row_revision': rowRevision,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (transcriptionMode != null) 'transcription_mode': transcriptionMode,
+      if (languageMode != null) 'language_mode': languageMode,
+      if (expectedSpeakerCount != null)
+        'expected_speaker_count': expectedSpeakerCount,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecordingPreferencesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowRevision,
+    Value<bool>? isDeleted,
+    Value<int?>? deletedAt,
+    Value<String>? transcriptionMode,
+    Value<String>? languageMode,
+    Value<int?>? expectedSpeakerCount,
+    Value<int>? rowid,
+  }) {
+    return RecordingPreferencesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowRevision: rowRevision ?? this.rowRevision,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
+      transcriptionMode: transcriptionMode ?? this.transcriptionMode,
+      languageMode: languageMode ?? this.languageMode,
+      expectedSpeakerCount: expectedSpeakerCount ?? this.expectedSpeakerCount,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowRevision.present) {
+      map['row_revision'] = Variable<int>(rowRevision.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (transcriptionMode.present) {
+      map['transcription_mode'] = Variable<String>(transcriptionMode.value);
+    }
+    if (languageMode.present) {
+      map['language_mode'] = Variable<String>(languageMode.value);
+    }
+    if (expectedSpeakerCount.present) {
+      map['expected_speaker_count'] = Variable<int>(expectedSpeakerCount.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecordingPreferencesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('transcriptionMode: $transcriptionMode, ')
+          ..write('languageMode: $languageMode, ')
+          ..write('expectedSpeakerCount: $expectedSpeakerCount, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1570,6 +2302,603 @@ class AudioSegmentsCompanion extends UpdateCompanion<AudioSegment> {
           ..write('mediaDurationUs: $mediaDurationUs, ')
           ..write('committedBytes: $committedBytes, ')
           ..write('state: $state, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RecoveryFindingsTable extends RecoveryFindings
+    with TableInfo<$RecoveryFindingsTable, RecoveryFinding> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecoveryFindingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (created_at >= 0)',
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (updated_at >= created_at)',
+  );
+  static const VerificationMeta _rowRevisionMeta = const VerificationMeta(
+    'rowRevision',
+  );
+  @override
+  late final GeneratedColumn<int> rowRevision = GeneratedColumn<int>(
+    'row_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (row_revision >= 0)',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)',
+  );
+  static const VerificationMeta _meetingIdMeta = const VerificationMeta(
+    'meetingId',
+  );
+  @override
+  late final GeneratedColumn<String> meetingId = GeneratedColumn<String>(
+    'meeting_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES meetings (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _segmentSequenceMeta = const VerificationMeta(
+    'segmentSequence',
+  );
+  @override
+  late final GeneratedColumn<int> segmentSequence = GeneratedColumn<int>(
+    'segment_sequence',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    meetingId,
+    segmentSequence,
+    code,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recovery_findings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecoveryFinding> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('row_revision')) {
+      context.handle(
+        _rowRevisionMeta,
+        rowRevision.isAcceptableOrUnknown(
+          data['row_revision']!,
+          _rowRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('meeting_id')) {
+      context.handle(
+        _meetingIdMeta,
+        meetingId.isAcceptableOrUnknown(data['meeting_id']!, _meetingIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_meetingIdMeta);
+    }
+    if (data.containsKey('segment_sequence')) {
+      context.handle(
+        _segmentSequenceMeta,
+        segmentSequence.isAcceptableOrUnknown(
+          data['segment_sequence']!,
+          _segmentSequenceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecoveryFinding map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecoveryFinding(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      rowRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_revision'],
+      )!,
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      meetingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}meeting_id'],
+      )!,
+      segmentSequence: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}segment_sequence'],
+      ),
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+    );
+  }
+
+  @override
+  $RecoveryFindingsTable createAlias(String alias) {
+    return $RecoveryFindingsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class RecoveryFinding extends DataClass implements Insertable<RecoveryFinding> {
+  /// Stable UUID-style identifier.
+  final String id;
+
+  /// UTC creation instant in epoch milliseconds.
+  final int createdAt;
+
+  /// UTC last-update instant in epoch milliseconds.
+  final int updatedAt;
+
+  /// Monotonic row revision used by restore conflict handling.
+  final int rowRevision;
+
+  /// Whether this row is hidden by a soft delete.
+  final bool isDeleted;
+
+  /// UTC soft-delete instant in epoch milliseconds.
+  final int? deletedAt;
+
+  /// Owning meeting.
+  final String meetingId;
+
+  /// Manifest segment associated with the finding, when applicable.
+  final int? segmentSequence;
+
+  /// Stable privacy-safe diagnostic code.
+  final String code;
+  const RecoveryFinding({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.rowRevision,
+    required this.isDeleted,
+    this.deletedAt,
+    required this.meetingId,
+    this.segmentSequence,
+    required this.code,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    map['row_revision'] = Variable<int>(rowRevision);
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['meeting_id'] = Variable<String>(meetingId);
+    if (!nullToAbsent || segmentSequence != null) {
+      map['segment_sequence'] = Variable<int>(segmentSequence);
+    }
+    map['code'] = Variable<String>(code);
+    return map;
+  }
+
+  RecoveryFindingsCompanion toCompanion(bool nullToAbsent) {
+    return RecoveryFindingsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      rowRevision: Value(rowRevision),
+      isDeleted: Value(isDeleted),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      meetingId: Value(meetingId),
+      segmentSequence: segmentSequence == null && nullToAbsent
+          ? const Value.absent()
+          : Value(segmentSequence),
+      code: Value(code),
+    );
+  }
+
+  factory RecoveryFinding.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecoveryFinding(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      rowRevision: serializer.fromJson<int>(json['rowRevision']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      meetingId: serializer.fromJson<String>(json['meetingId']),
+      segmentSequence: serializer.fromJson<int?>(json['segmentSequence']),
+      code: serializer.fromJson<String>(json['code']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'rowRevision': serializer.toJson<int>(rowRevision),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'meetingId': serializer.toJson<String>(meetingId),
+      'segmentSequence': serializer.toJson<int?>(segmentSequence),
+      'code': serializer.toJson<String>(code),
+    };
+  }
+
+  RecoveryFinding copyWith({
+    String? id,
+    int? createdAt,
+    int? updatedAt,
+    int? rowRevision,
+    bool? isDeleted,
+    Value<int?> deletedAt = const Value.absent(),
+    String? meetingId,
+    Value<int?> segmentSequence = const Value.absent(),
+    String? code,
+  }) => RecoveryFinding(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    rowRevision: rowRevision ?? this.rowRevision,
+    isDeleted: isDeleted ?? this.isDeleted,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    meetingId: meetingId ?? this.meetingId,
+    segmentSequence: segmentSequence.present
+        ? segmentSequence.value
+        : this.segmentSequence,
+    code: code ?? this.code,
+  );
+  RecoveryFinding copyWithCompanion(RecoveryFindingsCompanion data) {
+    return RecoveryFinding(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      rowRevision: data.rowRevision.present
+          ? data.rowRevision.value
+          : this.rowRevision,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      meetingId: data.meetingId.present ? data.meetingId.value : this.meetingId,
+      segmentSequence: data.segmentSequence.present
+          ? data.segmentSequence.value
+          : this.segmentSequence,
+      code: data.code.present ? data.code.value : this.code,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecoveryFinding(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('segmentSequence: $segmentSequence, ')
+          ..write('code: $code')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    meetingId,
+    segmentSequence,
+    code,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecoveryFinding &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.rowRevision == this.rowRevision &&
+          other.isDeleted == this.isDeleted &&
+          other.deletedAt == this.deletedAt &&
+          other.meetingId == this.meetingId &&
+          other.segmentSequence == this.segmentSequence &&
+          other.code == this.code);
+}
+
+class RecoveryFindingsCompanion extends UpdateCompanion<RecoveryFinding> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowRevision;
+  final Value<bool> isDeleted;
+  final Value<int?> deletedAt;
+  final Value<String> meetingId;
+  final Value<int?> segmentSequence;
+  final Value<String> code;
+  final Value<int> rowid;
+  const RecoveryFindingsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.meetingId = const Value.absent(),
+    this.segmentSequence = const Value.absent(),
+    this.code = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecoveryFindingsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required int updatedAt,
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required String meetingId,
+    this.segmentSequence = const Value.absent(),
+    required String code,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       meetingId = Value(meetingId),
+       code = Value(code);
+  static Insertable<RecoveryFinding> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowRevision,
+    Expression<bool>? isDeleted,
+    Expression<int>? deletedAt,
+    Expression<String>? meetingId,
+    Expression<int>? segmentSequence,
+    Expression<String>? code,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowRevision != null) 'row_revision': rowRevision,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (meetingId != null) 'meeting_id': meetingId,
+      if (segmentSequence != null) 'segment_sequence': segmentSequence,
+      if (code != null) 'code': code,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecoveryFindingsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowRevision,
+    Value<bool>? isDeleted,
+    Value<int?>? deletedAt,
+    Value<String>? meetingId,
+    Value<int?>? segmentSequence,
+    Value<String>? code,
+    Value<int>? rowid,
+  }) {
+    return RecoveryFindingsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowRevision: rowRevision ?? this.rowRevision,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
+      meetingId: meetingId ?? this.meetingId,
+      segmentSequence: segmentSequence ?? this.segmentSequence,
+      code: code ?? this.code,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowRevision.present) {
+      map['row_revision'] = Variable<int>(rowRevision.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (meetingId.present) {
+      map['meeting_id'] = Variable<String>(meetingId.value);
+    }
+    if (segmentSequence.present) {
+      map['segment_sequence'] = Variable<int>(segmentSequence.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecoveryFindingsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('segmentSequence: $segmentSequence, ')
+          ..write('code: $code, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -14411,7 +15740,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $MeetingsTable meetings = $MeetingsTable(this);
+  late final $RecordingPreferencesTable recordingPreferences =
+      $RecordingPreferencesTable(this);
   late final $AudioSegmentsTable audioSegments = $AudioSegmentsTable(this);
+  late final $RecoveryFindingsTable recoveryFindings = $RecoveryFindingsTable(
+    this,
+  );
   late final $SessionEventsTable sessionEvents = $SessionEventsTable(this);
   late final $BookmarksTable bookmarks = $BookmarksTable(this);
   late final $ModelManifestsTable modelManifests = $ModelManifestsTable(this);
@@ -14446,6 +15780,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index uxAudioSegmentsMeetingSequence = Index(
     'ux_audio_segments_meeting_sequence',
     'CREATE UNIQUE INDEX ux_audio_segments_meeting_sequence ON audio_segments (meeting_id, sequence)',
+  );
+  late final Index idxRecoveryFindingsMeetingSequence = Index(
+    'idx_recovery_findings_meeting_sequence',
+    'CREATE INDEX idx_recovery_findings_meeting_sequence ON recovery_findings (meeting_id, segment_sequence)',
   );
   late final Index uxSessionEventsMeetingSequence = Index(
     'ux_session_events_meeting_sequence',
@@ -14565,7 +15903,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     meetings,
+    recordingPreferences,
     audioSegments,
+    recoveryFindings,
     sessionEvents,
     bookmarks,
     modelManifests,
@@ -14585,6 +15925,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     backupRecords,
     idxMeetingsCreated,
     uxAudioSegmentsMeetingSequence,
+    idxRecoveryFindingsMeetingSequence,
     uxSessionEventsMeetingSequence,
     idxBookmarksMeetingMedia,
     idxTranscriptRunsMeetingCreated,
@@ -14622,6 +15963,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('audio_segments', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'meetings',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('recovery_findings', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -14788,6 +16136,8 @@ typedef $$MeetingsTableCreateCompanionBuilder =
       Value<int> mediaDurationUs,
       required String lifecycle,
       required String languageMode,
+      Value<String> transcriptionMode,
+      Value<int?> expectedSpeakerCount,
       Value<int?> trashedAtUtcMs,
       Value<String?> lifecycleBeforeTrash,
       Value<int> rowid,
@@ -14804,6 +16154,8 @@ typedef $$MeetingsTableUpdateCompanionBuilder =
       Value<int> mediaDurationUs,
       Value<String> lifecycle,
       Value<String> languageMode,
+      Value<String> transcriptionMode,
+      Value<int?> expectedSpeakerCount,
       Value<int?> trashedAtUtcMs,
       Value<String?> lifecycleBeforeTrash,
       Value<int> rowid,
@@ -14826,6 +16178,26 @@ final class $$MeetingsTableReferences
     ).filter((f) => f.meetingId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_audioSegmentsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RecoveryFindingsTable, List<RecoveryFinding>>
+  _recoveryFindingsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.recoveryFindings,
+    aliasName: 'meetings__id__recovery_findings__meeting_id',
+  );
+
+  $$RecoveryFindingsTableProcessedTableManager get recoveryFindingsRefs {
+    final manager = $$RecoveryFindingsTableTableManager(
+      $_db,
+      $_db.recoveryFindings,
+    ).filter((f) => f.meetingId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _recoveryFindingsRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -15105,6 +16477,16 @@ class $$MeetingsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get transcriptionMode => $composableBuilder(
+    column: $table.transcriptionMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get expectedSpeakerCount => $composableBuilder(
+    column: $table.expectedSpeakerCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get trashedAtUtcMs => $composableBuilder(
     column: $table.trashedAtUtcMs,
     builder: (column) => ColumnFilters(column),
@@ -15131,6 +16513,31 @@ class $$MeetingsTableFilterComposer
           }) => $$AudioSegmentsTableFilterComposer(
             $db: $db,
             $table: $db.audioSegments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> recoveryFindingsRefs(
+    Expression<bool> Function($$RecoveryFindingsTableFilterComposer f) f,
+  ) {
+    final $$RecoveryFindingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recoveryFindings,
+      getReferencedColumn: (t) => t.meetingId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecoveryFindingsTableFilterComposer(
+            $db: $db,
+            $table: $db.recoveryFindings,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -15479,6 +16886,16 @@ class $$MeetingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get transcriptionMode => $composableBuilder(
+    column: $table.transcriptionMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get expectedSpeakerCount => $composableBuilder(
+    column: $table.expectedSpeakerCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get trashedAtUtcMs => $composableBuilder(
     column: $table.trashedAtUtcMs,
     builder: (column) => ColumnOrderings(column),
@@ -15535,6 +16952,16 @@ class $$MeetingsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get transcriptionMode => $composableBuilder(
+    column: $table.transcriptionMode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get expectedSpeakerCount => $composableBuilder(
+    column: $table.expectedSpeakerCount,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get trashedAtUtcMs => $composableBuilder(
     column: $table.trashedAtUtcMs,
     builder: (column) => column,
@@ -15561,6 +16988,31 @@ class $$MeetingsTableAnnotationComposer
           }) => $$AudioSegmentsTableAnnotationComposer(
             $db: $db,
             $table: $db.audioSegments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> recoveryFindingsRefs<T extends Object>(
+    Expression<T> Function($$RecoveryFindingsTableAnnotationComposer a) f,
+  ) {
+    final $$RecoveryFindingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recoveryFindings,
+      getReferencedColumn: (t) => t.meetingId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecoveryFindingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recoveryFindings,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -15867,6 +17319,7 @@ class $$MeetingsTableTableManager
           Meeting,
           PrefetchHooks Function({
             bool audioSegmentsRefs,
+            bool recoveryFindingsRefs,
             bool sessionEventsRefs,
             bool bookmarksRefs,
             bool transcriptRunsRefs,
@@ -15903,6 +17356,8 @@ class $$MeetingsTableTableManager
                 Value<int> mediaDurationUs = const Value.absent(),
                 Value<String> lifecycle = const Value.absent(),
                 Value<String> languageMode = const Value.absent(),
+                Value<String> transcriptionMode = const Value.absent(),
+                Value<int?> expectedSpeakerCount = const Value.absent(),
                 Value<int?> trashedAtUtcMs = const Value.absent(),
                 Value<String?> lifecycleBeforeTrash = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -15917,6 +17372,8 @@ class $$MeetingsTableTableManager
                 mediaDurationUs: mediaDurationUs,
                 lifecycle: lifecycle,
                 languageMode: languageMode,
+                transcriptionMode: transcriptionMode,
+                expectedSpeakerCount: expectedSpeakerCount,
                 trashedAtUtcMs: trashedAtUtcMs,
                 lifecycleBeforeTrash: lifecycleBeforeTrash,
                 rowid: rowid,
@@ -15933,6 +17390,8 @@ class $$MeetingsTableTableManager
                 Value<int> mediaDurationUs = const Value.absent(),
                 required String lifecycle,
                 required String languageMode,
+                Value<String> transcriptionMode = const Value.absent(),
+                Value<int?> expectedSpeakerCount = const Value.absent(),
                 Value<int?> trashedAtUtcMs = const Value.absent(),
                 Value<String?> lifecycleBeforeTrash = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -15947,6 +17406,8 @@ class $$MeetingsTableTableManager
                 mediaDurationUs: mediaDurationUs,
                 lifecycle: lifecycle,
                 languageMode: languageMode,
+                transcriptionMode: transcriptionMode,
+                expectedSpeakerCount: expectedSpeakerCount,
                 trashedAtUtcMs: trashedAtUtcMs,
                 lifecycleBeforeTrash: lifecycleBeforeTrash,
                 rowid: rowid,
@@ -15962,6 +17423,7 @@ class $$MeetingsTableTableManager
           prefetchHooksCallback:
               ({
                 audioSegmentsRefs = false,
+                recoveryFindingsRefs = false,
                 sessionEventsRefs = false,
                 bookmarksRefs = false,
                 transcriptRunsRefs = false,
@@ -15978,6 +17440,7 @@ class $$MeetingsTableTableManager
                   db: db,
                   explicitlyWatchedTables: [
                     if (audioSegmentsRefs) db.audioSegments,
+                    if (recoveryFindingsRefs) db.recoveryFindings,
                     if (sessionEventsRefs) db.sessionEvents,
                     if (bookmarksRefs) db.bookmarks,
                     if (transcriptRunsRefs) db.transcriptRuns,
@@ -16009,6 +17472,27 @@ class $$MeetingsTableTableManager
                                 table,
                                 p0,
                               ).audioSegmentsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.meetingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (recoveryFindingsRefs)
+                        await $_getPrefetchedData<
+                          Meeting,
+                          $MeetingsTable,
+                          RecoveryFinding
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MeetingsTableReferences
+                              ._recoveryFindingsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MeetingsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).recoveryFindingsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.meetingId == item.id,
@@ -16268,6 +17752,7 @@ typedef $$MeetingsTableProcessedTableManager =
       Meeting,
       PrefetchHooks Function({
         bool audioSegmentsRefs,
+        bool recoveryFindingsRefs,
         bool sessionEventsRefs,
         bool bookmarksRefs,
         bool transcriptRunsRefs,
@@ -16280,6 +17765,317 @@ typedef $$MeetingsTableProcessedTableManager =
         bool processingJobsRefs,
         bool exportRecordsRefs,
       })
+    >;
+typedef $$RecordingPreferencesTableCreateCompanionBuilder =
+    RecordingPreferencesCompanion Function({
+      required String id,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      required String transcriptionMode,
+      required String languageMode,
+      Value<int?> expectedSpeakerCount,
+      Value<int> rowid,
+    });
+typedef $$RecordingPreferencesTableUpdateCompanionBuilder =
+    RecordingPreferencesCompanion Function({
+      Value<String> id,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      Value<String> transcriptionMode,
+      Value<String> languageMode,
+      Value<int?> expectedSpeakerCount,
+      Value<int> rowid,
+    });
+
+class $$RecordingPreferencesTableFilterComposer
+    extends Composer<_$AppDatabase, $RecordingPreferencesTable> {
+  $$RecordingPreferencesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get transcriptionMode => $composableBuilder(
+    column: $table.transcriptionMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get languageMode => $composableBuilder(
+    column: $table.languageMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get expectedSpeakerCount => $composableBuilder(
+    column: $table.expectedSpeakerCount,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RecordingPreferencesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecordingPreferencesTable> {
+  $$RecordingPreferencesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get transcriptionMode => $composableBuilder(
+    column: $table.transcriptionMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get languageMode => $composableBuilder(
+    column: $table.languageMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get expectedSpeakerCount => $composableBuilder(
+    column: $table.expectedSpeakerCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RecordingPreferencesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecordingPreferencesTable> {
+  $$RecordingPreferencesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get transcriptionMode => $composableBuilder(
+    column: $table.transcriptionMode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get languageMode => $composableBuilder(
+    column: $table.languageMode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get expectedSpeakerCount => $composableBuilder(
+    column: $table.expectedSpeakerCount,
+    builder: (column) => column,
+  );
+}
+
+class $$RecordingPreferencesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecordingPreferencesTable,
+          RecordingPreference,
+          $$RecordingPreferencesTableFilterComposer,
+          $$RecordingPreferencesTableOrderingComposer,
+          $$RecordingPreferencesTableAnnotationComposer,
+          $$RecordingPreferencesTableCreateCompanionBuilder,
+          $$RecordingPreferencesTableUpdateCompanionBuilder,
+          (
+            RecordingPreference,
+            BaseReferences<
+              _$AppDatabase,
+              $RecordingPreferencesTable,
+              RecordingPreference
+            >,
+          ),
+          RecordingPreference,
+          PrefetchHooks Function()
+        > {
+  $$RecordingPreferencesTableTableManager(
+    _$AppDatabase db,
+    $RecordingPreferencesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecordingPreferencesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecordingPreferencesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$RecordingPreferencesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                Value<String> transcriptionMode = const Value.absent(),
+                Value<String> languageMode = const Value.absent(),
+                Value<int?> expectedSpeakerCount = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecordingPreferencesCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                transcriptionMode: transcriptionMode,
+                languageMode: languageMode,
+                expectedSpeakerCount: expectedSpeakerCount,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                required String transcriptionMode,
+                required String languageMode,
+                Value<int?> expectedSpeakerCount = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecordingPreferencesCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                transcriptionMode: transcriptionMode,
+                languageMode: languageMode,
+                expectedSpeakerCount: expectedSpeakerCount,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RecordingPreferencesTable, RecordingPreference>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $RecordingPreferencesTable,
+                    RecordingPreference
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RecordingPreferencesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecordingPreferencesTable,
+      RecordingPreference,
+      $$RecordingPreferencesTableFilterComposer,
+      $$RecordingPreferencesTableOrderingComposer,
+      $$RecordingPreferencesTableAnnotationComposer,
+      $$RecordingPreferencesTableCreateCompanionBuilder,
+      $$RecordingPreferencesTableUpdateCompanionBuilder,
+      (
+        RecordingPreference,
+        BaseReferences<
+          _$AppDatabase,
+          $RecordingPreferencesTable,
+          RecordingPreference
+        >,
+      ),
+      RecordingPreference,
+      PrefetchHooks Function()
     >;
 typedef $$AudioSegmentsTableCreateCompanionBuilder =
     AudioSegmentsCompanion Function({
@@ -16762,6 +18558,412 @@ typedef $$AudioSegmentsTableProcessedTableManager =
       $$AudioSegmentsTableUpdateCompanionBuilder,
       (AudioSegment, $$AudioSegmentsTableReferences),
       AudioSegment,
+      PrefetchHooks Function({bool meetingId})
+    >;
+typedef $$RecoveryFindingsTableCreateCompanionBuilder =
+    RecoveryFindingsCompanion Function({
+      required String id,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      required String meetingId,
+      Value<int?> segmentSequence,
+      required String code,
+      Value<int> rowid,
+    });
+typedef $$RecoveryFindingsTableUpdateCompanionBuilder =
+    RecoveryFindingsCompanion Function({
+      Value<String> id,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      Value<String> meetingId,
+      Value<int?> segmentSequence,
+      Value<String> code,
+      Value<int> rowid,
+    });
+
+final class $$RecoveryFindingsTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $RecoveryFindingsTable, RecoveryFinding> {
+  $$RecoveryFindingsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $MeetingsTable _meetingIdTable(_$AppDatabase db) =>
+      db.meetings.createAlias('recovery_findings__meeting_id__meetings__id');
+
+  $$MeetingsTableProcessedTableManager get meetingId {
+    final $_column = $_itemColumn<String>('meeting_id')!;
+
+    final manager = $$MeetingsTableTableManager(
+      $_db,
+      $_db.meetings,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_meetingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RecoveryFindingsTableFilterComposer
+    extends Composer<_$AppDatabase, $RecoveryFindingsTable> {
+  $$RecoveryFindingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get segmentSequence => $composableBuilder(
+    column: $table.segmentSequence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MeetingsTableFilterComposer get meetingId {
+    final $$MeetingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableFilterComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecoveryFindingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecoveryFindingsTable> {
+  $$RecoveryFindingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get segmentSequence => $composableBuilder(
+    column: $table.segmentSequence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MeetingsTableOrderingComposer get meetingId {
+    final $$MeetingsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableOrderingComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecoveryFindingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecoveryFindingsTable> {
+  $$RecoveryFindingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get segmentSequence => $composableBuilder(
+    column: $table.segmentSequence,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  $$MeetingsTableAnnotationComposer get meetingId {
+    final $$MeetingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecoveryFindingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecoveryFindingsTable,
+          RecoveryFinding,
+          $$RecoveryFindingsTableFilterComposer,
+          $$RecoveryFindingsTableOrderingComposer,
+          $$RecoveryFindingsTableAnnotationComposer,
+          $$RecoveryFindingsTableCreateCompanionBuilder,
+          $$RecoveryFindingsTableUpdateCompanionBuilder,
+          (RecoveryFinding, $$RecoveryFindingsTableReferences),
+          RecoveryFinding,
+          PrefetchHooks Function({bool meetingId})
+        > {
+  $$RecoveryFindingsTableTableManager(
+    _$AppDatabase db,
+    $RecoveryFindingsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecoveryFindingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecoveryFindingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RecoveryFindingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                Value<String> meetingId = const Value.absent(),
+                Value<int?> segmentSequence = const Value.absent(),
+                Value<String> code = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecoveryFindingsCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                meetingId: meetingId,
+                segmentSequence: segmentSequence,
+                code: code,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                required String meetingId,
+                Value<int?> segmentSequence = const Value.absent(),
+                required String code,
+                Value<int> rowid = const Value.absent(),
+              }) => RecoveryFindingsCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                meetingId: meetingId,
+                segmentSequence: segmentSequence,
+                code: code,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RecoveryFindingsTable, RecoveryFinding>(table),
+                  $$RecoveryFindingsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({meetingId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (meetingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.meetingId,
+                                referencedTable:
+                                    $$RecoveryFindingsTableReferences
+                                        ._meetingIdTable(db),
+                                referencedColumn:
+                                    $$RecoveryFindingsTableReferences
+                                        ._meetingIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$RecoveryFindingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecoveryFindingsTable,
+      RecoveryFinding,
+      $$RecoveryFindingsTableFilterComposer,
+      $$RecoveryFindingsTableOrderingComposer,
+      $$RecoveryFindingsTableAnnotationComposer,
+      $$RecoveryFindingsTableCreateCompanionBuilder,
+      $$RecoveryFindingsTableUpdateCompanionBuilder,
+      (RecoveryFinding, $$RecoveryFindingsTableReferences),
+      RecoveryFinding,
       PrefetchHooks Function({bool meetingId})
     >;
 typedef $$SessionEventsTableCreateCompanionBuilder =
@@ -26475,8 +28677,12 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$MeetingsTableTableManager get meetings =>
       $$MeetingsTableTableManager(_db, _db.meetings);
+  $$RecordingPreferencesTableTableManager get recordingPreferences =>
+      $$RecordingPreferencesTableTableManager(_db, _db.recordingPreferences);
   $$AudioSegmentsTableTableManager get audioSegments =>
       $$AudioSegmentsTableTableManager(_db, _db.audioSegments);
+  $$RecoveryFindingsTableTableManager get recoveryFindings =>
+      $$RecoveryFindingsTableTableManager(_db, _db.recoveryFindings);
   $$SessionEventsTableTableManager get sessionEvents =>
       $$SessionEventsTableTableManager(_db, _db.sessionEvents);
   $$BookmarksTableTableManager get bookmarks =>
