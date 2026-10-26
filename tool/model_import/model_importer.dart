@@ -11,6 +11,28 @@ import 'package:path/path.dart' as path;
 
 part 'model_importer_io.dart';
 
+/// Injectable publication operations for deterministic filesystem fault tests.
+abstract interface class ModelImportPublication {
+  /// Renames a whole directory on the same filesystem.
+  Future<Directory> rename(Directory directory, String destination);
+
+  /// Removes an obsolete backup only after successful publication.
+  Future<void> removeBackup(Directory directory);
+}
+
+final class _LocalModelImportPublication implements ModelImportPublication {
+  const _LocalModelImportPublication();
+
+  @override
+  Future<Directory> rename(Directory directory, String destination) =>
+      directory.rename(destination);
+
+  @override
+  Future<void> removeBackup(Directory directory) async {
+    await directory.delete(recursive: true);
+  }
+}
+
 /// Stable reasons an offline model import cannot be published.
 enum ModelImportFailureReason {
   /// A configured input directory is outside its fixed project location.
@@ -130,5 +152,6 @@ final class ModelImportSummary extends ValueObject {
 /// The function performs no network access. A failed run leaves any previously
 /// published [ModelImportRequest.outputDirectory] unchanged.
 Future<Result<ModelImportSummary, ModelImportFailure>> importModels(
-  ModelImportRequest request,
-) => _importModels(request);
+  ModelImportRequest request, {
+  ModelImportPublication publication = const _LocalModelImportPublication(),
+}) => _importModels(request, publication);

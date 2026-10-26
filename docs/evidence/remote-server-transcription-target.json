@@ -1,0 +1,185 @@
+{
+  "recordedAtUnix": 1792676295.9225278,
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "logicalCpus": 32,
+  "packages": {
+    "torch": "2.6.0",
+    "qwen-asr": "0.0.6",
+    "transformers": "4.57.6",
+    "faster-whisper": "1.2.1",
+    "ctranslate2": "4.8.3",
+    "av": "18.1.0"
+  },
+  "cases": [
+    {
+      "name": "qwen-1.7b",
+      "durationMs": 45000,
+      "segments": 221,
+      "textCharacters": 255,
+      "firstStartMs": 320,
+      "lastEndMs": 44900,
+      "provenance": {
+        "model": "Qwen/Qwen3-ASR-1.7B",
+        "modelRevision": "7278e1e70fe206f11671096ffdd38061171dd6e5",
+        "runtime": "0.0.6",
+        "precision": "bfloat16",
+        "alignerRevision": "c7cbfc2048c462b0d63a45797104fc9db3ad62b7",
+        "chunkPolicy": "silence-boundary-30000ms-v1",
+        "timestampPolicy": "coalesced-zero-duration-v1",
+        "overlapPolicy": "complete-context-alternatives-v2",
+        "boundaryPolicy": "whole-group-max-min-context-v1",
+        "boundaryConflictGroups": "0",
+        "batchSize": "1",
+        "measurementScope": "cold-job-wall-time; max-stage-RSS; torch-allocator-VRAM-excludes-driver",
+        "peakRssBytes": "5219692544",
+        "elapsedSeconds": "31.060291202998997",
+        "peakVramBytes": "4698449408"
+      },
+      "resultSha256": "b217f63ba2f07f63c36e6842afca0d9a6195ff85a321e247fde4d6306687039d"
+    },
+    {
+      "name": "whisper-large-v3",
+      "durationMs": 45000,
+      "segments": 131,
+      "textCharacters": 151,
+      "firstStartMs": 460,
+      "lastEndMs": 44980,
+      "provenance": {
+        "model": "Systran/faster-whisper-large-v3",
+        "modelRevision": "edaa852ec7e145841d8ffdb056a99866b5f0a478",
+        "runtime": "1.2.1",
+        "precision": "int8_float16",
+        "alignerRevision": "integrated",
+        "chunkPolicy": "silence-boundary-30000ms-v1",
+        "timestampPolicy": "coalesced-zero-duration-v1",
+        "overlapPolicy": "complete-context-alternatives-v2",
+        "boundaryPolicy": "whole-group-max-min-context-v1",
+        "boundaryConflictGroups": "0",
+        "batchSize": "1",
+        "measurementScope": "cold-job-wall-time; max-stage-RSS; torch-allocator-VRAM-excludes-driver",
+        "peakRssBytes": "3666706432",
+        "elapsedSeconds": "13.90067186700071",
+        "peakVramBytes": "unmeasured"
+      },
+      "resultSha256": "41420ddbc823501a6b9b8d3c88b97e52ce58af5c41884273f5e51d934811cf45"
+    },
+    {
+      "name": "silence",
+      "durationMs": 4000,
+      "segments": 0,
+      "textCharacters": 0,
+      "firstStartMs": null,
+      "lastEndMs": null,
+      "provenance": {
+        "model": "Qwen/Qwen3-ASR-1.7B",
+        "modelRevision": "7278e1e70fe206f11671096ffdd38061171dd6e5",
+        "runtime": "0.0.6",
+        "precision": "bfloat16",
+        "alignerRevision": "c7cbfc2048c462b0d63a45797104fc9db3ad62b7",
+        "chunkPolicy": "silence-boundary-30000ms-v1",
+        "timestampPolicy": "coalesced-zero-duration-v1",
+        "overlapPolicy": "complete-context-alternatives-v2",
+        "boundaryPolicy": "whole-group-max-min-context-v1",
+        "boundaryConflictGroups": "0",
+        "batchSize": "1",
+        "measurementScope": "cold-job-wall-time; max-stage-RSS; torch-allocator-VRAM-excludes-driver",
+        "peakRssBytes": "5218996224",
+        "elapsedSeconds": "19.443943914000556",
+        "peakVramBytes": "4698449408"
+      },
+      "resultSha256": "8650195a2017dc3a214c7bd8f098208ff10d93314185d344b8577e162cb7251a"
+    },
+    {
+      "name": "paused",
+      "durationMs": 45000,
+      "segments": 226,
+      "textCharacters": 262,
+      "firstStartMs": 640,
+      "lastEndMs": 44880,
+      "provenance": {
+        "model": "Qwen/Qwen3-ASR-1.7B",
+        "modelRevision": "7278e1e70fe206f11671096ffdd38061171dd6e5",
+        "runtime": "0.0.6",
+        "precision": "bfloat16",
+        "alignerRevision": "c7cbfc2048c462b0d63a45797104fc9db3ad62b7",
+        "chunkPolicy": "silence-boundary-30000ms-v1",
+        "timestampPolicy": "coalesced-zero-duration-v1",
+        "overlapPolicy": "complete-context-alternatives-v2",
+        "boundaryPolicy": "whole-group-max-min-context-v1",
+        "boundaryConflictGroups": "0",
+        "batchSize": "1",
+        "measurementScope": "cold-job-wall-time; max-stage-RSS; torch-allocator-VRAM-excludes-driver",
+        "peakRssBytes": "5219360768",
+        "elapsedSeconds": "30.959454801999527",
+        "peakVramBytes": "4698449408"
+      },
+      "resultSha256": "4b25481a83a964759f18bdae7df71c6df4b3aa38f4288711890a2e8d22faf7de"
+    },
+    {
+      "name": "long600",
+      "durationMs": 600000,
+      "segments": 2986,
+      "textCharacters": 3407,
+      "firstStartMs": 320,
+      "lastEndMs": 599920,
+      "provenance": {
+        "model": "Qwen/Qwen3-ASR-1.7B",
+        "modelRevision": "7278e1e70fe206f11671096ffdd38061171dd6e5",
+        "runtime": "0.0.6",
+        "precision": "bfloat16",
+        "alignerRevision": "c7cbfc2048c462b0d63a45797104fc9db3ad62b7",
+        "chunkPolicy": "silence-boundary-30000ms-v1",
+        "timestampPolicy": "coalesced-zero-duration-v1",
+        "overlapPolicy": "complete-context-alternatives-v2",
+        "boundaryPolicy": "whole-group-max-min-context-v1",
+        "boundaryConflictGroups": "12",
+        "batchSize": "1",
+        "measurementScope": "cold-job-wall-time; max-stage-RSS; torch-allocator-VRAM-excludes-driver",
+        "peakRssBytes": "5219508224",
+        "elapsedSeconds": "133.57896540100046",
+        "peakVramBytes": "4698449408"
+      },
+      "resultSha256": "696934c4adcb5eb7ecd0cb8b3bfcf79d9e39738a5c8f38016deea6ac679f3793"
+    }
+  ],
+  "sources": {
+    "pyproject.toml": "d791e35b9f66c93ecba41b823f0ac7cd5c0c90a0068ddfe1adc9c53c9976149d",
+    "uv.lock": "55c2b1be2edff03495490002c44b41beea8882534cdfbc21ae6f7808d742376f",
+    "loquiris_server/pipeline.py": "d369636447938c16faa05467e9b347acee85f9c4be87f0381d945b5f8d88f87d",
+    "loquiris_server/worker.py": "968779286b1d9467220be09c1644d010ac93b4eea89915612b0769ecd1cfc2ea",
+    "loquiris_server/stage.py": "1e98341f5a331e6b3edfec7c143e76cba1b33b50761ff0e8b14c2670225f8bf8"
+  },
+  "health": {
+    "/health/live": {
+      "httpStatus": 200,
+      "body": {
+        "status": "alive"
+      }
+    },
+    "/health/ready": {
+      "httpStatus": 200,
+      "body": {
+        "status": "ready"
+      }
+    }
+  },
+  "services": [
+    "active",
+    "active"
+  ],
+  "gpu": "NVIDIA GeForce RTX 3080 Ti, 610.88, 12288 MiB",
+  "wslMemory": "               total        used        free      shared  buff/cache   available\nMem:     16703516672  1371287552  3409989632     3735552 12179009536 15332229120\nSwap:     4294967296     2125824  4292841472\n",
+  "monitor": {
+    "sinceUnix": 1792676057.7071044,
+    "intervalSeconds": 1,
+    "samples": 227,
+    "wholeDevicePeakMiBIncludingDesktop": 8393,
+    "maxConcurrentStageProcesses": 1,
+    "sampledPhases": [
+      "align",
+      "recognize"
+    ],
+    "scope": "whole GPU includes Windows desktop and unrelated apps; one-second sampling may miss peaks; torch allocator peak is separate in provenance"
+  }
+}

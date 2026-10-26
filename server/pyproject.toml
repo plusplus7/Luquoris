@@ -1,0 +1,38 @@
+[project]
+name = "loquiris-server"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.34,<1", "pydantic>=2.10,<3"]
+
+[project.optional-dependencies]
+gpu = [
+    "av>=11,<19",
+    "faster-whisper>=1.1,<2",
+    "huggingface-hub>=0.34,<1",
+    "qwen-asr>=0.0.6,<0.1",
+    "torch==2.6.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<10",
+    "httpx>=0.28,<1",
+    "ruff>=0.11,<1",
+    "httpx2>=2.16.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["loquiris_server"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

@@ -32,11 +32,13 @@ class WhisperPostSessionEngine(
                 }
                 is AuthoritativeAudioResolution.Failure -> return failure(resolved.code)
             }
+        if (cancellation.isCancelled()) return PostSessionTranscriptionResult.Cancelled
         val model =
             when (val materialized = modelProvider.materialize()) {
                 is ModelMaterializationResult.Ready -> materialized.file
                 is ModelMaterializationResult.Failure -> return failure(materialized.code)
             }
+        if (cancellation.isCancelled()) return PostSessionTranscriptionResult.Cancelled
         val context =
             try {
                 native.createContext(model.absolutePath)
@@ -50,6 +52,7 @@ class WhisperPostSessionEngine(
         if (context == 0L) return failure(stableNativeFailure())
         var run = 0L
         return try {
+            if (cancellation.isCancelled()) return PostSessionTranscriptionResult.Cancelled
             run = native.createRun()
             if (run == 0L) return failure(stableNativeFailure())
             val cancelRegistration = cancellation.invokeOnCancel { native.cancelRun(run) }

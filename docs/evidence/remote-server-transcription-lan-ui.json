@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-22",
+  "endpoint": "http://192.168.1.20:18000",
+  "flutterTests": 923,
+  "jvmTests": 561,
+  "physicalNativeTests": 9,
+  "analyze": "no issues",
+  "apk": "build/app/outputs/apk/debug/app-debug.apk",
+  "apkSha256": "2aee00ee2aa0f89d29d42e56d56655d5c3a249c57f2655f2221c91b56d73d7f7",
+  "apkBytes": 147703386,
+  "installedPackage": "com.loquiris.debug",
+  "isolatedTestPackage": "com.loquiris.debug.lantest",
+  "connectionSurvivesRestart": true,
+  "fullPhoneEndToEndVerified": false,
+  "qualityImprovementVerified": false,
+  "review": "no Important or Critical findings"
+}

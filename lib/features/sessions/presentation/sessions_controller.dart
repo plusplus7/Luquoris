@@ -144,14 +144,16 @@ final class SessionsController extends StreamNotifier<SessionsSnapshot> {
     final repository = ref.watch(sessionRepositoryProvider);
     final query = _query;
     if (query.isNotEmpty) {
-      return Stream.fromFuture(repository.search(query)).map(
-        (result) => switch (result) {
-          Ok(:final value) => _withDeletionState(
-            SessionsLoaded(kind: _kind, query: query, items: value),
-          ),
-          Err(:final failure) => SessionsLoadFailed(failure),
-        },
-      );
+      return repository
+          .watchSearch(query)
+          .map(
+            (result) => switch (result) {
+              Ok(:final value) => _withDeletionState(
+                SessionsLoaded(kind: _kind, query: query, items: value),
+              ),
+              Err(:final failure) => SessionsLoadFailed(failure),
+            },
+          );
     }
     final kind = _kind;
     return repository

@@ -205,7 +205,7 @@ private fun validArguments(): Map<String, Any?> =
         "runId" to "run-1",
         "meetingId" to "meeting-1",
         "segmentReferences" to listOf("recordings/storage-key/segment-00000.adts"),
-        "modelId" to "whisper-base-q5_1",
+        "modelId" to TranscriptionChannelContract.supportedModelId,
         "languageHint" to "mixed",
         "parameterVersion" to 1,
     )

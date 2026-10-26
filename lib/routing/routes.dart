@@ -23,6 +23,10 @@ abstract final class AppRoutes {
   /// Transcript and label editor for a saved meeting.
   static String editor(String meetingId) => '${session(meetingId)}/edit';
 
+  /// Retained transcript versions and explicit current selection.
+  static String transcriptVersions(String meetingId) =>
+      '${session(meetingId)}/versions';
+
   /// Export flow for a saved meeting.
   static String export(String meetingId) => '${session(meetingId)}/export';
 }

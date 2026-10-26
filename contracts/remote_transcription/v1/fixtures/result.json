@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "jobId": "job-1",
+  "meetingId": "meeting-1",
+  "runId": "run-1",
+  "audioManifestDigest": "1702a8661d930d33d69d2c6449c0b1ba92857d8a2222a49e345c8af5773006b7",
+  "durationMs": 2000,
+  "provenance": {
+    "modelRevision": "cccccccccccccccccccccccccccccccccccccccc",
+    "runtime": "fixture"
+  },
+  "segments": [
+    {
+      "startMs": 0,
+      "endMs": 900,
+      "text": "测试",
+      "language": "Chinese",
+      "speaker": null
+    },
+    {
+      "startMs": 1000,
+      "endMs": 1900,
+      "text": "hello",
+      "language": "English",
+      "speaker": null
+    }
+  ]
+}

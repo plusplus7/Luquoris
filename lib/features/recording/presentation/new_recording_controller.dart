@@ -1,9 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loquiris/core/failure.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/recording/presentation/recording_controller.dart';
+import 'package:loquiris/features/remote_transcription/application/remote_feature.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
+import 'package:loquiris/features/transcript/application/transcription_coordinator.dart';
+import 'package:loquiris/features/transcript/application/transcription_parameters.dart';
+import 'package:loquiris/features/transcript/domain/meeting_processing_selection.dart';
+import 'package:loquiris/services/meeting_processing_selection_repository.dart';
+import 'package:loquiris/services/remote_transcription_repository.dart';
+import 'package:loquiris/services/remote_transcription_service.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
 import 'package:meta/meta.dart';
@@ -25,10 +34,11 @@ enum NewRecordingStatus {
 }
 
 /// Failure surfaced by new-recording orchestration.
-sealed class NewRecordingFailure {
+sealed class NewRecordingFailure implements Failure {
   const NewRecordingFailure(this.code);
 
   /// Stable failure code suitable for localized mapping.
+  @override
   final String code;
 
   /// Whether the same meeting identity may safely issue another start.
@@ -87,11 +97,21 @@ final class NewRecordingCleanupFailure extends NewRecordingFailure {
   bool get allowsStartRetry => false;
 }
 
+/// Explicit processing configuration could not be frozen before capture.
+final class NewRecordingProcessingFailure extends NewRecordingFailure {
+  /// Creates a content-free configuration failure, safe to retry before capture.
+  const NewRecordingProcessingFailure(super.code);
+
+  @override
+  bool get allowsStartRetry => true;
+}
+
 /// Immutable state for the recording setup screen.
 @immutable
 final class NewRecordingState {
   /// Creates setup state from remembered or user-selected values.
   const NewRecordingState({
+    this.processingMode = MeetingProcessingMode.postSession,
     this.transcriptionMode = MeetingTranscriptionMode.postSession,
     this.languageMode = MeetingLanguageMode.mixed,
     this.expectedSpeakerCount,
@@ -102,7 +122,10 @@ final class NewRecordingState {
 
   static const _unset = Object();
 
-  /// Requested live-draft or post-session transcription timing.
+  /// Explicit processing intent for this meeting, independent of legacy defaults.
+  final MeetingProcessingMode processingMode;
+
+  /// Remembered legacy timing preference; new choices do not rewrite it.
   final MeetingTranscriptionMode transcriptionMode;
 
   /// Recognition language hint.
@@ -129,6 +152,7 @@ final class NewRecordingState {
 
   /// Returns a new immutable setup value.
   NewRecordingState copyWith({
+    MeetingProcessingMode? processingMode,
     MeetingTranscriptionMode? transcriptionMode,
     MeetingLanguageMode? languageMode,
     Object? expectedSpeakerCount = _unset,
@@ -136,6 +160,7 @@ final class NewRecordingState {
     Object? startedMeetingId = _unset,
     Object? failure = _unset,
   }) => NewRecordingState(
+    processingMode: processingMode ?? this.processingMode,
     transcriptionMode: transcriptionMode ?? this.transcriptionMode,
     languageMode: languageMode ?? this.languageMode,
     expectedSpeakerCount: identical(expectedSpeakerCount, _unset)
@@ -154,6 +179,7 @@ final class NewRecordingState {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is NewRecordingState &&
+          processingMode == other.processingMode &&
           transcriptionMode == other.transcriptionMode &&
           languageMode == other.languageMode &&
           expectedSpeakerCount == other.expectedSpeakerCount &&
@@ -166,6 +192,7 @@ final class NewRecordingState {
 
   @override
   int get hashCode => Object.hash(
+    processingMode,
     transcriptionMode,
     languageMode,
     expectedSpeakerCount,
@@ -212,8 +239,8 @@ final class NewRecordingController extends AsyncNotifier<NewRecordingState> {
   }
 
   /// Selects when transcription work may run for this meeting.
-  void selectTranscriptionMode(MeetingTranscriptionMode value) {
-    _update((current) => current.copyWith(transcriptionMode: value));
+  void selectProcessingMode(MeetingProcessingMode value) {
+    _update((current) => current.copyWith(processingMode: value));
   }
 
   /// Selects the recognition language hint for this meeting.
@@ -234,7 +261,19 @@ final class NewRecordingController extends AsyncNotifier<NewRecordingState> {
   void start({required String title}) {
     final current = state.value;
     if (current == null || !current.canStart) return;
-    unawaited(_start(current, title));
+    final keepAlive = ref.keepAlive();
+    unawaited(
+      _start(current, title)
+          .catchError((Object error) {
+            _fail(
+              current,
+              NewRecordingCaptureOutcomeUnknown(
+                const AudioCaptureUnavailable('recording_start_unexpected'),
+              ),
+            );
+          })
+          .whenComplete(keepAlive.close),
+    );
   }
 
   Future<void> _start(NewRecordingState selection, String title) async {
@@ -253,15 +292,38 @@ final class NewRecordingController extends AsyncNotifier<NewRecordingState> {
       title: draft?.title ?? title,
       createdAtUtcMs: draft?.createdAtUtcMs ?? now.millisecondsSinceEpoch,
       mediaDuration: Duration.zero,
-      lifecycle: MeetingLifecycle.preparing,
+      lifecycle: MeetingLifecycle.draft,
       languageMode: selection.languageMode,
-      transcriptionMode: selection.transcriptionMode,
+      transcriptionMode:
+          selection.processingMode == MeetingProcessingMode.twoPass
+          ? MeetingTranscriptionMode.nearRealTime
+          : MeetingTranscriptionMode.postSession,
       expectedSpeakerCount: selection.expectedSpeakerCount,
     );
     _draftMeeting = meeting;
+    final configured = _processingSelection(selection.processingMode, meeting);
+    if (configured case Err(:final failure)) {
+      _fail(selection, failure);
+      return;
+    }
+    final processing =
+        (configured
+                as Ok<
+                  MeetingProcessingSelection,
+                  NewRecordingProcessingFailure
+                >)
+            .value;
     final repository = ref.read(sessionRepositoryProvider);
+    final remembered = await repository.loadRecordingDefaults();
+    if (remembered case Err(:final failure)) {
+      _fail(selection, NewRecordingPersistenceFailure(failure));
+      return;
+    }
     final defaults = RecordingDefaults(
-      transcriptionMode: selection.transcriptionMode,
+      transcriptionMode:
+          (remembered as Ok<RecordingDefaults, SessionRepositoryFailure>)
+              .value
+              .transcriptionMode,
       languageMode: selection.languageMode,
       expectedSpeakerCount: selection.expectedSpeakerCount,
     );
@@ -275,6 +337,79 @@ final class NewRecordingController extends AsyncNotifier<NewRecordingState> {
     }
     final persistedMeeting = await repository.saveMeeting(meeting);
     if (persistedMeeting case Err(:final failure)) {
+      _fail(selection, NewRecordingPersistenceFailure(failure));
+      return;
+    }
+    final persistedProcessing = await ref
+        .read(meetingProcessingSelectionRepositoryProvider)
+        .save(meetingId, processing, storedAtUtcMs: now.millisecondsSinceEpoch);
+    if (persistedProcessing case Err(:final failure)) {
+      final cleanup = await repository.discardUnstartedMeeting(meetingId);
+      switch (cleanup) {
+        case Ok():
+          _fail(selection, NewRecordingProcessingFailure(failure.code));
+        case Err(:final failure):
+          _fail(selection, NewRecordingCleanupFailure(failure));
+      }
+      return;
+    }
+    if (ref.read(remoteTranscriptionEnabledProvider) &&
+        selection.processingMode == MeetingProcessingMode.recordingOnly) {
+      final remote = ref.read(remoteTranscriptionRepositoryProvider);
+      final pending = await remote.load(meetingId);
+      if (pending case Err(:final failure)) {
+        _fail(selection, NewRecordingProcessingFailure(failure.code));
+        return;
+      }
+      for (final task
+          in (pending
+                  as Ok<
+                    (List<RemoteTask>, List<RemoteVersion>),
+                    RemoteTranscriptionFailure
+                  >)
+              .value
+              .$1) {
+        final cancelled = await remote.cancel(task.id);
+        if (cancelled case Err(:final failure)) {
+          _fail(selection, NewRecordingProcessingFailure(failure.code));
+          return;
+        }
+      }
+    }
+    if (ref.read(remoteTranscriptionEnabledProvider) &&
+        selection.processingMode == MeetingProcessingMode.postSession) {
+      final remote = ref.read(remoteTranscriptionRepositoryProvider);
+      final existing = await remote.load(meetingId);
+      if (existing case Err(:final failure)) {
+        _fail(selection, NewRecordingProcessingFailure(failure.code));
+        return;
+      }
+      if ((existing
+              as Ok<
+                (List<RemoteTask>, List<RemoteVersion>),
+                RemoteTranscriptionFailure
+              >)
+          .value
+          .$1
+          .isEmpty) {
+        final destination = await remote.latestDestination();
+        final queued = await remote.enqueue(
+          meetingId,
+          destination:
+              destination is Ok<RemoteDestination?, RemoteTranscriptionFailure>
+              ? destination.value
+              : null,
+        );
+        if (queued case Err(:final failure)) {
+          _fail(selection, NewRecordingProcessingFailure(failure.code));
+          return;
+        }
+      }
+    }
+    final preparing = await repository.saveMeeting(
+      meeting.copyWith(lifecycle: MeetingLifecycle.preparing),
+    );
+    if (preparing case Err(:final failure)) {
       _fail(selection, NewRecordingPersistenceFailure(failure));
       return;
     }
@@ -319,6 +454,60 @@ final class NewRecordingController extends AsyncNotifier<NewRecordingState> {
         .read(recordingControllerProvider.notifier)
         .acceptAuthoritativeSnapshot(snapshot);
     _started(selection, meetingId);
+  }
+
+  Result<MeetingProcessingSelection, NewRecordingProcessingFailure>
+  _processingSelection(MeetingProcessingMode mode, Meeting meeting) {
+    switch (mode) {
+      case MeetingProcessingMode.recordingOnly:
+        return const Ok(MeetingProcessingSelection.recordingOnly());
+      case MeetingProcessingMode.twoPass:
+        return const Err(
+          NewRecordingProcessingFailure(
+            'recording_streaming_unavailable',
+          ),
+        );
+      case MeetingProcessingMode.postSession:
+        if (ref.read(remoteTranscriptionEnabledProvider)) {
+          return const Ok(MeetingProcessingSelection.recordingOnly());
+        }
+        try {
+          final manifest = ref.read(transcriptionModelManifestProvider);
+          if (!isSupportedTranscriptionManifest(manifest)) {
+            return const Err(
+              NewRecordingProcessingFailure(
+                'recording_processing_profile_unavailable',
+              ),
+            );
+          }
+          final profile = ProcessingModelProfile.tryCreate(
+            bundleManifestJson: jsonEncode(manifest.toJson()),
+            engineVersion: transcriptionEngineVersion,
+            parametersJson: TranscriptionParameters.forMeeting(
+              meeting: meeting,
+              manifest: manifest,
+            ).canonicalJson,
+          );
+          return switch (profile) {
+            Ok(:final value) => Ok(
+              MeetingProcessingSelection.postSession(
+                refinement: value,
+              ),
+            ),
+            Err() => const Err(
+              NewRecordingProcessingFailure(
+                'recording_processing_profile_unavailable',
+              ),
+            ),
+          };
+        } on Object {
+          return const Err(
+            NewRecordingProcessingFailure(
+              'recording_processing_profile_unavailable',
+            ),
+          );
+        }
+    }
   }
 
   void _started(NewRecordingState selection, String meetingId) {

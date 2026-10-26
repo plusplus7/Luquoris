@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loquiris/app.dart';
+import 'package:loquiris/l10n/app_localizations.dart';
 import 'package:loquiris/services/service_providers.dart';
+import 'package:loquiris/theme/app_theme.dart';
 
 import 'fakes/fake_services.dart';
 
@@ -27,6 +29,30 @@ final class TestDevice {
 
 /// Shared pinned-surface harness for Loquiris widget tests.
 extension LoquirisWidgetHarness on WidgetTester {
+  /// Pumps isolated localized content with the same theme and view-derived axes.
+  Future<void> pumpLocalizedContent(
+    Widget content, {
+    Locale locale = const Locale('en'),
+    TextScaler textScaler = TextScaler.noScaling,
+    Brightness brightness = Brightness.light,
+  }) async {
+    await pumpWidget(
+      Builder(
+        builder: (context) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+          child: MaterialApp(
+            locale: locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: buildLoquirisTheme(brightness),
+            home: Scaffold(body: SingleChildScrollView(child: content)),
+          ),
+        ),
+      ),
+    );
+    await pump();
+  }
+
   /// Pins logical size and DPR and restores both after the test.
   void useDevice(TestDevice device) {
     view.devicePixelRatio = device.dpr;

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/recording/presentation/active_recording_controller.dart';
 import 'package:loquiris/features/recording/presentation/recording_controller.dart';
+import 'package:loquiris/features/remote_transcription/application/remote_feature.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/transcript/presentation/live_transcript_controller.dart';
 import 'package:loquiris/features/transcript/presentation/live_transcript_panel.dart';
@@ -26,11 +29,24 @@ final class ActiveRecordingScreen extends ConsumerWidget {
     ref.listen(recordingControllerProvider, (previous, next) {
       final prior = previous?.value?.snapshot;
       final current = next.value?.snapshot;
-      if (current?.sessionId == meetingId &&
-          current?.state == AudioCaptureState.finalized &&
+      if (current?.sessionId != meetingId ||
+          current?.state != AudioCaptureState.finalized ||
+          !context.mounted) {
+        return;
+      }
+      if (!ref.read(remoteTranscriptionEnabledProvider) &&
           (prior?.sessionId != meetingId ||
-              prior?.state != AudioCaptureState.finalized) &&
-          context.mounted) {
+              prior?.state != AudioCaptureState.finalized)) {
+        unawaited(
+          ref
+              .read(liveTranscriptControllerProvider(meetingId).notifier)
+              .finish(),
+        );
+      }
+      // Detail reads a single durable projection; open it only after the
+      // finalized manifest's segments have reached the local repository.
+      if (next.value?.persistencePending == false &&
+          next.value?.persistenceFailure == null) {
         context.go(AppRoutes.session(meetingId));
       }
     });
@@ -41,10 +57,14 @@ final class ActiveRecordingScreen extends ConsumerWidget {
         AsyncData(:final value) => _ActiveRecordingContent(
           meetingId: meetingId,
           state: value,
+          remoteEnabled: ref.watch(remoteTranscriptionEnabledProvider),
           onPause: () => ref.read(recordingControllerProvider.notifier).pause(),
           onResume: () =>
               ref.read(recordingControllerProvider.notifier).resume(),
           onStop: () => ref.read(recordingControllerProvider.notifier).stop(),
+          onRetryPersistence: () => ref
+              .read(recordingControllerProvider.notifier)
+              .retryFinalizationPersistence(),
           onMarker: (kind) => ref
               .read(activeRecordingActionsProvider(meetingId))
               .addMarker(kind),
@@ -63,14 +83,18 @@ final class _ActiveRecordingContent extends StatelessWidget {
     required this.onPause,
     required this.onResume,
     required this.onStop,
+    required this.onRetryPersistence,
     required this.onMarker,
+    required this.remoteEnabled,
   });
 
   final String meetingId;
+  final bool remoteEnabled;
   final RecordingViewState state;
   final VoidCallback onPause;
   final VoidCallback onResume;
   final VoidCallback onStop;
+  final VoidCallback onRetryPersistence;
   final Future<Result<Bookmark, SessionRepositoryFailure>> Function(
     BookmarkKind kind,
   )
@@ -135,7 +159,6 @@ final class _ActiveRecordingContent extends StatelessWidget {
               ),
               SizedBox(height: spacing.section),
               _InputActivity(snapshot: snapshot),
-              _LiveTranscriptSection(meetingId: meetingId),
               if (state.failure != null ||
                   state.persistenceFailure != null) ...[
                 SizedBox(height: spacing.related),
@@ -149,6 +172,18 @@ final class _ActiveRecordingContent extends StatelessWidget {
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
+                ),
+              ],
+              if (snapshot.state == AudioCaptureState.finalized &&
+                  state.persistenceFailure != null) ...[
+                SizedBox(height: spacing.related),
+                _ControlButton(
+                  key: const Key('active-recording-retry-persistence'),
+                  icon: Icons.refresh_rounded,
+                  label: l10n.retryAction,
+                  onPressed: state.persistencePending
+                      ? null
+                      : onRetryPersistence,
                 ),
               ],
               SizedBox(height: spacing.section),
@@ -196,16 +231,19 @@ final class _ActiveRecordingContent extends StatelessWidget {
                         ? () => _addMarker(context, BookmarkKind.bookmark)
                         : null,
                   ),
-                  _ControlButton(
-                    key: const Key('active-recording-highlight'),
-                    icon: Icons.star_outline_rounded,
-                    label: l10n.addHighlightAction,
-                    onPressed: canMark
-                        ? () => _addMarker(context, BookmarkKind.highlight)
-                        : null,
-                  ),
+                  if (!remoteEnabled)
+                    _ControlButton(
+                      key: const Key('active-recording-highlight'),
+                      icon: Icons.star_outline_rounded,
+                      label: l10n.addHighlightAction,
+                      onPressed: canMark
+                          ? () => _addMarker(context, BookmarkKind.highlight)
+                          : null,
+                    ),
                 ],
               ),
+              SizedBox(height: spacing.section),
+              if (!remoteEnabled) _LiveTranscriptSection(meetingId: meetingId),
               SizedBox(height: spacing.page),
             ],
           ),

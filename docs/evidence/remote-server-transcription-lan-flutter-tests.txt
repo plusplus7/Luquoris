@@ -1,0 +1,926 @@
+00:00 +0: loading /Users/bytedance/workspace/Loquiris/test/core/result_test.dart
+00:00 +0: /Users/bytedance/workspace/Loquiris/test/core/result_test.dart: Result fold reads the success value
+00:00 +1: /Users/bytedance/workspace/Loquiris/test/core/result_test.dart: Result fold reads the structured failure
+00:00 +2: /Users/bytedance/workspace/Loquiris/test/core/result_test.dart: Result map transforms success and preserves failure identity
+00:00 +3: /Users/bytedance/workspace/Loquiris/test/core/result_test.dart: Result flatMap short-circuits after a failure
+00:00 +4: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +5: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +6: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +7: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +8: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +9: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +10: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +11: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +12: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +13: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +14: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +15: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +16: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +17: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +18: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +19: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +20: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +21: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +22: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +23: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +24: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +25: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +26: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +27: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +28: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +29: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +30: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +31: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +32: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +33: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +34: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: production bootstrap installs local session persistence
+00:00 +35: /Users/bytedance/workspace/Loquiris/test/native/method_channel_recording_permission_test.dart: requests microphone permission through the versioned channel
+00:00 +36: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: bootstrap reconciles native inventory before returning
+00:00 +37: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: bootstrap reconciles native inventory before returning
+00:00 +38: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: bootstrap records privacy-safe native recovery issues
+00:00 +39: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: root scope installs explicit test overrides
+00:00 +40: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:00 +41: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:00 +42: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:00 +43: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:00 +44: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +45: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +46: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +47: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +48: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +49: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +50: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +51: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +52: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +53: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +54: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +55: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +56: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +57: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +58: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +59: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +60: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +61: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: Loquiris app renders the offline shell
+00:01 +62: /Users/bytedance/workspace/Loquiris/test/native/native_audio_capture_permission_test.dart: denied microphone permission prevents native start dispatch
+00:01 +63: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: root observer flushes on pause and refreshes on resume
+00:01 +64: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: root observer flushes on pause and refreshes on resume
+00:01 +65: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: app forwards authoritative finalization to transcription
+00:01 +66: /Users/bytedance/workspace/Loquiris/test/native/remote_connection_persistence_test.dart: connection reload exposes origin and reference without returning a token
+00:01 +67: /Users/bytedance/workspace/Loquiris/test/bootstrap/bootstrap_test.dart: fresh finalization inventories Drift audio for transcription and backup
+00:01 +68: /Users/bytedance/workspace/Loquiris/test/native/streaming_delivery_trace_test.dart: real projection and controller preserve both coverage notices at STOP
+00:02 +69: /Users/bytedance/workspace/Loquiris/test/native/streaming_delivery_trace_test.dart: real projection and controller preserve both coverage notices at STOP
+00:02 +70: /Users/bytedance/workspace/Loquiris/test/native/streaming_delivery_trace_test.dart: real projection and controller preserve both coverage notices at STOP
+00:02 +71: /Users/bytedance/workspace/Loquiris/test/native/streaming_delivery_trace_test.dart: real projection and controller preserve both coverage notices at STOP
+00:02 +72: /Users/bytedance/workspace/Loquiris/test/native/streaming_delivery_trace_test.dart: gap diagnostics retain reason and media bounds without private data
+00:02 +73: /Users/bytedance/workspace/Loquiris/test/native/streaming_delivery_trace_test.dart: gap diagnostics stay bounded while retaining an exact overflow count
+00:02 +74: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_draft_test.dart: startDraft sends the complete versioned live request
+00:02 +75: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_draft_test.dart: startDraft sends the complete versioned live request
+00:02 +76: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_draft_test.dart: startDraft sends the complete versioned live request
+00:02 +77: /Users/bytedance/workspace/Loquiris/test/native/streaming_delivery_trace_test.dart: safe reports distinguish malformed input and allowlisted failure reasons
+00:02 +78: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_draft_test.dart: stopDraft is a typed idempotent run-scoped request
+00:02 +79: /Users/bytedance/workspace/Loquiris/test/native/streaming_delivery_trace_test.dart: transport tracing preserves the exact request future and raw event object
+00:02 +80: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_draft_test.dart: eventsFor decodes live draft backlog and explicit degradation
+00:02 +81: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_draft_test.dart: malformed and unsafe live events are ignored
+00:02 +82: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_draft_test.dart: native and model failures remain visible as draft degradation
+00:02 +83: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_audio_service_test.dart: inspection sends complete identity and decodes content-only inventory
+00:02 +84: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_audio_service_test.dart: wrong owner version hash format or duration never authorizes queueing
+00:02 +85: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_audio_service_test.dart: missing or malformed per-segment evidence cannot authorize a complete inventory
+00:02 +86: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_audio_service_test.dart: recording priority remains a typed deferred result
+00:02 +87: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_audio_service_test.dart: invalid requests are rejected before any native work
+00:02 +88: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_audio_service_test.dart: platform details and timeout remain content-free typed failures
+00:02 +89: /Users/bytedance/workspace/Loquiris/test/native/method_channel_remote_transcription_service_test.dart: platform preparation and wake carry no audio or token
+00:02 +90: /Users/bytedance/workspace/Loquiris/test/native/method_channel_remote_transcription_service_test.dart: missing platform becomes typed unavailability
+00:02 +91: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: full frozen profile crosses the seam and raw original language is unchanged
+00:02 +92: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: full frozen profile crosses the seam and raw original language is unchanged
+00:02 +93: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: full frozen profile crosses the seam and raw original language is unchanged
+00:02 +94: /Users/bytedance/workspace/Loquiris/test/native/streaming_recorder_ui_coverage_test.dart: a gap without a final still exhausts a bounded wait
+00:02 +95: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: wrong ownership, timing, runtime, overlap and rewritten text never become a version
+00:02 +96: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: wrong ownership, timing, runtime, overlap and rewritten text never become a version
+00:02 +97: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: wrong ownership, timing, runtime, overlap and rewritten text never become a version
+00:02 +98: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: wrong ownership, timing, runtime, overlap and rewritten text never become a version
+00:02 +99: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: wrong ownership, timing, runtime, overlap and rewritten text never become a version
+00:02 +100: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: wrong ownership, timing, runtime, overlap and rewritten text never become a version
+00:02 +101: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: wrong ownership, timing, runtime, overlap and rewritten text never become a version
+00:02 +102: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: wrong ownership, timing, runtime, overlap and rewritten text never become a version
+00:02 +103: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: wrong ownership, timing, runtime, overlap and rewritten text never become a version
+00:02 +104: /Users/bytedance/workspace/Loquiris/test/native/streaming_recorder_ui_coverage_test.dart: rejects a gap over resumed text
+00:02 +105: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: defer and cancellation stay actionable and native details stay private
+00:02 +106: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: defer and cancellation stay actionable and native details stay private
+00:02 +107: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: defer and cancellation stay actionable and native details stay private
+00:02 +108: /Users/bytedance/workspace/Loquiris/test/native/streaming_recorder_ui_coverage_test.dart: rejects truncated gap evidence
+00:02 +109: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: timeout requests owner-scoped native cancellation without claiming release
+00:02 +110: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: timeout requests owner-scoped native cancellation without claiming release
+00:02 +111: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: timeout requests owner-scoped native cancellation without claiming release
+00:02 +112: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: timeout requests owner-scoped native cancellation without claiming release
+00:02 +113: /Users/bytedance/workspace/Loquiris/test/native/streaming_recorder_ui_coverage_test.dart: rejects a missing gap notice
+00:02 +114: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: cancel checks echoed owner and malformed local input causes no native work
+00:02 +115: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: cancel checks echoed owner and malformed local input causes no native work
+00:02 +116: /Users/bytedance/workspace/Loquiris/test/native/streaming_recorder_ui_coverage_test.dart: rejects a hidden incomplete flag
+00:02 +117: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: unrepresentable audio duration is rejected before platform work
+00:02 +118: /Users/bytedance/workspace/Loquiris/test/native/method_channel_refinement_execution_service_test.dart: unrepresentable audio duration is rejected before platform work
+00:02 +119: /Users/bytedance/workspace/Loquiris/test/native/streaming_recorder_ui_coverage_test.dart: rejects an unexpected view failure
+00:02 +120: /Users/bytedance/workspace/Loquiris/test/native/streaming_recorder_ui_coverage_test.dart: rejects an unexpected projected failure
+00:02 +121: /Users/bytedance/workspace/Loquiris/test/native/streaming_recorder_ui_coverage_test.dart: rejects a view that never observed release
+00:02 +122: /Users/bytedance/workspace/Loquiris/test/native/streaming_channel_contract_test.dart: encodes exact owner and pinned model without arbitrary paths or PCM
+00:02 +123: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe sends the complete versioned request contract
+00:02 +124: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe sends the complete versioned request contract
+00:02 +125: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe sends the complete versioned request contract
+00:02 +126: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe sends the complete versioned request contract
+00:02 +127: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe sends the complete versioned request contract
+00:02 +128: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: eventsFor filters other runs and decodes ordered progress
+00:02 +129: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe decodes stable chunks without rewriting model text
+00:02 +130: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: cancel sends one typed run-scoped cancellation request
+00:03 +131: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe rejects malformed terminal payloads
+00:03 +132: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe rejects a terminal result for another run
+00:03 +133: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe rejects absolute or traversing segment references
+00:03 +134: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: transcribe maps timeout and missing plugin to stable failures
+00:03 +135: /Users/bytedance/workspace/Loquiris/test/native/method_channel_transcription_engine_test.dart: platform exception text never enters a failure code
+00:03 +136: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +137: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +138: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +139: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +140: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +141: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +142: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +143: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +144: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +145: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:03 +146: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +147: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +148: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +149: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +150: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +151: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +152: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +153: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +154: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +155: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +156: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +157: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +158: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +159: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +160: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +161: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +162: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_permission_screen_test.dart: microphone denial explains how to grant access
+00:04 +163: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: explicit choices remain usable in en at 1.0
+00:04 +164: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: growing live text preserves the pause hit target @ compact_320 x1.0
+00:04 +165: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_versions_screen_test.dart: ready refinement is explicit, accessible and wraps at 1.0
+00:04 +166: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_versions_screen_test.dart: ready refinement is explicit, accessible and wraps at 1.0
+00:04 +167: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: growing live text preserves the pause hit target @ small_landscape_640 x1.0
+00:04 +168: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: growing live text preserves the pause hit target @ small_landscape_640 x1.0
+00:05 +169: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: growing live text preserves the pause hit target @ small_landscape_640 x1.0
+00:05 +170: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: explicit choices remain usable in en at 3.0
+00:05 +171: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: explicit choices remain usable in en at 3.0
+00:05 +172: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: explicit choices remain usable in en at 3.0
+00:05 +173: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: explicit choices remain usable in en at 3.0
+00:05 +174: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: growing live text preserves the pause hit target @ compact_320 x2.0
+00:05 +175: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: growing live text preserves the pause hit target @ compact_320 x2.0
+00:05 +176: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: growing live text preserves the pause hit target @ compact_320 x2.0
+00:05 +177: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: growing live text preserves the pause hit target @ compact_320 x2.0
+00:05 +178: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: explicit choices remain usable in zh at 1.0
+00:05 +179: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: explicit choices remain usable in zh at 1.0
+00:05 +180: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: explicit choices remain usable in zh at 1.0
+00:05 +181: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized navigation keeps the last endpoint drain alive until ACK
+00:05 +182: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized navigation keeps the last endpoint drain alive until ACK
+00:05 +183: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized navigation keeps the last endpoint drain alive until ACK
+00:05 +184: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized navigation keeps the last endpoint drain alive until ACK
+00:05 +185: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized navigation keeps the last endpoint drain alive until ACK
+00:05 +186: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcription_coordinator_test.dart: TranscriptionCoordinator observed finalization waits for the durable meeting projection
+00:05 +187: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcription_coordinator_test.dart: TranscriptionCoordinator observed finalization waits for the durable meeting projection
+00:05 +188: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcription_coordinator_test.dart: TranscriptionCoordinator observed finalization waits for the durable meeting projection
+00:05 +189: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcription_coordinator_test.dart: TranscriptionCoordinator observed finalization waits for the durable meeting projection
+00:05 +190: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +191: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +192: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +193: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +194: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +195: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +196: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +197: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +198: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +199: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +200: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +201: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/new_recording_screen_test.dart: selects setup and starts immediately after native preflight
+00:05 +202: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:05 +203: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:05 +204: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:05 +205: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:05 +206: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:05 +207: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:05 +208: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:05 +209: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:05 +210: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:06 +211: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: pause, bookmark, highlight, and confirmed stop are explicit
+00:06 +212: /Users/bytedance/workspace/Loquiris/test/features/transcript/meeting_transcription_status_test.dart: shows durable progress and completed transcript preview
+00:06 +213: /Users/bytedance/workspace/Loquiris/test/features/transcript/meeting_transcription_status_test.dart: shows durable progress and completed transcript preview
+00:06 +214: /Users/bytedance/workspace/Loquiris/test/features/transcript/meeting_transcription_status_test.dart: shows durable progress and completed transcript preview
+00:06 +215: /Users/bytedance/workspace/Loquiris/test/features/transcript/meeting_transcription_status_test.dart: shows durable progress and completed transcript preview
+00:06 +216: /Users/bytedance/workspace/Loquiris/test/features/transcript/refinement_paused_status_test.dart: safe pause explanation for refinement_thermal_severe
+00:06 +217: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized detail waits for audio inventory and surfaces failure
+00:06 +218: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized detail waits for audio inventory and surfaces failure
+00:06 +219: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized detail waits for audio inventory and surfaces failure
+00:06 +220: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized detail waits for audio inventory and surfaces failure
+00:06 +221: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized detail waits for audio inventory and surfaces failure
+00:06 +222: /Users/bytedance/workspace/Loquiris/test/features/recording/presentation/active_recording_screen_test.dart: finalized detail waits for audio inventory and surfaces failure
+00:06 +223: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:06 +224: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:06 +225: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:06 +226: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:06 +227: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:06 +228: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:06 +229: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +230: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +231: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +232: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +233: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +234: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +235: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +236: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +237: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +238: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +239: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +240: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +241: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +242: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +243: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +244: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +245: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +246: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +247: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +248: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +249: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +250: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +251: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +252: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +253: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +254: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +255: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +256: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +257: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +258: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +259: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +260: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +261: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +262: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +263: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +264: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:07 +265: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +266: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +267: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +268: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +269: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +270: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +271: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +272: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +273: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +274: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +275: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: stable transcript corrections are revisions and reload
+00:08 +276: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: active draft is visible but cannot be edited
+00:08 +277: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: editor unlocks only after a stable durable run completes
+00:08 +278: /Users/bytedance/workspace/Loquiris/test/features/transcript/live_transcript_panel_test.dart: renders stable and unstable hypotheses as read-only states
+00:08 +279: /Users/bytedance/workspace/Loquiris/test/features/transcript/live_transcript_panel_test.dart: renders stable and unstable hypotheses as read-only states
+00:08 +280: /Users/bytedance/workspace/Loquiris/test/features/transcript/live_transcript_panel_test.dart: renders stable and unstable hypotheses as read-only states
+00:08 +281: /Users/bytedance/workspace/Loquiris/test/features/transcript/live_transcript_panel_test.dart: renders stable and unstable hypotheses as read-only states
+00:08 +282: /Users/bytedance/workspace/Loquiris/test/features/transcript/live_transcript_panel_test.dart: renders stable and unstable hypotheses as read-only states
+00:08 +283: /Users/bytedance/workspace/Loquiris/test/features/transcript/live_transcript_panel_test.dart: renders stable and unstable hypotheses as read-only states
+00:08 +284: /Users/bytedance/workspace/Loquiris/test/features/transcript/live_transcript_panel_test.dart: renders stable and unstable hypotheses as read-only states
+00:08 +285: /Users/bytedance/workspace/Loquiris/test/features/transcript/live_transcript_panel_test.dart: renders stable and unstable hypotheses as read-only states
+00:09 +286: /Users/bytedance/workspace/Loquiris/test/features/transcript/transcript_editor_screen_test.dart: language and speaker corrections use typed revisions
+00:09 +287: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:09 +288: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:09 +289: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:09 +290: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:09 +291: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:09 +292: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:09 +293: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:09 +294: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:09 +295: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:09 +296: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:10 +297: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:10 +298: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_detail_screen_test.dart: detail exposes playback and every durable meeting timeline
+00:10 +299: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/capture_ui_simplification_test.dart: remote capture omits unused language and speaker controls
+00:10 +300: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/capture_ui_simplification_test.dart: remote capture omits unused language and speaker controls
+00:10 +301: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/capture_ui_simplification_test.dart: remote capture omits unused language and speaker controls
+00:10 +302: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/capture_ui_simplification_test.dart: remote capture omits unused language and speaker controls
+00:10 +303: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/capture_ui_simplification_test.dart: remote capture omits unused language and speaker controls
+00:10 +304: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/capture_ui_simplification_test.dart: remote capture omits unused language and speaker controls
+00:10 +305: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/capture_ui_simplification_test.dart: remote capture omits unused language and speaker controls
+00:10 +306: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/capture_ui_simplification_test.dart: remote capture omits unused language and speaker controls
+00:10 +307: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/capture_ui_simplification_test.dart: remote capture omits unused language and speaker controls
+00:10 +308: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_panel_test.dart: actual server retention and expiry are visible
+00:10 +309: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_panel_test.dart: actual server retention and expiry are visible
+00:10 +310: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_panel_test.dart: actual server retention and expiry are visible
+00:10 +311: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_panel_test.dart: actual server retention and expiry are visible
+00:11 +312: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_panel_test.dart: actual server retention and expiry are visible
+00:11 +313: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: saved connection is visible while replacement credentials stay collapsed
+00:11 +314: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: saved connection is visible while replacement credentials stay collapsed
+00:11 +315: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: saved connection is visible while replacement credentials stay collapsed
+00:11 +316: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: saved connection is visible while replacement credentials stay collapsed
+00:11 +317: /Users/bytedance/workspace/Loquiris/test/features/sessions/session_library_screen_test.dart: rename and trash actions use controller intents
+00:11 +318: /Users/bytedance/workspace/Loquiris/test/features/export_backup/paired_restore_importer_test.dart: an empty paired sidecar preserves legacy restored-copy identities
+00:11 +319: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:11 +320: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:11 +321: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:11 +322: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:11 +323: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +324: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +325: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +326: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +327: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +328: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +329: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +330: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +331: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +332: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +333: /Users/bytedance/workspace/Loquiris/test/features/remote_transcription/remote_settings_and_export_ui_test.dart: result edits expose save only when dirty and exports share one menu
+00:12 +334: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:12 +335: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:12 +336: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:12 +337: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:12 +338: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:12 +339: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +340: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +341: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +342: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +343: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +344: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +345: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +346: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +347: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +348: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +349: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +350: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +351: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: version export recovery explains export_transcript_selection_required
+00:13 +352: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: publishes remapped audio and skips the same collision on repeat
+00:13 +353: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: publishes remapped audio and skips the same collision on repeat
+00:13 +354: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: user explicitly selects one of six local export formats
+00:13 +355: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rolls back DB and earlier audio when later publication fails
+00:13 +356: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rolls back DB and earlier audio when later publication fails
+00:13 +357: /Users/bytedance/workspace/Loquiris/test/features/export_backup/drift_backup_snapshot_planner_test.dart: creates WAL-safe snapshot and explicit committed audio plan
+00:13 +358: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: material audio warnings are announced as live regions
+00:13 +359: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rejects a staged recording index that disagrees with SQLite
+00:13 +360: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rejects a staged recording index that disagrees with SQLite
+00:14 +361: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rejects a staged recording index that disagrees with SQLite
+00:14 +362: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rejects a staged recording index that disagrees with SQLite
+00:14 +363: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rejects a staged recording index that disagrees with SQLite
+00:14 +364: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rejects a staged recording index that disagrees with SQLite
+00:14 +365: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rejects a staged recording index that disagrees with SQLite
+00:14 +366: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rejects a staged recording index that disagrees with SQLite
+00:14 +367: /Users/bytedance/workspace/Loquiris/test/features/export_backup/local_restore_service_test.dart: rejects a staged recording index that disagrees with SQLite
+00:14 +368: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: long export exposes determinate progress and safe cancellation
+00:14 +369: /Users/bytedance/workspace/Loquiris/test/features/export_backup/drift_restore_importer_test.dart: duplicates a changed meeting ID and labels the restored copy
+00:14 +370: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: cleanup refusal clearly identifies possible incomplete output
+00:14 +371: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: cleanup refusal clearly identifies possible incomplete output
+00:14 +372: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: cleanup refusal clearly identifies possible incomplete output
+00:14 +373: /Users/bytedance/workspace/Loquiris/test/features/export_backup/drift_restore_importer_test.dart: remaps conflicting model and capability identities
+00:14 +374: /Users/bytedance/workspace/Loquiris/test/features/export_backup/export_screen_test.dart: interrupted export warning is restored after restart
+00:14 +375: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +376: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +377: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +378: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +379: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +380: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +381: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +382: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +383: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +384: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_accounting_controller_test.dart: loads through injected boundaries and retry re-measures
+00:14 +385: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +386: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +387: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +388: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +389: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +390: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +391: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +392: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +393: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +394: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:14 +395: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +396: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +397: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +398: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +399: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +400: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +401: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +402: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +403: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +404: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +405: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +406: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +407: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +408: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +409: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +410: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +411: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +412: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +413: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +414: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +415: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +416: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +417: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +418: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +419: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +420: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +421: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +422: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +423: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +424: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +425: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows formatted explainable totals and model disclosure
+00:15 +426: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows a retryable localized failure then reloads
+00:15 +427: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows a retryable localized failure then reloads
+00:15 +428: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows a retryable localized failure then reloads
+00:15 +429: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows a retryable localized failure then reloads
+00:15 +430: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows a retryable localized failure then reloads
+00:15 +431: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows a retryable localized failure then reloads
+00:15 +432: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_controller_test.dart: provider disposal cancels once and ignores late events
+00:15 +433: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +434: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +435: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +436: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +437: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +438: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +439: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +440: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +441: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +442: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +443: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +444: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +445: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +446: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +447: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: remains scrollable at compact width and 200 percent text
+00:15 +448: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: clears only rebuildable cache and refreshes accounting
+00:15 +449: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: clears only rebuildable cache and refreshes accounting
+00:15 +450: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: clears only rebuildable cache and refreshes accounting
+00:15 +451: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: clears only rebuildable cache and refreshes accounting
+00:15 +452: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: clears only rebuildable cache and refreshes accounting
+00:15 +453: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: clears only rebuildable cache and refreshes accounting
+00:15 +454: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: clears only rebuildable cache and refreshes accounting
+00:15 +455: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: shows a retryable partial cleanup failure
+00:15 +456: /Users/bytedance/workspace/Loquiris/test/features/storage_privacy/storage_privacy_screen_test.dart: disables repeat cleanup while native work is pending
+00:15 +457: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +458: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +459: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +460: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +461: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +462: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +463: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +464: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +465: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +466: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +467: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +468: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +469: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +470: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +471: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +472: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +473: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +474: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:15 +475: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +476: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +477: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +478: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +479: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +480: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +481: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +482: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +483: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +484: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +485: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +486: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +487: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +488: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +489: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +490: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +491: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +492: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +493: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: remote mode explains that phone models are optional
+00:16 +494: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: renders the unavailable state without a fake start action
+00:16 +495: /Users/bytedance/workspace/Loquiris/test/features/models_performance/model_bundle_manifest_test.dart: serializes full v2 provenance into a durable processing profile
+00:16 +496: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +497: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +498: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +499: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +500: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +501: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +502: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +503: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +504: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +505: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +506: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +507: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +508: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +509: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +510: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +511: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +512: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +513: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +514: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +515: /Users/bytedance/workspace/Loquiris/test/features/models_performance/models_performance_screen_test.dart: unavailable runtime still explains all five locked policies
+00:16 +516: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +517: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +518: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +519: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +520: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +521: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +522: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +523: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +524: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +525: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +526: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:16 +527: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:17 +528: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:17 +529: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:17 +530: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:17 +531: /Users/bytedance/workspace/Loquiris/test/golden/session_tools_golden_test.dart: populated meeting library phone portrait light
+00:17 +532: /Users/bytedance/workspace/Loquiris/test/golden/app_shell_golden_test.dart: empty meeting library phone portrait light
+00:17 +533: /Users/bytedance/workspace/Loquiris/test/golden/app_shell_golden_test.dart: empty meeting library phone portrait light
+00:17 +534: /Users/bytedance/workspace/Loquiris/test/golden/app_shell_golden_test.dart: empty meeting library phone portrait light
+00:17 +535: /Users/bytedance/workspace/Loquiris/test/widget_test.dart: application smoke test
+00:17 +536: /Users/bytedance/workspace/Loquiris/test/widget_test.dart: application smoke test
+00:17 +537: /Users/bytedance/workspace/Loquiris/test/widget_test.dart: application smoke test
+00:17 +538: /Users/bytedance/workspace/Loquiris/test/widget_test.dart: application smoke test
+00:17 +539: /Users/bytedance/workspace/Loquiris/test/widget_test.dart: application smoke test
+00:17 +540: /Users/bytedance/workspace/Loquiris/test/widget_test.dart: application smoke test
+00:17 +541: /Users/bytedance/workspace/Loquiris/test/widget_test.dart: application smoke test
+00:17 +542: /Users/bytedance/workspace/Loquiris/test/widget_test.dart: application smoke test
+00:17 +543: /Users/bytedance/workspace/Loquiris/test/accessibility/models_performance_accessibility_test.dart: policy cards expose mode timing availability and fallback semantics
+00:17 +544: /Users/bytedance/workspace/Loquiris/test/accessibility/models_performance_accessibility_test.dart: policy cards expose mode timing availability and fallback semantics
+00:18 +545: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +546: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +547: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +548: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +549: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +550: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +551: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +552: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +553: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +554: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:18 +555: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:19 +556: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:19 +557: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:19 +558: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:19 +559: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:19 +560: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:19 +561: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: every required surface is reconstructable from its URL
+00:19 +562: /Users/bytedance/workspace/Loquiris/test/accessibility/app_shell_accessibility_test.dart: TalkBack sees a labelled enabled recording action
+00:19 +563: /Users/bytedance/workspace/Loquiris/test/data/drift_remote_transcription_repository_test.dart: human edit never replaces raw remote result
+00:19 +564: /Users/bytedance/workspace/Loquiris/test/routing/app_router_test.dart: an unknown deep link renders the localized not-found screen
+00:19 +565: /Users/bytedance/workspace/Loquiris/test/accessibility/app_shell_accessibility_test.dart: primary navigation activates the recording branch
+00:19 +566: /Users/bytedance/workspace/Loquiris/test/accessibility/app_shell_accessibility_test.dart: primary navigation activates the recording branch
+00:19 +567: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected closed live text is readable while refinement is none
+00:19 +568: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected closed live text is readable while refinement is none
+00:19 +569: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected closed live text is readable while refinement is none
+00:19 +570: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected closed live text is readable while refinement is none
+00:19 +571: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected closed live text is readable while refinement is queued
+00:19 +572: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected closed live text is readable while refinement is paused
+00:19 +573: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected closed live text is readable while refinement is failed
+00:19 +574: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected failed live evidence remains a visibly incomplete preview
+00:19 +575: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected failed live evidence remains a visibly incomplete preview
+00:19 +576: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected failed live evidence remains a visibly incomplete preview
+00:20 +577: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: selected-version search and playback text preserve media bookmarks
+00:20 +578: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: an already-open search removes hits after explicit version selection
+00:20 +579: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: search observation follows source corrections without a job transition
+00:20 +580: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: backup snapshots restore selection, both segmentations and source corrections
+00:20 +581: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: an unselected archive omits empty text files but retains version history
+00:20 +582: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: text and subtitle export require an explicit current selection
+00:20 +583: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: JSON export rejects a version change at the editor read boundary
+00:20 +584: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: JSON export rejects a version change at the versions read boundary
+00:20 +585: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: JSON export rejects a version change at the correction read boundary
+00:20 +586: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: local text subtitle and JSON exports follow selection while retaining history
+00:20 +587: /Users/bytedance/workspace/Loquiris/test/data/paired_version_consumers_test.dart: (tearDownAll)
+00:20 +587: /Users/bytedance/workspace/Loquiris/test/data/write_transactions_test.dart: model manifest and compatibility rows roll back together
+00:20 +588: /Users/bytedance/workspace/Loquiris/test/data/write_transactions_test.dart: transcript run and derived rows roll back together
+00:20 +589: /Users/bytedance/workspace/Loquiris/test/data/write_transactions_test.dart: transcript write rejects language selection outside its aggregate
+00:20 +590: /Users/bytedance/workspace/Loquiris/test/data/write_transactions_test.dart: diarization run, clusters, and assignments roll back together
+00:21 +591: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs enqueue is idempotent for one deterministic job key
+00:21 +592: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs successful partial output retains its safe warning code
+00:21 +593: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs meeting watch re-emits committed transcription job states
+00:21 +594: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs running progress and checkpoints never regress
+00:21 +595: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs orphaned running jobs become resumably paused
+00:21 +596: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs checkpoint storage contains only the typed resume boundary
+00:21 +597: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs completion atomically stores one stable visible version
+00:21 +598: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs completion rejects incompatible provenance and duplicate segments
+00:21 +599: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs completion rolls back run, segments, job, and selection together
+00:21 +600: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs failure is terminal, privacy-safe, and retry returns to queued
+00:21 +601: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs cancellation records a stable terminal failure
+00:21 +602: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs only the first completed version is selected automatically
+00:21 +603: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: durable transcription jobs illegal state transitions are rejected without mutation
+00:21 +604: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: model manifests are complete, idempotent, and immutable
+00:21 +605: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: model child-write failure rolls back the manifest transaction
+00:21 +606: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: parallel transcript versions require explicit current selection
+00:21 +607: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: version watch reflects committed additions and explicit selection
+00:21 +608: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: version watch refreshes human text and selected language without jobs
+00:21 +609: /Users/bytedance/workspace/Loquiris/test/data/drift_analysis_repositories_test.dart: text and language corrections preserve machine evidence
+00:21 +610: /Users/bytedance/workspace/Loquiris/test/data/drift_meeting_processing_selection_repository_test.dart: legacy absence is not interpreted as an opt-in
+00:21 +611: /Users/bytedance/workspace/Loquiris/test/data/drift_meeting_processing_selection_repository_test.dart: legacy absence is not interpreted as an opt-in
+00:21 +612: /Users/bytedance/workspace/Loquiris/test/data/drift_meeting_processing_selection_repository_test.dart: legacy absence is not interpreted as an opt-in
+00:21 +613: /Users/bytedance/workspace/Loquiris/test/data/drift_meeting_processing_selection_repository_test.dart: legacy absence is not interpreted as an opt-in
+00:21 +614: /Users/bytedance/workspace/Loquiris/test/data/drift_meeting_processing_selection_repository_test.dart: legacy absence is not interpreted as an opt-in
+00:21 +615: /Users/bytedance/workspace/Loquiris/test/data/drift_meeting_processing_selection_repository_test.dart: legacy absence is not interpreted as an opt-in
+00:21 +616: /Users/bytedance/workspace/Loquiris/test/data/drift_meeting_processing_selection_repository_test.dart: legacy absence is not interpreted as an opt-in
+00:21 +617: /Users/bytedance/workspace/Loquiris/test/data/drift_meeting_processing_selection_repository_test.dart: independent complete profiles persist and repeat idempotently
+00:21 +618: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: complete original input publishes a separate raw version without selecting it
+00:21 +619: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: complete original input publishes a separate raw version without selecting it
+00:21 +620: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: complete original input publishes a separate raw version without selecting it
+00:21 +621: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: complete original input publishes a separate raw version without selecting it
+00:21 +622: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: complete original input publishes a separate raw version without selecting it
+00:21 +623: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: complete original input publishes a separate raw version without selecting it
+00:21 +624: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: missing original audio produces a durable failure before model execution
+00:21 +625: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: changed authoritative geometry cannot be processed merely because hash matches
+00:21 +626: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: capture deferral stays paused and resumes the same job without a new version identity
+00:21 +627: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: inventory deferral is persisted without invoking execution
+00:21 +628: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: duplicate run joins one owner and cancellation waits for native cleanup outcome
+00:21 +629: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:21 +630: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:21 +631: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:21 +632: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:21 +633: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:21 +634: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:21 +635: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:21 +636: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:21 +637: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:22 +638: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:22 +639: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: v5 to v6 preserves every old table and invents no processing choice
+00:22 +640: /Users/bytedance/workspace/Loquiris/test/data/refinement_runner_test.dart: untrusted incomplete or invalid engine output fails before publication 1.9.4/transcription_audio_uncommitted_tail/0:00:00.064000/ 原文 API /TranscriptStability.stable
+00:22 +641: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: mid-v6 index publication failure restores closed v5 bytes exactly
+00:22 +642: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: mid-v6 index publication failure restores closed v5 bytes exactly
+00:22 +643: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: mid-v6 index publication failure restores closed v5 bytes exactly
+00:22 +644: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: mid-v6 index publication failure restores closed v5 bytes exactly
+00:22 +645: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_migration_test.dart: mid-v6 index publication failure restores closed v5 bytes exactly
+00:22 +646: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: current database matches the committed latest schema snapshot
+00:22 +647: /Users/bytedance/workspace/Loquiris/test/data/refinement_dispatch_test.dart: explicit capture-only never falls back to legacy complete pass
+00:22 +648: /Users/bytedance/workspace/Loquiris/test/data/paired_transcript_completion_test.dart: refinement completion rejects meeting lifecycle trashed atomically
+00:22 +649: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +650: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +651: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +652: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +653: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +654: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +655: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +656: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +657: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +658: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +659: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +660: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +661: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +662: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +663: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +664: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: v6 to v7 retains every old row without scheduling any upload
+00:22 +665: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: v1 hostile fixture remains byte-for-byte readable
+00:22 +666: /Users/bytedance/workspace/Loquiris/test/data/refinement_dispatch_test.dart: startup recovers orphan refinement through its own role claim
+00:22 +667: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:22 +668: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:22 +669: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:22 +670: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:22 +671: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:22 +672: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:23 +673: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:23 +674: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:23 +675: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:23 +676: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:23 +677: /Users/bytedance/workspace/Loquiris/test/data/remote_endpoint_contract_test.dart: task creation follows the shared LAN origin policy
+00:23 +678: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: mid-v7 failure restores the exact closed v6 database
+00:23 +679: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: mid-v7 failure restores the exact closed v6 database
+00:23 +680: /Users/bytedance/workspace/Loquiris/test/data/remote_transcription_migration_test.dart: mid-v7 failure restores the exact closed v6 database
+00:23 +681: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +682: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +683: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +684: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +685: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +686: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +687: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +688: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +689: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +690: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +691: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +692: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +693: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +694: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +695: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +696: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +697: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +698: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +699: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +700: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +701: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +702: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +703: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +704: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +705: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +706: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +707: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:23 +708: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +709: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +710: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +711: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +712: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +713: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +714: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +715: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +716: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +717: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +718: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +719: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +720: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +721: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: failed guarded open restores the exact WAL database snapshot
+00:24 +722: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: version choices announce refinement readiness without selecting it
+00:24 +723: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: version choices announce refinement readiness without selecting it
+00:24 +724: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v1 -> v3
+00:24 +725: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: explicit version switch preserves source corrections and raw results
+00:24 +726: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: explicit version switch preserves source corrections and raw results
+00:24 +727: /Users/bytedance/workspace/Loquiris/test/data/drift_session_bookmark_repository_test.dart: saveBookmark durably stores its pause-aware media position
+00:24 +728: /Users/bytedance/workspace/Loquiris/test/data/drift_session_bookmark_repository_test.dart: saveBookmark durably stores its pause-aware media position
+00:24 +729: /Users/bytedance/workspace/Loquiris/test/data/drift_session_bookmark_repository_test.dart: saveBookmark durably stores its pause-aware media position
+00:24 +730: /Users/bytedance/workspace/Loquiris/test/data/drift_session_bookmark_repository_test.dart: saveBookmark durably stores its pause-aware media position
+00:24 +731: /Users/bytedance/workspace/Loquiris/test/data/drift_session_bookmark_repository_test.dart: saveBookmark durably stores its pause-aware media position
+00:24 +732: /Users/bytedance/workspace/Loquiris/test/data/drift_session_bookmark_repository_test.dart: saveBookmark durably stores its pause-aware media position
+00:25 +733: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: selection completes and refreshes an existing editor after choices close
+00:25 +734: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: selection completes and refreshes an existing editor after choices close
+00:25 +735: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v2 -> v3
+00:25 +736: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: selection atomically rejects snapshot after UI validation
+00:25 +737: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v2 -> v4
+00:25 +738: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v2 -> v4
+00:25 +739: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: selection atomically rejects missingMetadata after UI validation
+00:25 +740: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v2 -> v5
+00:25 +741: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: selection atomically rejects runReset after UI validation
+00:25 +742: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v2 -> v6
+00:25 +743: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: selection atomically rejects recording after UI validation
+00:25 +744: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v2 -> v7
+00:25 +745: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: verified catalog alias retains the original frozen snapshot
+00:25 +746: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v3 -> v4
+00:25 +747: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v3 -> v4
+00:25 +748: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: missing catalog capability or mode prevents new paired writes
+00:25 +749: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v3 -> v5
+00:25 +750: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v3 -> v5
+00:25 +751: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: invalid bundle or mismatching runtime leaves no partial live run
+00:25 +752: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v3 -> v6
+00:25 +753: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v3 -> v6
+00:25 +754: /Users/bytedance/workspace/Loquiris/test/data/drift_transcript_processing_repository_test.dart: refinement job records only a same-meeting live source and deduplicates
+00:25 +755: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +756: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +757: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +758: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +759: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +760: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +761: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +762: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +763: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +764: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +765: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +766: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +767: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy absence and explicit recording-only never create optional work
+00:25 +768: /Users/bytedance/workspace/Loquiris/test/data/meeting_processing_selection_schema_test.dart: meeting processing selection survives as an optional durable table
+00:25 +769: /Users/bytedance/workspace/Loquiris/test/data/app_database_migration_test.dart: schema shape v5 -> v7
+00:25 +770: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: finalization and durable complete inventory are required before queueing
+00:25 +771: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: finalization and durable complete inventory are required before queueing
+00:25 +772: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: finalization and durable complete inventory are required before queueing
+00:25 +773: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: finalization and durable complete inventory are required before queueing
+00:25 +774: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: concurrent repeated notifications and a new coordinator reuse one durable job
+00:25 +775: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: missing corrupt or recording-deferred input does not publish jobs or models
+00:25 +776: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: restored job run and catalog IDs are matched semantically not rederived
+00:25 +777: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: retained live draft is linked without becoming current or being overwritten
+00:25 +778: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: a compatible existing catalog alias backs a newly queued run
+00:25 +779: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: same hash with conflicting catalog source never silently substitutes
+00:25 +780: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: failed atomic publication can retry without an orphan run or duplicate job
+00:25 +781: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: database and native inventory disagreement is rejected instead of filtering input
+00:25 +782: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: same aggregate duration cannot prove per-segment timeline agreement
+00:25 +783: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: same local duration cannot hide byte or file-reference mismatch
+00:25 +784: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: different prior decoding settings do not block a distinct requested run
+00:25 +785: /Users/bytedance/workspace/Loquiris/test/data/app_database_schema_test.dart: initial schema contains every durable versioned entity
+00:25 +786: /Users/bytedance/workspace/Loquiris/test/data/app_database_schema_test.dart: initial schema contains every durable versioned entity
+00:25 +787: /Users/bytedance/workspace/Loquiris/test/data/app_database_schema_test.dart: initial schema contains every durable versioned entity
+00:25 +788: /Users/bytedance/workspace/Loquiris/test/data/app_database_schema_test.dart: initial schema contains every durable versioned entity
+00:25 +789: /Users/bytedance/workspace/Loquiris/test/data/app_database_schema_test.dart: initial schema contains every durable versioned entity
+00:25 +790: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: trashed meeting rejects refinement claim without writes
+00:25 +791: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: trashed meeting rejects refinement claim without writes
+00:25 +792: /Users/bytedance/workspace/Loquiris/test/data/app_database_schema_test.dart: meeting-owned rows cascade and unsafe paths fail checks
+00:25 +793: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: trashed meeting rejects refinement retry without writes
+00:25 +794: /Users/bytedance/workspace/Loquiris/test/data/app_database_schema_test.dart: query indexes cover owner plus timeline access patterns
+00:25 +795: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: explicit retry preserves the same failed refinement provenance
+00:25 +796: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: explicit retry preserves the same failed refinement provenance
+00:25 +797: /Users/bytedance/workspace/Loquiris/test/data/app_database_schema_test.dart: meeting and initial event are one atomic transaction
+00:25 +798: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: paired orphan recovery is separate from legacy recovery and claim
+00:25 +799: /Users/bytedance/workspace/Loquiris/test/assets/benchmark_audio_test.dart: bundled benchmark manifest retains provenance and authorization
+00:25 +800: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: queued resource pause and invalid reason never fabricate execution
+00:26 +801: /Users/bytedance/workspace/Loquiris/test/assets/benchmark_audio_test.dart: bundled benchmark is the reviewed 45-second PCM waveform
+00:26 +802: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: corrupt or deleted processing metadata cannot authorize refinement claim
+00:26 +803: /Users/bytedance/workspace/Loquiris/test/assets/benchmark_audio_test.dart: reviewed CC0 legal text is retained without drift
+00:26 +804: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: legacy start cannot claim a paired refinement job
+00:26 +805: /Users/bytedance/workspace/Loquiris/test/data/two_pass_schema_test.dart: full v2 inventory and per-file provenance survive SQLite storage
+00:26 +806: /Users/bytedance/workspace/Loquiris/test/data/two_pass_schema_test.dart: full v2 inventory and per-file provenance survive SQLite storage
+00:26 +807: /Users/bytedance/workspace/Loquiris/test/data/refinement_scheduler_test.dart: a file reopen recovers explicit selection and reuses queued work
+00:26 +808: /Users/bytedance/workspace/Loquiris/test/data/two_pass_schema_test.dart: mid-v5 index publication failure restores exact closed v4 bytes
+00:26 +809: /Users/bytedance/workspace/Loquiris/test/data/two_pass_schema_test.dart: v4 upgrade preserves legacy content and invents no paired provenance
+00:26 +810: /Users/bytedance/workspace/Loquiris/test/data/two_pass_schema_test.dart: paired-run metadata has checked role, linkage and bundle snapshot
+00:26 +811: /Users/bytedance/workspace/Loquiris/test/data/two_pass_schema_test.dart: invalid role, completeness and manifest cannot be stored
+00:26 +812: /Users/bytedance/workspace/Loquiris/test/data/two_pass_schema_test.dart: source and run links are meeting-local and never self-referential
+00:26 +813: /Users/bytedance/workspace/Loquiris/test/domain/domain_entities_test.dart: meeting identity survives immutable edits
+00:26 +814: /Users/bytedance/workspace/Loquiris/test/domain/domain_entities_test.dart: meeting identity survives immutable edits
+00:26 +815: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes collection-valued contracts defensively copy their inputs
+00:26 +816: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes collection-valued contracts defensively copy their inputs
+00:26 +817: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes collection-valued contracts defensively copy their inputs
+00:26 +818: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes collection-valued contracts defensively copy their inputs
+00:26 +819: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes collection-valued contracts defensively copy their inputs
+00:26 +820: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes collection-valued contracts defensively copy their inputs
+00:26 +821: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes collection-valued contracts defensively copy their inputs
+00:26 +822: /Users/bytedance/workspace/Loquiris/test/domain/domain_provenance_test.dart: nullable transcript metadata can be explicitly cleared
+00:26 +823: /Users/bytedance/workspace/Loquiris/test/domain/domain_provenance_test.dart: nullable transcript metadata can be explicitly cleared
+00:26 +824: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes capture records commands and exposes configured failures
+00:26 +825: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes capture records commands and exposes configured failures
+00:26 +826: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes capture records commands and exposes configured failures
+00:26 +827: /Users/bytedance/workspace/Loquiris/test/domain/domain_entities_test.dart: domain values support structural equality and immutable updates
+00:26 +828: /Users/bytedance/workspace/Loquiris/test/domain/domain_entities_test.dart: domain values support structural equality and immutable updates
+00:26 +829: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes transcription job fake records durable state changes
+00:26 +830: /Users/bytedance/workspace/Loquiris/test/services/streaming_transcription_contract_test.dart: paused listener retains terminal failure without explicit cancellation
+00:26 +831: /Users/bytedance/workspace/Loquiris/test/services/streaming_transcription_contract_test.dart: paused listener retains terminal failure without explicit cancellation
+00:26 +832: /Users/bytedance/workspace/Loquiris/test/services/streaming_transcription_contract_test.dart: paused listener retains terminal failure without explicit cancellation
+00:26 +833: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes capture fake emits live snapshots
+00:26 +834: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes capture fake emits live snapshots
+00:26 +835: /Users/bytedance/workspace/Loquiris/test/services/streaming_transcription_contract_test.dart: paused listener does not delay native release acknowledgement
+00:26 +836: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes transcription exposes incremental draft progress and backlog
+00:26 +837: /Users/bytedance/workspace/Loquiris/test/services/streaming_transcription_contract_test.dart: terminal worker failure releases ownership and rejects later events
+00:26 +838: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes storage and device fakes expose successful values
+00:26 +839: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes storage and device fakes expose successful values
+00:26 +840: /Users/bytedance/workspace/Loquiris/test/services/streaming_transcription_contract_test.dart: native preparation failure does not acquire ownership
+00:26 +841: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes snapshot stores monotonic cpu pss thermal energy and charging values
+00:26 +842: /Users/bytedance/workspace/Loquiris/test/services/streaming_transcription_contract_test.dart: replacement epoch cannot acquire the same meeting before closure
+00:26 +843: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes snapshot constructor rejects negative and accepts int64 bounds
+00:26 +844: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: service fakes snapshot constructor rejects negative and accepts int64 bounds
+00:26 +845: /Users/bytedance/workspace/Loquiris/test/services/streaming_transcription_contract_test.dart: provider requires wiring and accepts an injected contract fake
+00:26 +846: /Users/bytedance/workspace/Loquiris/test/services/streaming_transcription_contract_test.dart: provider requires wiring and accepts an injected contract fake
+00:26 +847: /Users/bytedance/workspace/Loquiris/test/services/service_contracts_test.dart: providers can be overridden headlessly, including a fixed clock
+00:26 +848: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: remote build needs no bundled transcription weights
+00:26 +849: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: release manifest preserves explicit remote access
+00:26 +850: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: manifest validation cannot be satisfied by comments or adjacent nodes
+00:27 +851: /Users/bytedance/workspace/Loquiris/test/policy/gradle_wrapper_policy_test.dart: Android Gradle wrapper is a tracked executable build entrypoint
+00:27 +852: /Users/bytedance/workspace/Loquiris/test/policy/gradle_wrapper_policy_test.dart: Android Gradle wrapper is a tracked executable build entrypoint
+00:27 +853: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +854: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +855: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +856: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +857: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +858: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +859: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +860: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +861: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +862: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +863: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:27 +864: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:28 +865: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:28 +866: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:28 +867: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:28 +868: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:28 +869: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:28 +870: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:28 +871: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: privacy gate rejects incomplete Android 12 extraction rules
+00:28 +872: /Users/bytedance/workspace/Loquiris/test/localization/app_localization_test.dart: null override follows the platform locale
+00:28 +873: /Users/bytedance/workspace/Loquiris/test/localization/app_localization_test.dart: null override follows the platform locale
+00:28 +874: /Users/bytedance/workspace/Loquiris/test/localization/app_localization_test.dart: null override follows the platform locale
+00:28 +875: /Users/bytedance/workspace/Loquiris/test/localization/app_localization_test.dart: null override follows the platform locale
+00:28 +876: /Users/bytedance/workspace/Loquiris/test/localization/app_localization_test.dart: null override follows the platform locale
+00:28 +877: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host preflight rejects zero and multiple connected devices
+00:28 +878: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host preflight rejects zero and multiple connected devices
+00:28 +879: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host preflight rejects zero and multiple connected devices
+00:28 +880: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host preflight rejects zero and multiple connected devices
+00:28 +881: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host preflight rejects zero and multiple connected devices
+00:28 +882: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host preflight rejects zero and multiple connected devices
+00:28 +883: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host preflight rejects zero and multiple connected devices
+00:28 +884: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host preflight rejects zero and multiple connected devices
+00:28 +885: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +886: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +887: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +888: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +889: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +890: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +891: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +892: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +893: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +894: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +895: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +896: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +897: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +898: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +899: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +900: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +901: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +902: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +903: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +904: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +905: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +906: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:28 +907: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:29 +908: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: backup-only mode accepts a valid merged debug manifest
+00:29 +909: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +910: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +911: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +912: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +913: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +914: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +915: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +916: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +917: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +918: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +919: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +920: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +921: /Users/bytedance/workspace/Loquiris/test/tool/measure_release_footprint_script_test.dart: host signs and verifies the measurement APK before install
+00:29 +922: /Users/bytedance/workspace/Loquiris/test/policy/release_privacy_policy_test.dart: source dependency privacy gate passes
+00:30 +923: All tests passed!

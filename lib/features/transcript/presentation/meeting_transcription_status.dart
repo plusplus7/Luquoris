@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/transcript/presentation/meeting_transcription_controller.dart';
+import 'package:loquiris/features/transcript/presentation/refinement_paused_status.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
 
 /// Durable, localized post-session transcription status for one meeting.
@@ -22,6 +23,7 @@ final class MeetingTranscriptionStatus extends ConsumerWidget {
         _StatusCard(
           state: value,
           onRetry: (jobId) => ref.read(provider.notifier).retry(jobId),
+          onResume: (jobId) => ref.read(provider.notifier).resume(jobId),
         ),
       AsyncData() => const SizedBox.shrink(),
       AsyncError() || AsyncLoading() => const SizedBox.shrink(),
@@ -30,10 +32,15 @@ final class MeetingTranscriptionStatus extends ConsumerWidget {
 }
 
 final class _StatusCard extends StatelessWidget {
-  const _StatusCard({required this.state, required this.onRetry});
+  const _StatusCard({
+    required this.state,
+    required this.onRetry,
+    required this.onResume,
+  });
 
   final MeetingTranscriptionState state;
   final ValueChanged<String> onRetry;
+  final ValueChanged<String> onResume;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +69,8 @@ final class _StatusCard extends StatelessWidget {
                 job: job,
                 isRetrying: state.retryingJobIds.contains(job.id),
                 onRetry: onRetry,
+                canResume: state.resumableJobIds.contains(job.id),
+                onResume: onResume,
               ),
             if (state.retryFailed) ...[
               const SizedBox(height: 8),
@@ -70,8 +79,16 @@ final class _StatusCard extends StatelessWidget {
                 isError: true,
               ),
             ],
-            if (version != null && version.run.state is AnalysisCompleted) ...[
+            if (version != null &&
+                (version.run.state is AnalysisCompleted ||
+                    version.run.state is AnalysisFailed)) ...[
               const SizedBox(height: 16),
+              if (version.run.state is AnalysisFailed) ...[
+                _LiveMessage(
+                  message: l10n.transcriptVersionCoverage('incomplete'),
+                ),
+                const SizedBox(height: 8),
+              ],
               Text(
                 l10n.transcriptPreviewTitle,
                 style: Theme.of(context).textTheme.titleSmall,
@@ -101,11 +118,15 @@ final class _JobStatus extends StatelessWidget {
     required this.job,
     required this.isRetrying,
     required this.onRetry,
+    required this.canResume,
+    required this.onResume,
   });
 
   final ProcessingJob job;
   final bool isRetrying;
   final ValueChanged<String> onRetry;
+  final bool canResume;
+  final ValueChanged<String> onResume;
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +147,12 @@ final class _JobStatus extends StatelessWidget {
           Text(l10n.transcriptionProgress((progress * 100).round())),
         ],
       ),
+      ProcessingPaused(:final reasonCode) when canResume =>
+        RefinementPausedStatus(
+          reasonCode: reasonCode,
+          isResuming: isRetrying,
+          onResume: () => onResume(job.id),
+        ),
       ProcessingPaused() => _LiveMessage(message: l10n.transcriptionDelayed),
       ProcessingSucceeded() => Text(l10n.transcriptionCompleted),
       ProcessingSucceededWithWarning() => _LiveMessage(

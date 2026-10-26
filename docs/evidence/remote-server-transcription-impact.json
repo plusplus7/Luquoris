@@ -1,0 +1,2602 @@
+{
+  "summary": {
+    "changed_count": 387,
+    "affected_count": 21,
+    "changed_files": 109,
+    "risk_level": "critical"
+  },
+  "changed_symbols": [
+    {
+      "id": "Section:AGENTS.md:L2:GitNexus — Code Intelligence",
+      "name": "GitNexus — Code Intelligence",
+      "filePath": "AGENTS.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:CLAUDE.md:L2:GitNexus — Code Intelligence",
+      "name": "GitNexus — Code Intelligence",
+      "filePath": "CLAUDE.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:PRIVACY.md:L1:Privacy",
+      "name": "Privacy",
+      "filePath": "PRIVACY.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:README.md:L1:Loquiris",
+      "name": "Loquiris",
+      "filePath": "README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:README.md:L7:Project principles",
+      "name": "Project principles",
+      "filePath": "README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:README.md:L21:License",
+      "name": "License",
+      "filePath": "README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:models/README.md:L1:Offline model inputs",
+      "name": "Offline model inputs",
+      "filePath": "models/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:models/README.md:L6:Add a model",
+      "name": "Add a model",
+      "filePath": "models/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:tool/third_party_notices/README.md:L1:Third-party notice workflow",
+      "name": "Third-party notice workflow",
+      "filePath": "tool/third_party_notices/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:docs/architecture/README.md:L1:Architecture",
+      "name": "Architecture",
+      "filePath": "docs/architecture/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:assets/benchmarks/README.md:L1:Fixed first-run benchmark audio",
+      "name": "Fixed first-run benchmark audio",
+      "filePath": "assets/benchmarks/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/build.gradle.kts:verifyImportedModels",
+      "name": "verifyImportedModels",
+      "filePath": "android/app/build.gradle.kts",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/build.gradle.kts:assetsRoot",
+      "name": "assetsRoot",
+      "filePath": "android/app/build.gradle.kts",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/build.gradle.kts:index",
+      "name": "index",
+      "filePath": "android/app/build.gradle.kts",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/build.gradle.kts:models",
+      "name": "models",
+      "filePath": "android/app/build.gradle.kts",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/build.gradle.kts:inventoryFile",
+      "name": "inventoryFile",
+      "filePath": "android/app/build.gradle.kts",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/build.gradle.kts:artifacts",
+      "name": "artifacts",
+      "filePath": "android/app/build.gradle.kts",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:android/app/build.gradle.kts:quoted",
+      "name": "quoted",
+      "filePath": "android/app/build.gradle.kts",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt:RecordingForegroundServiceInstrumentedTest.notification",
+      "name": "notification",
+      "filePath": "android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt:RecordingForegroundServiceInstrumentedTest.loaded",
+      "name": "loaded",
+      "filePath": "android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt:RecordingForegroundServiceInstrumentedTest.stored",
+      "name": "stored",
+      "filePath": "android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt:RecordingForegroundServiceInstrumentedTest.startCapturesCanonicalAudioAndPublishesOngoingNotification#0",
+      "name": "startCapturesCanonicalAudioAndPublishesOngoingNotification",
+      "filePath": "android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt:RecordingForegroundServiceInstrumentedTest",
+      "name": "RecordingForegroundServiceInstrumentedTest",
+      "filePath": "android/app/src/androidTest/kotlin/com/loquiris/recording/RecordingForegroundServiceInstrumentedTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.recoveryExecutor",
+      "name": "recoveryExecutor",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.exportExecutor",
+      "name": "exportExecutor",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.storageMetricsExecutor",
+      "name": "storageMetricsExecutor",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.performanceMetricsExecutor",
+      "name": "performanceMetricsExecutor",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.transcriptionExecutor",
+      "name": "transcriptionExecutor",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.transcriptionController",
+      "name": "transcriptionController",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.permissionController",
+      "name": "permissionController",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.microphoneIndex",
+      "name": "microphoneIndex",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.granted",
+      "name": "granted",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.configureFlutterEngine#1",
+      "name": "configureFlutterEngine",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.onListen#2",
+      "name": "onListen",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.onCancel#1",
+      "name": "onCancel",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.onActivityResult#3",
+      "name": "onActivityResult",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.onNewIntent#1",
+      "name": "onNewIntent",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.onRequestPermissionsResult#3",
+      "name": "onRequestPermissionsResult",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity.onDestroy#0",
+      "name": "onDestroy",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/MainActivity.kt:MainActivity",
+      "name": "MainActivity",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/MainActivity.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PcmCaptureFrame.copyBytes#0",
+      "name": "copyBytes",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.publish#1",
+      "name": "publish",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.replaceInferenceConsumer#1",
+      "name": "replaceInferenceConsumer",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.awaitCanonicalProcessed#2",
+      "name": "awaitCanonicalProcessed",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.drainInference#0",
+      "name": "drainInference",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.close#0",
+      "name": "close",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.shutdown#0",
+      "name": "shutdown",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.awaitQuiescence#0",
+      "name": "awaitQuiescence",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOutMetrics.canonicalAcceptedFrames",
+      "name": "canonicalAcceptedFrames",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOutMetrics.inferenceAcceptedFrames",
+      "name": "inferenceAcceptedFrames",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOutMetrics.inferenceDroppedFrames",
+      "name": "inferenceDroppedFrames",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.inferenceConsumer",
+      "name": "inferenceConsumer",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.lifecycleLock",
+      "name": "lifecycleLock",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.canonicalQueueLock",
+      "name": "canonicalQueueLock",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.canonicalQueueChanged",
+      "name": "canonicalQueueChanged",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.progressLock",
+      "name": "progressLock",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.progressChanged",
+      "name": "progressChanged",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.worker",
+      "name": "worker",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.inferenceWorker",
+      "name": "inferenceWorker",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.metrics",
+      "name": "metrics",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.inferenceFrame",
+      "name": "inferenceFrame",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.previous",
+      "name": "previous",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.deadline",
+      "name": "deadline",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.remaining",
+      "name": "remaining",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.frames",
+      "name": "frames",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut.newlyClosed",
+      "name": "newlyClosed",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:onBacklog",
+      "name": "onBacklog",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PcmCaptureFrame",
+      "name": "PcmCaptureFrame",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PcmFanOutPublishResult",
+      "name": "PcmFanOutPublishResult",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOutMetrics",
+      "name": "PriorityPcmFanOutMetrics",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:PriorityPcmFanOut",
+      "name": "PriorityPcmFanOut",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Enum:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:canonicalSinkFailed",
+      "name": "canonicalSinkFailed",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Enum:android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt:closed",
+      "name": "closed",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/PriorityPcmFanOut.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.lifecycle",
+      "name": "lifecycle",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.read",
+      "name": "read",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.PAUSE_READ_SETTLE_TIMEOUT_NANOS",
+      "name": "PAUSE_READ_SETTLE_TIMEOUT_NANOS",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.start#0",
+      "name": "start",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.pause#0",
+      "name": "pause",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.resume#0",
+      "name": "resume",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.finish#0",
+      "name": "finish",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.close#0",
+      "name": "close",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.captureLoop#0",
+      "name": "captureLoop",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.failFromCapture#1",
+      "name": "failFromCapture",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.failLocked#1",
+      "name": "failLocked",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.failAndAbort#2",
+      "name": "failAndAbort",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.abortEncoderOnce#0",
+      "name": "abortEncoderOnce",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.deferEncoderAbortUntilFanOutStops#0",
+      "name": "deferEncoderAbortUntilFanOutStops",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline.releaseSource#0",
+      "name": "releaseSource",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt:RecordingCapturePipeline",
+      "name": "RecordingCapturePipeline",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingCapturePipeline.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt:RecordingChannelSnapshotReader",
+      "name": "RecordingChannelSnapshotReader",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt:RecordingProcessLiveness",
+      "name": "RecordingProcessLiveness",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt:RecordingProcessLiveness.claim#1",
+      "name": "claim",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt:RecordingProcessLiveness.release#1",
+      "name": "release",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt:RecordingProcessLiveness.owns#1",
+      "name": "owns",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingChannelSnapshotReader.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.progressTick",
+      "name": "progressTick",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.authoritativeStorage",
+      "name": "authoritativeStorage",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.accepted",
+      "name": "accepted",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.run#0",
+      "name": "run",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.handleStart#3",
+      "name": "handleStart",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.handleStop#2",
+      "name": "handleStop",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.completeOwnedCommand#1",
+      "name": "completeOwnedCommand",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.failUnownedStart#3",
+      "name": "failUnownedStart",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.handleInterruptionSignal#1",
+      "name": "handleInterruptionSignal",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService.applyInterruptionDecision#1",
+      "name": "applyInterruptionDecision",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt:RecordingForegroundService",
+      "name": "RecordingForegroundService",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingForegroundService.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycle.kt:RecordingLiveInferenceLifecycle.attach#2",
+      "name": "attach",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycle.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycle.kt:RecordingLiveInferenceLifecycle",
+      "name": "RecordingLiveInferenceLifecycle",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycle.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/recording/RecordingServiceLifecycle.kt:RecordingForegroundPromotion.attempt#1",
+      "name": "attempt",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingServiceLifecycle.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/recording/RecordingServiceLifecycle.kt:RecordingForegroundPromotion",
+      "name": "RecordingForegroundPromotion",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/recording/RecordingServiceLifecycle.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.recovered",
+      "name": "recovered",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.expectedSamples",
+      "name": "expectedSamples",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.bytes",
+      "name": "bytes",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.read",
+      "name": "read",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.MAX_JOURNAL_BYTES",
+      "name": "MAX_JOURNAL_BYTES",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.resolveChecked#1",
+      "name": "resolveChecked",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.readCommittedPrefix#2",
+      "name": "readCommittedPrefix",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.decodeRecord#2",
+      "name": "decodeRecord",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.readPrefix#2",
+      "name": "readPrefix",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver.failure#1",
+      "name": "failure",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt:AuthoritativeAudioResolver",
+      "name": "AuthoritativeAudioResolver",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/AuthoritativeAudioResolver.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LiveDraftRequest.runId",
+      "name": "runId",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LiveDraftRequest.meetingId",
+      "name": "meetingId",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LiveDraftRequest.modelId",
+      "name": "modelId",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:ActiveDraft.request",
+      "name": "request",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:ActiveDraft.session",
+      "name": "session",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.lock",
+      "name": "lock",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.pendingStarts",
+      "name": "pendingStarts",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.thermalBlockedMeetings",
+      "name": "thermalBlockedMeetings",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.draftsByRunId",
+      "name": "draftsByRunId",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.runIdByMeetingId",
+      "name": "runIdByMeetingId",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.captureBindings",
+      "name": "captureBindings",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.pending",
+      "name": "pending",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.session",
+      "name": "session",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.startResult",
+      "name": "startResult",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.duplicate",
+      "name": "duplicate",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.cancellationCode",
+      "name": "cancellationCode",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.replaced",
+      "name": "replaced",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.replacedRunId",
+      "name": "replacedRunId",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.binding",
+      "name": "binding",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.runId",
+      "name": "runId",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.start#2",
+      "name": "start",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.bindCapture#2",
+      "name": "bindCapture",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.unbindCapture#2",
+      "name": "unbindCapture",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry.closeOwner#0",
+      "name": "closeOwner",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LiveDraftRequest",
+      "name": "LiveDraftRequest",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:LivePcmInferenceRegistry",
+      "name": "LivePcmInferenceRegistry",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt:ActiveDraft",
+      "name": "ActiveDraft",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/LivePcmInferenceRegistry.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/TranscriptionChannelContract.kt:TranscriptionChannelContract.supportedParameterVersion",
+      "name": "supportedParameterVersion",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/TranscriptionChannelContract.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/transcription/TranscriptionChannelContract.kt:TranscriptionChannelContract",
+      "name": "TranscriptionChannelContract",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/TranscriptionChannelContract.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Interface:android/app/src/main/kotlin/com/loquiris/transcription/TranscriptionNativeModels.kt:AuthoritativeAudioResolution",
+      "name": "AuthoritativeAudioResolution",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/TranscriptionNativeModels.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/transcription/WhisperModelStore.kt:WhisperModelStore",
+      "name": "WhisperModelStore",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/WhisperModelStore.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:android/app/src/main/kotlin/com/loquiris/transcription/WhisperModelStore.kt:toHex",
+      "name": "toHex",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/WhisperModelStore.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/WhisperModelStore.kt:WhisperModelStore.syncDirectory#1",
+      "name": "syncDirectory",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/WhisperModelStore.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/main/kotlin/com/loquiris/transcription/WhisperPostSessionEngine.kt:WhisperPostSessionEngine",
+      "name": "WhisperPostSessionEngine",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/WhisperPostSessionEngine.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/WhisperPostSessionEngine.kt:WhisperPostSessionEngine.model",
+      "name": "model",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/WhisperPostSessionEngine.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/main/kotlin/com/loquiris/transcription/WhisperPostSessionEngine.kt:WhisperPostSessionEngine.context",
+      "name": "context",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/WhisperPostSessionEngine.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/main/kotlin/com/loquiris/transcription/WhisperPostSessionEngine.kt:WhisperPostSessionEngine.transcribe#4",
+      "name": "transcribe",
+      "filePath": "android/app/src/main/kotlin/com/loquiris/transcription/WhisperPostSessionEngine.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt:RecordingForegroundPromotionTest",
+      "name": "RecordingForegroundPromotionTest",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt:RecordingForegroundPromotionTest.promoted",
+      "name": "promoted",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt:RecordingForegroundPromotionTest.calls",
+      "name": "calls",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt:RecordingForegroundPromotionTest.`platform promotion exception becomes failure`#0",
+      "name": "`platform promotion exception becomes failure`",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt:RecordingForegroundPromotionTest.`successful platform promotion is reported`#0",
+      "name": "`successful platform promotion is reported`",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingForegroundPromotionTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt:RecordingLiveInferenceLifecycleTest.registry",
+      "name": "registry",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt:RecordingLiveInferenceLifecycleTest.lifecycle",
+      "name": "lifecycle",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt:RecordingLiveInferenceLifecycleTest.attachments",
+      "name": "attachments",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt:RecordingLiveInferenceLifecycleTest.session",
+      "name": "session",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt:RecordingLiveInferenceLifecycleTest.thermalSession",
+      "name": "thermalSession",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt:RecordingLiveInferenceLifecycleTest.restartedSession",
+      "name": "restartedSession",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt:RecordingLiveInferenceLifecycleTest.`recording end detaches and releases inference exactly once`#0",
+      "name": "`recording end detaches and releases inference exactly once`",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt:RecordingLiveInferenceLifecycleTest.`severe thermal releases draft but leaves canonical capture binding available`#0",
+      "name": "`severe thermal releases draft but leaves canonical capture binding available`",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt:RecordingLiveInferenceLifecycleTest",
+      "name": "RecordingLiveInferenceLifecycleTest",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/recording/RecordingLiveInferenceLifecycleTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:android/app/src/test/kotlin/com/loquiris/transcription/TranscriptionChannelControllerTest.kt:validArguments",
+      "name": "validArguments",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/transcription/TranscriptionChannelControllerTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:android/app/src/test/kotlin/com/loquiris/transcription/TranscriptionLiveChannelControllerTest.kt:liveArguments",
+      "name": "liveArguments",
+      "filePath": "android/app/src/test/kotlin/com/loquiris/transcription/TranscriptionLiveChannelControllerTest.kt",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:docs/architecture/README.md:L1:Architecture",
+      "name": "Architecture",
+      "filePath": "docs/architecture/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/bootstrap/bootstrap.dart:_NoopAppLifecycleActions.flush#0",
+      "name": "flush",
+      "filePath": "lib/bootstrap/bootstrap.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/bootstrap/bootstrap.dart:AppLifecycleActions",
+      "name": "AppLifecycleActions",
+      "filePath": "lib/bootstrap/bootstrap.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/bootstrap/bootstrap.dart:_NoopAppLifecycleActions",
+      "name": "_NoopAppLifecycleActions",
+      "filePath": "lib/bootstrap/bootstrap.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/data/database/app_database.dart:AppDatabase",
+      "name": "AppDatabase",
+      "filePath": "lib/data/database/app_database.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:lib/data/database/open_connection.dart:openMigratedDatabaseFile",
+      "name": "openMigratedDatabaseFile",
+      "filePath": "lib/data/database/open_connection.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:lib/data/database/schema_versions.dart:migrationSteps",
+      "name": "migrationSteps",
+      "filePath": "lib/data/database/schema_versions.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:lib/data/database/schema_versions.dart:stepByStep",
+      "name": "stepByStep",
+      "filePath": "lib/data/database/schema_versions.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/data/repositories/drift_analysis_repositories.dart:DriftTranscriptRepository",
+      "name": "DriftTranscriptRepository",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/data/repositories/drift_analysis_repositories.dart:DriftTranscriptionJobRepository",
+      "name": "DriftTranscriptionJobRepository",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/data/repositories/drift_analysis_repositories.dart:DriftRevisionRepository",
+      "name": "DriftRevisionRepository",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/data/repositories/drift_analysis_repositories.dart:DriftTranscriptionJobRepository.database",
+      "name": "database",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/data/repositories/drift_analysis_repositories.dart:DriftTranscriptionJobRepository.diagnosticSink",
+      "name": "diagnosticSink",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/data/repositories/drift_analysis_repositories.dart:DriftTranscriptionJobRepository.enqueue#3",
+      "name": "enqueue",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/data/repositories/drift_analysis_repositories.dart:DriftTranscriptionJobRepository._jobRow#1",
+      "name": "_jobRow",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/data/repositories/drift_analysis_repositories.dart:DriftTranscriptionJobRepository._runRow#1",
+      "name": "_runRow",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/data/repositories/drift_analysis_repositories.dart:DriftRevisionRepository.materializeSpeakerAssignment#1",
+      "name": "materializeSpeakerAssignment",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/data/repositories/drift_analysis_repositories.dart:DriftRevisionRepository._ensureRevisionOrder#1",
+      "name": "_ensureRevisionOrder",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/data/repositories/drift_analysis_repositories.dart:DriftRevisionRepository._applyLanguage#2",
+      "name": "_applyLanguage",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/data/repositories/drift_analysis_repositories.dart:DriftRevisionRepository._applySpeakerAssignment#2",
+      "name": "_applySpeakerAssignment",
+      "filePath": "lib/data/repositories/drift_analysis_repositories.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/data/repositories/drift_session_repository.dart:DriftSessionRepository",
+      "name": "DriftSessionRepository",
+      "filePath": "lib/data/repositories/drift_session_repository.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/data/repositories/drift_session_repository.dart:DriftSessionRepository.search#1",
+      "name": "search",
+      "filePath": "lib/data/repositories/drift_session_repository.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/export_backup/application/drift_restore_importer.dart:DriftRestoreImporter",
+      "name": "DriftRestoreImporter",
+      "filePath": "lib/features/export_backup/application/drift_restore_importer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/export_backup/application/drift_restore_importer.dart:_ModelAggregate",
+      "name": "_ModelAggregate",
+      "filePath": "lib/features/export_backup/application/drift_restore_importer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/export_backup/application/drift_restore_importer.dart:_ModelAggregate.semantic",
+      "name": "semantic",
+      "filePath": "lib/features/export_backup/application/drift_restore_importer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/export_backup/application/drift_restore_importer.dart:DriftRestoreImporter._loadModel#2",
+      "name": "_loadModel",
+      "filePath": "lib/features/export_backup/application/drift_restore_importer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/export_backup/application/drift_restore_importer.dart:DriftRestoreImporter._remapRevisionPayload#2",
+      "name": "_remapRevisionPayload",
+      "filePath": "lib/features/export_backup/application/drift_restore_importer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/export_backup/application/drift_restore_importer.dart:DriftRestoreImporter._insertAggregate#1",
+      "name": "_insertAggregate",
+      "filePath": "lib/features/export_backup/application/drift_restore_importer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/export_backup/application/drift_restore_importer.dart:DriftRestoreImporter._insertRows#2",
+      "name": "_insertRows",
+      "filePath": "lib/features/export_backup/application/drift_restore_importer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/export_backup/application/local_export_service.dart:LocalExportService",
+      "name": "LocalExportService",
+      "filePath": "lib/features/export_backup/application/local_export_service.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/export_backup/presentation/export_screen.dart:ExportScreen",
+      "name": "ExportScreen",
+      "filePath": "lib/features/export_backup/presentation/export_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/export_backup/presentation/export_screen.dart:_ExportChoice",
+      "name": "_ExportChoice",
+      "filePath": "lib/features/export_backup/presentation/export_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/models_performance/application/runtime_model_manager.dart:RuntimeModelManager",
+      "name": "RuntimeModelManager",
+      "filePath": "lib/features/models_performance/application/runtime_model_manager.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Enum:lib/features/models_performance/domain/model_manifest.dart:ModelManifestFailureReason",
+      "name": "ModelManifestFailureReason",
+      "filePath": "lib/features/models_performance/domain/model_manifest.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/models_performance/domain/model_manifest.dart:BundledModelManifest.schemaVersion",
+      "name": "schemaVersion",
+      "filePath": "lib/features/models_performance/domain/model_manifest.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/models_performance/domain/model_manifest.dart:BundledModelManifest.id",
+      "name": "id",
+      "filePath": "lib/features/models_performance/domain/model_manifest.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/models_performance/domain/model_manifest.dart:BundledModelManifest.version",
+      "name": "version",
+      "filePath": "lib/features/models_performance/domain/model_manifest.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/models_performance/domain/model_manifest.dart:BundledModelManifest.source",
+      "name": "source",
+      "filePath": "lib/features/models_performance/domain/model_manifest.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/models_performance/domain/model_manifest.dart:BundledModelManifest.artifactPath",
+      "name": "artifactPath",
+      "filePath": "lib/features/models_performance/domain/model_manifest.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/models_performance/domain/model_manifest.dart:BundledModelManifest.equalityValues",
+      "name": "equalityValues",
+      "filePath": "lib/features/models_performance/domain/model_manifest.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/models_performance/domain/model_manifest.dart:BundledModelManifest.tryParse#1",
+      "name": "tryParse",
+      "filePath": "lib/features/models_performance/domain/model_manifest.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/models_performance/domain/model_manifest.dart:BundledModelManifest",
+      "name": "BundledModelManifest",
+      "filePath": "lib/features/models_performance/domain/model_manifest.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/models_performance/presentation/models_performance_screen.dart:ModelsPerformanceScreen",
+      "name": "ModelsPerformanceScreen",
+      "filePath": "lib/features/models_performance/presentation/models_performance_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/recording/application/recording_inventory_synchronizer.dart:NativeRecordingInventorySynchronizer.synchronize#0",
+      "name": "synchronize",
+      "filePath": "lib/features/recording/application/recording_inventory_synchronizer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/application/recording_inventory_synchronizer.dart:RecordingInventorySynchronizer",
+      "name": "RecordingInventorySynchronizer",
+      "filePath": "lib/features/recording/application/recording_inventory_synchronizer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/application/recording_inventory_synchronizer.dart:NativeRecordingInventorySynchronizer",
+      "name": "NativeRecordingInventorySynchronizer",
+      "filePath": "lib/features/recording/application/recording_inventory_synchronizer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/application/recording_inventory_synchronizer.dart:_NoopRecordingInventorySynchronizer",
+      "name": "_NoopRecordingInventorySynchronizer",
+      "filePath": "lib/features/recording/application/recording_inventory_synchronizer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/active_recording_screen.dart:ActiveRecordingScreen",
+      "name": "ActiveRecordingScreen",
+      "filePath": "lib/features/recording/presentation/active_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/active_recording_screen.dart:_ActiveRecordingContent",
+      "name": "_ActiveRecordingContent",
+      "filePath": "lib/features/recording/presentation/active_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/active_recording_screen.dart:_LiveTranscriptSection",
+      "name": "_LiveTranscriptSection",
+      "filePath": "lib/features/recording/presentation/active_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Enum:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingStatus",
+      "name": "NewRecordingStatus",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingState.transcriptionMode",
+      "name": "transcriptionMode",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingState.languageMode",
+      "name": "languageMode",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingState.status",
+      "name": "status",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:lib/features/recording/presentation/new_recording_controller.dart:_isDefinitivePreflightFailure",
+      "name": "_isDefinitivePreflightFailure",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingState._requiredBytes#1",
+      "name": "_requiredBytes",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingController._started#2",
+      "name": "_started",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingController._update#1",
+      "name": "_update",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingPersistenceFailure",
+      "name": "NewRecordingPersistenceFailure",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingState",
+      "name": "NewRecordingState",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/new_recording_controller.dart:NewRecordingController",
+      "name": "NewRecordingController",
+      "filePath": "lib/features/recording/presentation/new_recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/new_recording_screen.dart:NewRecordingScreen",
+      "name": "NewRecordingScreen",
+      "filePath": "lib/features/recording/presentation/new_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/new_recording_screen.dart:_NewRecordingForm",
+      "name": "_NewRecordingForm",
+      "filePath": "lib/features/recording/presentation/new_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/new_recording_screen.dart:_SectionLabel",
+      "name": "_SectionLabel",
+      "filePath": "lib/features/recording/presentation/new_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/new_recording_screen.dart:_ModeChoice",
+      "name": "_ModeChoice",
+      "filePath": "lib/features/recording/presentation/new_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/recording/presentation/new_recording_screen.dart:_NewRecordingForm.state",
+      "name": "state",
+      "filePath": "lib/features/recording/presentation/new_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/recording/presentation/new_recording_screen.dart:_SectionLabel.label",
+      "name": "label",
+      "filePath": "lib/features/recording/presentation/new_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/recording/presentation/new_recording_screen.dart:_NewRecordingForm.build#1",
+      "name": "build",
+      "filePath": "lib/features/recording/presentation/new_recording_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/recording/presentation/recording_controller.dart:RecordingController.acceptAuthoritativeSnapshot#1",
+      "name": "acceptAuthoritativeSnapshot",
+      "filePath": "lib/features/recording/presentation/recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/recording/presentation/recording_controller.dart:RecordingController._run#1",
+      "name": "_run",
+      "filePath": "lib/features/recording/presentation/recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/recording/presentation/recording_controller.dart:RecordingController",
+      "name": "RecordingController",
+      "filePath": "lib/features/recording/presentation/recording_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/sessions/presentation/session_detail_screen.dart:_DetailContent",
+      "name": "_DetailContent",
+      "filePath": "lib/features/sessions/presentation/session_detail_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/sessions/presentation/sessions_controller.dart:SessionsController",
+      "name": "SessionsController",
+      "filePath": "lib/features/sessions/presentation/sessions_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/transcript/application/transcription_coordinator.dart:LiveTranscriptionSession.events",
+      "name": "events",
+      "filePath": "lib/features/transcript/application/transcription_coordinator.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/transcript/application/transcription_coordinator.dart:TranscriptionCoordinator._finalizationPollWaiters",
+      "name": "_finalizationPollWaiters",
+      "filePath": "lib/features/transcript/application/transcription_coordinator.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/transcript/application/transcription_coordinator.dart:TranscriptionCoordinator._inferenceTail",
+      "name": "_inferenceTail",
+      "filePath": "lib/features/transcript/application/transcription_coordinator.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/transcript/application/transcription_coordinator.dart:TranscriptionCoordinator.build#0",
+      "name": "build",
+      "filePath": "lib/features/transcript/application/transcription_coordinator.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/transcript/application/transcription_coordinator.dart:TranscriptionCoordinator.scheduleFinalized#2",
+      "name": "scheduleFinalized",
+      "filePath": "lib/features/transcript/application/transcription_coordinator.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/transcript/application/transcription_coordinator.dart:LiveTranscriptionSession",
+      "name": "LiveTranscriptionSession",
+      "filePath": "lib/features/transcript/application/transcription_coordinator.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/transcript/application/transcription_coordinator.dart:TranscriptionCoordinator",
+      "name": "TranscriptionCoordinator",
+      "filePath": "lib/features/transcript/application/transcription_coordinator.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/transcript/presentation/live_transcript_controller.dart:LiveTranscriptController",
+      "name": "LiveTranscriptController",
+      "filePath": "lib/features/transcript/presentation/live_transcript_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:lib/features/transcript/presentation/live_transcript_controller.dart:_stopping",
+      "name": "_stopping",
+      "filePath": "lib/features/transcript/presentation/live_transcript_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:lib/features/transcript/presentation/live_transcript_controller.dart:_replaceChunk",
+      "name": "_replaceChunk",
+      "filePath": "lib/features/transcript/presentation/live_transcript_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/transcript/presentation/live_transcript_controller.dart:LiveTranscriptController.build#0",
+      "name": "build",
+      "filePath": "lib/features/transcript/presentation/live_transcript_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/transcript/presentation/live_transcript_controller.dart:LiveTranscriptController._onEvent#1",
+      "name": "_onEvent",
+      "filePath": "lib/features/transcript/presentation/live_transcript_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/transcript/presentation/live_transcript_controller.dart:LiveTranscriptController._dispose#0",
+      "name": "_dispose",
+      "filePath": "lib/features/transcript/presentation/live_transcript_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/transcript/presentation/meeting_transcription_controller.dart:MeetingTranscriptionState",
+      "name": "MeetingTranscriptionState",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/transcript/presentation/meeting_transcription_controller.dart:MeetingTranscriptionController",
+      "name": "MeetingTranscriptionController",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/transcript/presentation/meeting_transcription_controller.dart:MeetingTranscriptionState.retryingJobIds",
+      "name": "retryingJobIds",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/transcript/presentation/meeting_transcription_controller.dart:MeetingTranscriptionController._project#1",
+      "name": "_project",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Constructor:lib/features/transcript/presentation/meeting_transcription_controller.dart:MeetingTranscriptionState.MeetingTranscriptionState#5",
+      "name": "MeetingTranscriptionState",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_controller.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/transcript/presentation/meeting_transcription_status.dart:MeetingTranscriptionStatus",
+      "name": "MeetingTranscriptionStatus",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_status.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/transcript/presentation/meeting_transcription_status.dart:_StatusCard",
+      "name": "_StatusCard",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_status.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/transcript/presentation/meeting_transcription_status.dart:_JobStatus",
+      "name": "_JobStatus",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_status.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/features/transcript/presentation/meeting_transcription_status.dart:_StatusCard.onRetry",
+      "name": "onRetry",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_status.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/features/transcript/presentation/meeting_transcription_status.dart:_StatusCard.build#1",
+      "name": "build",
+      "filePath": "lib/features/transcript/presentation/meeting_transcription_status.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/features/transcript/presentation/transcript_editor_screen.dart:TranscriptEditorScreen",
+      "name": "TranscriptEditorScreen",
+      "filePath": "lib/features/transcript/presentation/transcript_editor_screen.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:lib/l10n/app_localizations.dart:lookupAppLocalizations",
+      "name": "lookupAppLocalizations",
+      "filePath": "lib/l10n/app_localizations.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/l10n/app_localizations.dart:AppLocalizations",
+      "name": "AppLocalizations",
+      "filePath": "lib/l10n/app_localizations.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/l10n/app_localizations_en.dart:AppLocalizationsEn",
+      "name": "AppLocalizationsEn",
+      "filePath": "lib/l10n/app_localizations_en.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/l10n/app_localizations_en.dart:AppLocalizationsEn.exportIncompleteOutputWarning",
+      "name": "exportIncompleteOutputWarning",
+      "filePath": "lib/l10n/app_localizations_en.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/l10n/app_localizations_en.dart:AppLocalizationsEn.exportInterruptedOutputWarning",
+      "name": "exportInterruptedOutputWarning",
+      "filePath": "lib/l10n/app_localizations_en.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/l10n/app_localizations_en.dart:AppLocalizationsEn.liveTranscriptGenericFallback",
+      "name": "liveTranscriptGenericFallback",
+      "filePath": "lib/l10n/app_localizations_en.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/l10n/app_localizations_zh.dart:AppLocalizationsZh.exportIncompleteOutputWarning",
+      "name": "exportIncompleteOutputWarning",
+      "filePath": "lib/l10n/app_localizations_zh.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/l10n/app_localizations_zh.dart:AppLocalizationsZh.exportInterruptedOutputWarning",
+      "name": "exportInterruptedOutputWarning",
+      "filePath": "lib/l10n/app_localizations_zh.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:lib/l10n/app_localizations_zh.dart:AppLocalizationsZh.liveTranscriptGenericFallback",
+      "name": "liveTranscriptGenericFallback",
+      "filePath": "lib/l10n/app_localizations_zh.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/l10n/app_localizations_zh.dart:AppLocalizationsZh",
+      "name": "AppLocalizationsZh",
+      "filePath": "lib/l10n/app_localizations_zh.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/routing/routes.dart:AppRoutes.export#1",
+      "name": "export",
+      "filePath": "lib/routing/routes.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/routing/routes.dart:AppRoutes",
+      "name": "AppRoutes",
+      "filePath": "lib/routing/routes.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/services/analysis_repository_contracts.dart:TranscriptRepository.loadEditor#1",
+      "name": "loadEditor",
+      "filePath": "lib/services/analysis_repository_contracts.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/services/analysis_repository_contracts.dart:TranscriptRepository.selectCurrent#3",
+      "name": "selectCurrent",
+      "filePath": "lib/services/analysis_repository_contracts.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/services/analysis_repository_contracts.dart:TranscriptionJobRepository.saveProgress#4",
+      "name": "saveProgress",
+      "filePath": "lib/services/analysis_repository_contracts.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/services/analysis_repository_contracts.dart:TranscriptRepository",
+      "name": "TranscriptRepository",
+      "filePath": "lib/services/analysis_repository_contracts.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/services/analysis_repository_contracts.dart:TranscriptionJobRepository",
+      "name": "TranscriptionJobRepository",
+      "filePath": "lib/services/analysis_repository_contracts.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:lib/services/service_contracts.dart:SessionRepository.moveToTrash#2",
+      "name": "moveToTrash",
+      "filePath": "lib/services/service_contracts.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:lib/services/service_contracts.dart:SessionRepository",
+      "name": "SessionRepository",
+      "filePath": "lib/services/service_contracts.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:models/README.md:L1:Offline model inputs",
+      "name": "Offline model inputs",
+      "filePath": "models/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:models/README.md:L41:Reviewed Whisper base-q5 input",
+      "name": "Reviewed Whisper base-q5 input",
+      "filePath": "models/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:openspec/changes/bootstrap-loquiris-offline-recorder/tasks.md:L149:15. Physical-Device Release Gates",
+      "name": "15. Physical-Device Release Gates",
+      "filePath": "openspec/changes/bootstrap-loquiris-offline-recorder/tasks.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/bootstrap/bootstrap_test.dart:_RecordingDiagnosticSink.events",
+      "name": "events",
+      "filePath": "test/bootstrap/bootstrap_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:test/bootstrap/bootstrap_test.dart:main",
+      "name": "main",
+      "filePath": "test/bootstrap/bootstrap_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/bootstrap/bootstrap_test.dart:_RecordingDiagnosticSink.record#1",
+      "name": "record",
+      "filePath": "test/bootstrap/bootstrap_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/bootstrap/bootstrap_test.dart:_RecordingDiagnosticSink",
+      "name": "_RecordingDiagnosticSink",
+      "filePath": "test/bootstrap/bootstrap_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/export_backup/local_export_service_test.dart:_FakeExportDestinationGateway.result",
+      "name": "result",
+      "filePath": "test/features/export_backup/local_export_service_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/export_backup/local_export_service_test.dart:_TranscriptRepository.selectCurrent#3",
+      "name": "selectCurrent",
+      "filePath": "test/features/export_backup/local_export_service_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/export_backup/local_export_service_test.dart:_TranscriptRepository.saveVersion#3",
+      "name": "saveVersion",
+      "filePath": "test/features/export_backup/local_export_service_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/export_backup/local_export_service_test.dart:_FakeExportDestinationGateway.save#1",
+      "name": "save",
+      "filePath": "test/features/export_backup/local_export_service_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/export_backup/local_export_service_test.dart:_TranscriptRepository",
+      "name": "_TranscriptRepository",
+      "filePath": "test/features/export_backup/local_export_service_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/export_backup/local_export_service_test.dart:_FakeExportDestinationGateway",
+      "name": "_FakeExportDestinationGateway",
+      "filePath": "test/features/export_backup/local_export_service_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/models_performance/models_performance_screen_test.dart:_ControlledRun._controller",
+      "name": "_controller",
+      "filePath": "test/features/models_performance/models_performance_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/models_performance/models_performance_screen_test.dart:_ControlledRun",
+      "name": "_ControlledRun",
+      "filePath": "test/features/models_performance/models_performance_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:test/features/recording/presentation/active_recording_screen_test.dart:_manifest",
+      "name": "_manifest",
+      "filePath": "test/features/recording/presentation/active_recording_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:test/features/recording/presentation/new_recording_controller_test.dart:main",
+      "name": "main",
+      "filePath": "test/features/recording/presentation/new_recording_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/sessions/session_detail_screen_test.dart:_TranscriptRepository.listVersions#1",
+      "name": "listVersions",
+      "filePath": "test/features/sessions/session_detail_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/sessions/session_detail_screen_test.dart:_TranscriptRepository.saveVersion#3",
+      "name": "saveVersion",
+      "filePath": "test/features/sessions/session_detail_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/sessions/session_detail_screen_test.dart:_TranscriptRepository",
+      "name": "_TranscriptRepository",
+      "filePath": "test/features/sessions/session_detail_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/sessions/session_library_screen_test.dart:_PendingSessionRepository.search#1",
+      "name": "search",
+      "filePath": "test/features/sessions/session_library_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/sessions/session_library_screen_test.dart:_PendingSessionRepository",
+      "name": "_PendingSessionRepository",
+      "filePath": "test/features/sessions/session_library_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_Harness.sessions",
+      "name": "sessions",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_Harness.FakeSessionRepository",
+      "name": "FakeSessionRepository",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_Harness.jobs",
+      "name": "jobs",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_Harness.FakeTranscriptionJobRepository",
+      "name": "FakeTranscriptionJobRepository",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_Harness.engine",
+      "name": "engine",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_Harness.container",
+      "name": "container",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_Harness.subscription",
+      "name": "subscription",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_Harness.controller",
+      "name": "controller",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_Harness.state",
+      "name": "state",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.startResult",
+      "name": "startResult",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine._startGate",
+      "name": "_startGate",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine._events",
+      "name": "_events",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.draftRequests",
+      "name": "draftRequests",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.stopDraftRequests",
+      "name": "stopDraftRequests",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:test/features/transcript/live_transcript_controller_test.dart:_draft",
+      "name": "_draft",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:test/features/transcript/live_transcript_controller_test.dart:_manifest",
+      "name": "_manifest",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:test/features/transcript/live_transcript_controller_test.dart:_inactiveState",
+      "name": "_inactiveState",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_Harness.start#0",
+      "name": "start",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_Harness.dispose#0",
+      "name": "dispose",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.emit#1",
+      "name": "emit",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.eventsFor#1",
+      "name": "eventsFor",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.startDraft#1",
+      "name": "startDraft",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.releaseStart#0",
+      "name": "releaseStart",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.stopDraft#1",
+      "name": "stopDraft",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.transcribe#1",
+      "name": "transcribe",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.cancel#1",
+      "name": "cancel",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine.dispose#0",
+      "name": "dispose",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Constructor:test/features/transcript/live_transcript_controller_test.dart:_Harness._Harness#3",
+      "name": "_Harness",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Constructor:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine._LiveEngine#2",
+      "name": "_LiveEngine",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/live_transcript_controller_test.dart:_Harness",
+      "name": "_Harness",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/live_transcript_controller_test.dart:_LiveEngine",
+      "name": "_LiveEngine",
+      "filePath": "test/features/transcript/live_transcript_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/meeting_transcription_controller_test.dart:_TranscriptRepository.listVersions#1",
+      "name": "listVersions",
+      "filePath": "test/features/transcript/meeting_transcription_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/meeting_transcription_controller_test.dart:_TranscriptRepository.saveVersion#3",
+      "name": "saveVersion",
+      "filePath": "test/features/transcript/meeting_transcription_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/meeting_transcription_controller_test.dart:_TranscriptRepository",
+      "name": "_TranscriptRepository",
+      "filePath": "test/features/transcript/meeting_transcription_controller_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/meeting_transcription_status_test.dart:_TranscriptRepository.listVersions#1",
+      "name": "listVersions",
+      "filePath": "test/features/transcript/meeting_transcription_status_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/meeting_transcription_status_test.dart:_TranscriptRepository.saveVersion#3",
+      "name": "saveVersion",
+      "filePath": "test/features/transcript/meeting_transcription_status_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/meeting_transcription_status_test.dart:_TranscriptRepository",
+      "name": "_TranscriptRepository",
+      "filePath": "test/features/transcript/meeting_transcription_status_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/transcript_edit_conflict_test.dart:_ConflictingRevisionRepository.attempted",
+      "name": "attempted",
+      "filePath": "test/features/transcript/transcript_edit_conflict_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/transcript_edit_conflict_test.dart:_StableTranscriptRepository.listVersions#1",
+      "name": "listVersions",
+      "filePath": "test/features/transcript/transcript_edit_conflict_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/transcript_edit_conflict_test.dart:_StableTranscriptRepository.selectCurrent#3",
+      "name": "selectCurrent",
+      "filePath": "test/features/transcript/transcript_edit_conflict_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/transcript_edit_conflict_test.dart:_StableTranscriptRepository.saveVersion#3",
+      "name": "saveVersion",
+      "filePath": "test/features/transcript/transcript_edit_conflict_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/transcript_edit_conflict_test.dart:_StableTranscriptRepository",
+      "name": "_StableTranscriptRepository",
+      "filePath": "test/features/transcript/transcript_edit_conflict_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/transcript_edit_conflict_test.dart:_ConflictingRevisionRepository",
+      "name": "_ConflictingRevisionRepository",
+      "filePath": "test/features/transcript/transcript_edit_conflict_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/transcript_editor_screen_test.dart:_FakeTranscriptRepository.listVersions#1",
+      "name": "listVersions",
+      "filePath": "test/features/transcript/transcript_editor_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/features/transcript/transcript_editor_screen_test.dart:_FakeTranscriptRepository.saveVersion#3",
+      "name": "saveVersion",
+      "filePath": "test/features/transcript/transcript_editor_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/transcript_editor_screen_test.dart:_FakeTranscriptRepository",
+      "name": "_FakeTranscriptRepository",
+      "filePath": "test/features/transcript/transcript_editor_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/transcript_editor_screen_test.dart:_FakeRevisionRepository",
+      "name": "_FakeRevisionRepository",
+      "filePath": "test/features/transcript/transcript_editor_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Constructor:test/features/transcript/transcript_editor_screen_test.dart:_FakeRevisionRepository._FakeRevisionRepository#1",
+      "name": "_FakeRevisionRepository",
+      "filePath": "test/features/transcript/transcript_editor_screen_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/transcription_coordinator_test.dart:_Harness.jobs",
+      "name": "jobs",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/transcription_coordinator_test.dart:_Harness.FakeTranscriptionJobRepository",
+      "name": "FakeTranscriptionJobRepository",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/transcription_coordinator_test.dart:_Harness.models",
+      "name": "models",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/transcription_coordinator_test.dart:_Harness.FakeModelManager",
+      "name": "FakeModelManager",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/transcription_coordinator_test.dart:_Harness.manifest",
+      "name": "manifest",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/transcription_coordinator_test.dart:_Harness.engine",
+      "name": "engine",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/transcription_coordinator_test.dart:_Harness.container",
+      "name": "container",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:test/features/transcript/transcription_coordinator_test.dart:_Harness.coordinator",
+      "name": "coordinator",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:test/features/transcript/transcription_coordinator_test.dart:main",
+      "name": "main",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/transcription_coordinator_test.dart:_Harness",
+      "name": "_Harness",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/features/transcript/transcription_coordinator_test.dart:_DetailSessionRepository",
+      "name": "_DetailSessionRepository",
+      "filePath": "test/features/transcript/transcription_coordinator_test.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/support/fakes/fake_services.dart:FakeSessionRepository.search#1",
+      "name": "search",
+      "filePath": "test/support/fakes/fake_services.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/support/fakes/fake_services.dart:FakeSessionRepository",
+      "name": "FakeSessionRepository",
+      "filePath": "test/support/fakes/fake_services.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:test/support/harness.dart:LoquirisWidgetHarness",
+      "name": "LoquirisWidgetHarness",
+      "filePath": "test/support/harness.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:test/support/harness.dart:LoquirisWidgetHarness.pumpLoquirisApp#4",
+      "name": "pumpLoquirisApp",
+      "filePath": "test/support/harness.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Enum:tool/model_import/model_importer.dart:ModelImportFailureReason",
+      "name": "ModelImportFailureReason",
+      "filePath": "tool/model_import/model_importer.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:tool/model_import/model_importer_io.dart:_VerifiedModel.licenseFile",
+      "name": "licenseFile",
+      "filePath": "tool/model_import/model_importer_io.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/model_import/model_importer_io.dart:_verifyOne",
+      "name": "_verifyOne",
+      "filePath": "tool/model_import/model_importer_io.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/model_import/model_importer_io.dart:_stageAndPublish",
+      "name": "_stageAndPublish",
+      "filePath": "tool/model_import/model_importer_io.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/model_import/model_importer_io.dart:_copyFile",
+      "name": "_copyFile",
+      "filePath": "tool/model_import/model_importer_io.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/model_import/model_importer_io.dart:_sha256Of",
+      "name": "_sha256Of",
+      "filePath": "tool/model_import/model_importer_io.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/model_import/model_importer_io.dart:_writeIndex",
+      "name": "_writeIndex",
+      "filePath": "tool/model_import/model_importer_io.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/model_import/model_importer_io.dart:_publish",
+      "name": "_publish",
+      "filePath": "tool/model_import/model_importer_io.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/model_import/model_importer_io.dart:_failure",
+      "name": "_failure",
+      "filePath": "tool/model_import/model_importer_io.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:tool/model_import/model_importer_io.dart:_VerifiedModel",
+      "name": "_VerifiedModel",
+      "filePath": "tool/model_import/model_importer_io.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/release_privacy_policy.dart:validateReleaseManifest",
+      "name": "validateReleaseManifest",
+      "filePath": "tool/release_privacy_policy.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/release_privacy_policy.dart:validateMainManifest",
+      "name": "validateMainManifest",
+      "filePath": "tool/release_privacy_policy.dart",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:tool/release_privacy_policy.dart:validateBackupManifest",
+      "name": "validateBackupManifest",
+      "filePath": "tool/release_privacy_policy.dart",
+      "change_type": "touched"
+    }
+  ],
+  "affected_processes": [
+    {
+      "id": "proc_48_ondestroy",
+      "name": "OnDestroy → Released",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "onDestroy",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_97_handlestart",
+      "name": "HandleStart → Save",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "handleStart",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_98_handlestart",
+      "name": "HandleStart → NativeRecordingCommandReceipt",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "handleStart",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_99_handlestart",
+      "name": "HandleStart → ShouldStopAfterRejectedStart",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "handleStart",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_133_restore",
+      "name": "Restore → _DatabaseFileSnapshot",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "openMigratedDatabaseFile",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_134_restore",
+      "name": "Restore → Discard",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "openMigratedDatabaseFile",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_140_ondestroy",
+      "name": "OnDestroy → Release",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "onDestroy",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_141_ondestroy",
+      "name": "OnDestroy → Release",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "onDestroy",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_142_ondestroy",
+      "name": "OnDestroy → Release",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "onDestroy",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_159_onstartcommand",
+      "name": "OnStartCommand → ShouldStopAfterRejectedStart",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "handleStart",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_160_onstartcommand",
+      "name": "OnStartCommand → CheckSelfPermission",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "handleStart",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_180_main",
+      "name": "Main → DriftSessionRepository",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "DriftSessionRepository",
+          "step": 3
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_181_main",
+      "name": "Main → PrivateMeetingAudioStore",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_182_main",
+      "name": "Main → NativeRecordingInventorySynchronizer",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "NativeRecordingInventorySynchronizer",
+          "step": 3
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_183_main",
+      "name": "Main → DriftExportRecordRepository",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_192_main",
+      "name": "Main → BundledModelManifest",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_193_main",
+      "name": "Main → TryParse",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "tryParse",
+          "step": 3
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_207_main",
+      "name": "Main → _update",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "_update",
+          "step": 3
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_236_recordscontinuouslyf",
+      "name": "RecordsContinuouslyForOneHourAndFinalizesDurableSegments → Owns",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "owns",
+          "step": 3
+        }
+      ]
+    },
+    {
+      "id": "proc_265_main",
+      "name": "Main → DriftSessionRepository",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "DriftSessionRepository",
+          "step": 3
+        }
+      ]
+    },
+    {
+      "id": "proc_267_main",
+      "name": "Main → NativeRecordingInventorySynchronizer",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "NativeRecordingInventorySynchronizer",
+          "step": 3
+        }
+      ]
+    }
+  ]
+}

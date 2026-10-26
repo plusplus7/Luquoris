@@ -1499,6 +1499,3134 @@ class RecordingPreferencesCompanion
   }
 }
 
+class $MeetingProcessingSelectionsTable extends MeetingProcessingSelections
+    with
+        TableInfo<
+          $MeetingProcessingSelectionsTable,
+          MeetingProcessingSelection
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MeetingProcessingSelectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (created_at >= 0)',
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (updated_at >= created_at)',
+  );
+  static const VerificationMeta _rowRevisionMeta = const VerificationMeta(
+    'rowRevision',
+  );
+  @override
+  late final GeneratedColumn<int> rowRevision = GeneratedColumn<int>(
+    'row_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (row_revision >= 0)',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)',
+  );
+  static const VerificationMeta _meetingIdMeta = const VerificationMeta(
+    'meetingId',
+  );
+  @override
+  late final GeneratedColumn<String> meetingId = GeneratedColumn<String>(
+    'meeting_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES meetings (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _processingModeMeta = const VerificationMeta(
+    'processingMode',
+  );
+  @override
+  late final GeneratedColumn<String> processingMode = GeneratedColumn<String>(
+    'processing_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _liveBundleManifestJsonMeta =
+      const VerificationMeta('liveBundleManifestJson');
+  @override
+  late final GeneratedColumn<String> liveBundleManifestJson =
+      GeneratedColumn<String>(
+        'live_bundle_manifest_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _liveEngineVersionMeta = const VerificationMeta(
+    'liveEngineVersion',
+  );
+  @override
+  late final GeneratedColumn<String> liveEngineVersion =
+      GeneratedColumn<String>(
+        'live_engine_version',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _liveParametersJsonMeta =
+      const VerificationMeta('liveParametersJson');
+  @override
+  late final GeneratedColumn<String> liveParametersJson =
+      GeneratedColumn<String>(
+        'live_parameters_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _refinementBundleManifestJsonMeta =
+      const VerificationMeta('refinementBundleManifestJson');
+  @override
+  late final GeneratedColumn<String> refinementBundleManifestJson =
+      GeneratedColumn<String>(
+        'refinement_bundle_manifest_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _refinementEngineVersionMeta =
+      const VerificationMeta('refinementEngineVersion');
+  @override
+  late final GeneratedColumn<String> refinementEngineVersion =
+      GeneratedColumn<String>(
+        'refinement_engine_version',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _refinementParametersJsonMeta =
+      const VerificationMeta('refinementParametersJson');
+  @override
+  late final GeneratedColumn<String> refinementParametersJson =
+      GeneratedColumn<String>(
+        'refinement_parameters_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    meetingId,
+    processingMode,
+    liveBundleManifestJson,
+    liveEngineVersion,
+    liveParametersJson,
+    refinementBundleManifestJson,
+    refinementEngineVersion,
+    refinementParametersJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'meeting_processing_selections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MeetingProcessingSelection> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('row_revision')) {
+      context.handle(
+        _rowRevisionMeta,
+        rowRevision.isAcceptableOrUnknown(
+          data['row_revision']!,
+          _rowRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('meeting_id')) {
+      context.handle(
+        _meetingIdMeta,
+        meetingId.isAcceptableOrUnknown(data['meeting_id']!, _meetingIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_meetingIdMeta);
+    }
+    if (data.containsKey('processing_mode')) {
+      context.handle(
+        _processingModeMeta,
+        processingMode.isAcceptableOrUnknown(
+          data['processing_mode']!,
+          _processingModeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_processingModeMeta);
+    }
+    if (data.containsKey('live_bundle_manifest_json')) {
+      context.handle(
+        _liveBundleManifestJsonMeta,
+        liveBundleManifestJson.isAcceptableOrUnknown(
+          data['live_bundle_manifest_json']!,
+          _liveBundleManifestJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('live_engine_version')) {
+      context.handle(
+        _liveEngineVersionMeta,
+        liveEngineVersion.isAcceptableOrUnknown(
+          data['live_engine_version']!,
+          _liveEngineVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('live_parameters_json')) {
+      context.handle(
+        _liveParametersJsonMeta,
+        liveParametersJson.isAcceptableOrUnknown(
+          data['live_parameters_json']!,
+          _liveParametersJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('refinement_bundle_manifest_json')) {
+      context.handle(
+        _refinementBundleManifestJsonMeta,
+        refinementBundleManifestJson.isAcceptableOrUnknown(
+          data['refinement_bundle_manifest_json']!,
+          _refinementBundleManifestJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('refinement_engine_version')) {
+      context.handle(
+        _refinementEngineVersionMeta,
+        refinementEngineVersion.isAcceptableOrUnknown(
+          data['refinement_engine_version']!,
+          _refinementEngineVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('refinement_parameters_json')) {
+      context.handle(
+        _refinementParametersJsonMeta,
+        refinementParametersJson.isAcceptableOrUnknown(
+          data['refinement_parameters_json']!,
+          _refinementParametersJsonMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MeetingProcessingSelection map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MeetingProcessingSelection(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      rowRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_revision'],
+      )!,
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      meetingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}meeting_id'],
+      )!,
+      processingMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}processing_mode'],
+      )!,
+      liveBundleManifestJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}live_bundle_manifest_json'],
+      ),
+      liveEngineVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}live_engine_version'],
+      ),
+      liveParametersJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}live_parameters_json'],
+      ),
+      refinementBundleManifestJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}refinement_bundle_manifest_json'],
+      ),
+      refinementEngineVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}refinement_engine_version'],
+      ),
+      refinementParametersJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}refinement_parameters_json'],
+      ),
+    );
+  }
+
+  @override
+  $MeetingProcessingSelectionsTable createAlias(String alias) {
+    return $MeetingProcessingSelectionsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class MeetingProcessingSelection extends DataClass
+    implements Insertable<MeetingProcessingSelection> {
+  /// Stable UUID-style identifier.
+  final String id;
+
+  /// UTC creation instant in epoch milliseconds.
+  final int createdAt;
+
+  /// UTC last-update instant in epoch milliseconds.
+  final int updatedAt;
+
+  /// Monotonic row revision used by restore conflict handling.
+  final int rowRevision;
+
+  /// Whether this row is hidden by a soft delete.
+  final bool isDeleted;
+
+  /// UTC soft-delete instant in epoch milliseconds.
+  final int? deletedAt;
+
+  /// Meeting whose processing choice was made before microphone startup.
+  final String meetingId;
+
+  /// Explicit recordingOnly, postSession, or twoPass selection.
+  final String processingMode;
+
+  /// Exact streaming bundle snapshot, independent of the refinement bundle.
+  final String? liveBundleManifestJson;
+
+  /// Exact streaming runtime, including v1 manifests without runtime versions.
+  final String? liveEngineVersion;
+
+  /// Frozen streaming settings with an explicit parameterVersion.
+  final String? liveParametersJson;
+
+  /// Exact complete-pass bundle snapshot retained until durable finalization.
+  final String? refinementBundleManifestJson;
+
+  /// Exact complete-pass runtime; never silently substituted into live work.
+  final String? refinementEngineVersion;
+
+  /// Frozen complete-pass settings with an explicit parameterVersion.
+  final String? refinementParametersJson;
+  const MeetingProcessingSelection({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.rowRevision,
+    required this.isDeleted,
+    this.deletedAt,
+    required this.meetingId,
+    required this.processingMode,
+    this.liveBundleManifestJson,
+    this.liveEngineVersion,
+    this.liveParametersJson,
+    this.refinementBundleManifestJson,
+    this.refinementEngineVersion,
+    this.refinementParametersJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    map['row_revision'] = Variable<int>(rowRevision);
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['meeting_id'] = Variable<String>(meetingId);
+    map['processing_mode'] = Variable<String>(processingMode);
+    if (!nullToAbsent || liveBundleManifestJson != null) {
+      map['live_bundle_manifest_json'] = Variable<String>(
+        liveBundleManifestJson,
+      );
+    }
+    if (!nullToAbsent || liveEngineVersion != null) {
+      map['live_engine_version'] = Variable<String>(liveEngineVersion);
+    }
+    if (!nullToAbsent || liveParametersJson != null) {
+      map['live_parameters_json'] = Variable<String>(liveParametersJson);
+    }
+    if (!nullToAbsent || refinementBundleManifestJson != null) {
+      map['refinement_bundle_manifest_json'] = Variable<String>(
+        refinementBundleManifestJson,
+      );
+    }
+    if (!nullToAbsent || refinementEngineVersion != null) {
+      map['refinement_engine_version'] = Variable<String>(
+        refinementEngineVersion,
+      );
+    }
+    if (!nullToAbsent || refinementParametersJson != null) {
+      map['refinement_parameters_json'] = Variable<String>(
+        refinementParametersJson,
+      );
+    }
+    return map;
+  }
+
+  MeetingProcessingSelectionsCompanion toCompanion(bool nullToAbsent) {
+    return MeetingProcessingSelectionsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      rowRevision: Value(rowRevision),
+      isDeleted: Value(isDeleted),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      meetingId: Value(meetingId),
+      processingMode: Value(processingMode),
+      liveBundleManifestJson: liveBundleManifestJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(liveBundleManifestJson),
+      liveEngineVersion: liveEngineVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(liveEngineVersion),
+      liveParametersJson: liveParametersJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(liveParametersJson),
+      refinementBundleManifestJson:
+          refinementBundleManifestJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refinementBundleManifestJson),
+      refinementEngineVersion: refinementEngineVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refinementEngineVersion),
+      refinementParametersJson: refinementParametersJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refinementParametersJson),
+    );
+  }
+
+  factory MeetingProcessingSelection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MeetingProcessingSelection(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      rowRevision: serializer.fromJson<int>(json['rowRevision']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      meetingId: serializer.fromJson<String>(json['meetingId']),
+      processingMode: serializer.fromJson<String>(json['processingMode']),
+      liveBundleManifestJson: serializer.fromJson<String?>(
+        json['liveBundleManifestJson'],
+      ),
+      liveEngineVersion: serializer.fromJson<String?>(
+        json['liveEngineVersion'],
+      ),
+      liveParametersJson: serializer.fromJson<String?>(
+        json['liveParametersJson'],
+      ),
+      refinementBundleManifestJson: serializer.fromJson<String?>(
+        json['refinementBundleManifestJson'],
+      ),
+      refinementEngineVersion: serializer.fromJson<String?>(
+        json['refinementEngineVersion'],
+      ),
+      refinementParametersJson: serializer.fromJson<String?>(
+        json['refinementParametersJson'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'rowRevision': serializer.toJson<int>(rowRevision),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'meetingId': serializer.toJson<String>(meetingId),
+      'processingMode': serializer.toJson<String>(processingMode),
+      'liveBundleManifestJson': serializer.toJson<String?>(
+        liveBundleManifestJson,
+      ),
+      'liveEngineVersion': serializer.toJson<String?>(liveEngineVersion),
+      'liveParametersJson': serializer.toJson<String?>(liveParametersJson),
+      'refinementBundleManifestJson': serializer.toJson<String?>(
+        refinementBundleManifestJson,
+      ),
+      'refinementEngineVersion': serializer.toJson<String?>(
+        refinementEngineVersion,
+      ),
+      'refinementParametersJson': serializer.toJson<String?>(
+        refinementParametersJson,
+      ),
+    };
+  }
+
+  MeetingProcessingSelection copyWith({
+    String? id,
+    int? createdAt,
+    int? updatedAt,
+    int? rowRevision,
+    bool? isDeleted,
+    Value<int?> deletedAt = const Value.absent(),
+    String? meetingId,
+    String? processingMode,
+    Value<String?> liveBundleManifestJson = const Value.absent(),
+    Value<String?> liveEngineVersion = const Value.absent(),
+    Value<String?> liveParametersJson = const Value.absent(),
+    Value<String?> refinementBundleManifestJson = const Value.absent(),
+    Value<String?> refinementEngineVersion = const Value.absent(),
+    Value<String?> refinementParametersJson = const Value.absent(),
+  }) => MeetingProcessingSelection(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    rowRevision: rowRevision ?? this.rowRevision,
+    isDeleted: isDeleted ?? this.isDeleted,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    meetingId: meetingId ?? this.meetingId,
+    processingMode: processingMode ?? this.processingMode,
+    liveBundleManifestJson: liveBundleManifestJson.present
+        ? liveBundleManifestJson.value
+        : this.liveBundleManifestJson,
+    liveEngineVersion: liveEngineVersion.present
+        ? liveEngineVersion.value
+        : this.liveEngineVersion,
+    liveParametersJson: liveParametersJson.present
+        ? liveParametersJson.value
+        : this.liveParametersJson,
+    refinementBundleManifestJson: refinementBundleManifestJson.present
+        ? refinementBundleManifestJson.value
+        : this.refinementBundleManifestJson,
+    refinementEngineVersion: refinementEngineVersion.present
+        ? refinementEngineVersion.value
+        : this.refinementEngineVersion,
+    refinementParametersJson: refinementParametersJson.present
+        ? refinementParametersJson.value
+        : this.refinementParametersJson,
+  );
+  MeetingProcessingSelection copyWithCompanion(
+    MeetingProcessingSelectionsCompanion data,
+  ) {
+    return MeetingProcessingSelection(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      rowRevision: data.rowRevision.present
+          ? data.rowRevision.value
+          : this.rowRevision,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      meetingId: data.meetingId.present ? data.meetingId.value : this.meetingId,
+      processingMode: data.processingMode.present
+          ? data.processingMode.value
+          : this.processingMode,
+      liveBundleManifestJson: data.liveBundleManifestJson.present
+          ? data.liveBundleManifestJson.value
+          : this.liveBundleManifestJson,
+      liveEngineVersion: data.liveEngineVersion.present
+          ? data.liveEngineVersion.value
+          : this.liveEngineVersion,
+      liveParametersJson: data.liveParametersJson.present
+          ? data.liveParametersJson.value
+          : this.liveParametersJson,
+      refinementBundleManifestJson: data.refinementBundleManifestJson.present
+          ? data.refinementBundleManifestJson.value
+          : this.refinementBundleManifestJson,
+      refinementEngineVersion: data.refinementEngineVersion.present
+          ? data.refinementEngineVersion.value
+          : this.refinementEngineVersion,
+      refinementParametersJson: data.refinementParametersJson.present
+          ? data.refinementParametersJson.value
+          : this.refinementParametersJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MeetingProcessingSelection(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('processingMode: $processingMode, ')
+          ..write('liveBundleManifestJson: $liveBundleManifestJson, ')
+          ..write('liveEngineVersion: $liveEngineVersion, ')
+          ..write('liveParametersJson: $liveParametersJson, ')
+          ..write(
+            'refinementBundleManifestJson: $refinementBundleManifestJson, ',
+          )
+          ..write('refinementEngineVersion: $refinementEngineVersion, ')
+          ..write('refinementParametersJson: $refinementParametersJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    meetingId,
+    processingMode,
+    liveBundleManifestJson,
+    liveEngineVersion,
+    liveParametersJson,
+    refinementBundleManifestJson,
+    refinementEngineVersion,
+    refinementParametersJson,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MeetingProcessingSelection &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.rowRevision == this.rowRevision &&
+          other.isDeleted == this.isDeleted &&
+          other.deletedAt == this.deletedAt &&
+          other.meetingId == this.meetingId &&
+          other.processingMode == this.processingMode &&
+          other.liveBundleManifestJson == this.liveBundleManifestJson &&
+          other.liveEngineVersion == this.liveEngineVersion &&
+          other.liveParametersJson == this.liveParametersJson &&
+          other.refinementBundleManifestJson ==
+              this.refinementBundleManifestJson &&
+          other.refinementEngineVersion == this.refinementEngineVersion &&
+          other.refinementParametersJson == this.refinementParametersJson);
+}
+
+class MeetingProcessingSelectionsCompanion
+    extends UpdateCompanion<MeetingProcessingSelection> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowRevision;
+  final Value<bool> isDeleted;
+  final Value<int?> deletedAt;
+  final Value<String> meetingId;
+  final Value<String> processingMode;
+  final Value<String?> liveBundleManifestJson;
+  final Value<String?> liveEngineVersion;
+  final Value<String?> liveParametersJson;
+  final Value<String?> refinementBundleManifestJson;
+  final Value<String?> refinementEngineVersion;
+  final Value<String?> refinementParametersJson;
+  final Value<int> rowid;
+  const MeetingProcessingSelectionsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.meetingId = const Value.absent(),
+    this.processingMode = const Value.absent(),
+    this.liveBundleManifestJson = const Value.absent(),
+    this.liveEngineVersion = const Value.absent(),
+    this.liveParametersJson = const Value.absent(),
+    this.refinementBundleManifestJson = const Value.absent(),
+    this.refinementEngineVersion = const Value.absent(),
+    this.refinementParametersJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MeetingProcessingSelectionsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required int updatedAt,
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required String meetingId,
+    required String processingMode,
+    this.liveBundleManifestJson = const Value.absent(),
+    this.liveEngineVersion = const Value.absent(),
+    this.liveParametersJson = const Value.absent(),
+    this.refinementBundleManifestJson = const Value.absent(),
+    this.refinementEngineVersion = const Value.absent(),
+    this.refinementParametersJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       meetingId = Value(meetingId),
+       processingMode = Value(processingMode);
+  static Insertable<MeetingProcessingSelection> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowRevision,
+    Expression<bool>? isDeleted,
+    Expression<int>? deletedAt,
+    Expression<String>? meetingId,
+    Expression<String>? processingMode,
+    Expression<String>? liveBundleManifestJson,
+    Expression<String>? liveEngineVersion,
+    Expression<String>? liveParametersJson,
+    Expression<String>? refinementBundleManifestJson,
+    Expression<String>? refinementEngineVersion,
+    Expression<String>? refinementParametersJson,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowRevision != null) 'row_revision': rowRevision,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (meetingId != null) 'meeting_id': meetingId,
+      if (processingMode != null) 'processing_mode': processingMode,
+      if (liveBundleManifestJson != null)
+        'live_bundle_manifest_json': liveBundleManifestJson,
+      if (liveEngineVersion != null) 'live_engine_version': liveEngineVersion,
+      if (liveParametersJson != null)
+        'live_parameters_json': liveParametersJson,
+      if (refinementBundleManifestJson != null)
+        'refinement_bundle_manifest_json': refinementBundleManifestJson,
+      if (refinementEngineVersion != null)
+        'refinement_engine_version': refinementEngineVersion,
+      if (refinementParametersJson != null)
+        'refinement_parameters_json': refinementParametersJson,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MeetingProcessingSelectionsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowRevision,
+    Value<bool>? isDeleted,
+    Value<int?>? deletedAt,
+    Value<String>? meetingId,
+    Value<String>? processingMode,
+    Value<String?>? liveBundleManifestJson,
+    Value<String?>? liveEngineVersion,
+    Value<String?>? liveParametersJson,
+    Value<String?>? refinementBundleManifestJson,
+    Value<String?>? refinementEngineVersion,
+    Value<String?>? refinementParametersJson,
+    Value<int>? rowid,
+  }) {
+    return MeetingProcessingSelectionsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowRevision: rowRevision ?? this.rowRevision,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
+      meetingId: meetingId ?? this.meetingId,
+      processingMode: processingMode ?? this.processingMode,
+      liveBundleManifestJson:
+          liveBundleManifestJson ?? this.liveBundleManifestJson,
+      liveEngineVersion: liveEngineVersion ?? this.liveEngineVersion,
+      liveParametersJson: liveParametersJson ?? this.liveParametersJson,
+      refinementBundleManifestJson:
+          refinementBundleManifestJson ?? this.refinementBundleManifestJson,
+      refinementEngineVersion:
+          refinementEngineVersion ?? this.refinementEngineVersion,
+      refinementParametersJson:
+          refinementParametersJson ?? this.refinementParametersJson,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowRevision.present) {
+      map['row_revision'] = Variable<int>(rowRevision.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (meetingId.present) {
+      map['meeting_id'] = Variable<String>(meetingId.value);
+    }
+    if (processingMode.present) {
+      map['processing_mode'] = Variable<String>(processingMode.value);
+    }
+    if (liveBundleManifestJson.present) {
+      map['live_bundle_manifest_json'] = Variable<String>(
+        liveBundleManifestJson.value,
+      );
+    }
+    if (liveEngineVersion.present) {
+      map['live_engine_version'] = Variable<String>(liveEngineVersion.value);
+    }
+    if (liveParametersJson.present) {
+      map['live_parameters_json'] = Variable<String>(liveParametersJson.value);
+    }
+    if (refinementBundleManifestJson.present) {
+      map['refinement_bundle_manifest_json'] = Variable<String>(
+        refinementBundleManifestJson.value,
+      );
+    }
+    if (refinementEngineVersion.present) {
+      map['refinement_engine_version'] = Variable<String>(
+        refinementEngineVersion.value,
+      );
+    }
+    if (refinementParametersJson.present) {
+      map['refinement_parameters_json'] = Variable<String>(
+        refinementParametersJson.value,
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MeetingProcessingSelectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('processingMode: $processingMode, ')
+          ..write('liveBundleManifestJson: $liveBundleManifestJson, ')
+          ..write('liveEngineVersion: $liveEngineVersion, ')
+          ..write('liveParametersJson: $liveParametersJson, ')
+          ..write(
+            'refinementBundleManifestJson: $refinementBundleManifestJson, ',
+          )
+          ..write('refinementEngineVersion: $refinementEngineVersion, ')
+          ..write('refinementParametersJson: $refinementParametersJson, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RemoteTranscriptionTasksTable extends RemoteTranscriptionTasks
+    with TableInfo<$RemoteTranscriptionTasksTable, RemoteTranscriptionTask> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RemoteTranscriptionTasksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (created_at >= 0)',
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (updated_at >= created_at)',
+  );
+  static const VerificationMeta _rowRevisionMeta = const VerificationMeta(
+    'rowRevision',
+  );
+  @override
+  late final GeneratedColumn<int> rowRevision = GeneratedColumn<int>(
+    'row_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (row_revision >= 0)',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)',
+  );
+  static const VerificationMeta _meetingIdMeta = const VerificationMeta(
+    'meetingId',
+  );
+  @override
+  late final GeneratedColumn<String> meetingId = GeneratedColumn<String>(
+    'meeting_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES meetings (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _endpointMeta = const VerificationMeta(
+    'endpoint',
+  );
+  @override
+  late final GeneratedColumn<String> endpoint = GeneratedColumn<String>(
+    'endpoint',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _credentialRefMeta = const VerificationMeta(
+    'credentialRef',
+  );
+  @override
+  late final GeneratedColumn<String> credentialRef = GeneratedColumn<String>(
+    'credential_ref',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _profileIdMeta = const VerificationMeta(
+    'profileId',
+  );
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _requestJsonMeta = const VerificationMeta(
+    'requestJson',
+  );
+  @override
+  late final GeneratedColumn<String> requestJson = GeneratedColumn<String>(
+    'request_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _uploadIdMeta = const VerificationMeta(
+    'uploadId',
+  );
+  @override
+  late final GeneratedColumn<String> uploadId = GeneratedColumn<String>(
+    'upload_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _jobIdMeta = const VerificationMeta('jobId');
+  @override
+  late final GeneratedColumn<String> jobId = GeneratedColumn<String>(
+    'job_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _manifestDigestMeta = const VerificationMeta(
+    'manifestDigest',
+  );
+  @override
+  late final GeneratedColumn<String> manifestDigest = GeneratedColumn<String>(
+    'manifest_digest',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('waitingAudio'),
+  );
+  static const VerificationMeta _failureCodeMeta = const VerificationMeta(
+    'failureCode',
+  );
+  @override
+  late final GeneratedColumn<String> failureCode = GeneratedColumn<String>(
+    'failure_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _confirmedBytesMeta = const VerificationMeta(
+    'confirmedBytes',
+  );
+  @override
+  late final GeneratedColumn<int> confirmedBytes = GeneratedColumn<int>(
+    'confirmed_bytes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _totalBytesMeta = const VerificationMeta(
+    'totalBytes',
+  );
+  @override
+  late final GeneratedColumn<int> totalBytes = GeneratedColumn<int>(
+    'total_bytes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta(
+    'attempts',
+  );
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _retryAtUtcMsMeta = const VerificationMeta(
+    'retryAtUtcMs',
+  );
+  @override
+  late final GeneratedColumn<int> retryAtUtcMs = GeneratedColumn<int>(
+    'retry_at_utc_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtUtcMsMeta = const VerificationMeta(
+    'createdAtUtcMs',
+  );
+  @override
+  late final GeneratedColumn<int> createdAtUtcMs = GeneratedColumn<int>(
+    'created_at_utc_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMsMeta = const VerificationMeta(
+    'updatedAtUtcMs',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAtUtcMs = GeneratedColumn<int>(
+    'updated_at_utc_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _retentionSecondsMeta = const VerificationMeta(
+    'retentionSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> retentionSeconds = GeneratedColumn<int>(
+    'retention_seconds',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _expiresAtUtcMsMeta = const VerificationMeta(
+    'expiresAtUtcMs',
+  );
+  @override
+  late final GeneratedColumn<int> expiresAtUtcMs = GeneratedColumn<int>(
+    'expires_at_utc_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    meetingId,
+    endpoint,
+    credentialRef,
+    profileId,
+    requestJson,
+    uploadId,
+    jobId,
+    manifestDigest,
+    state,
+    failureCode,
+    confirmedBytes,
+    totalBytes,
+    attempts,
+    retryAtUtcMs,
+    createdAtUtcMs,
+    updatedAtUtcMs,
+    retentionSeconds,
+    expiresAtUtcMs,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'remote_transcription_tasks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RemoteTranscriptionTask> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('row_revision')) {
+      context.handle(
+        _rowRevisionMeta,
+        rowRevision.isAcceptableOrUnknown(
+          data['row_revision']!,
+          _rowRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('meeting_id')) {
+      context.handle(
+        _meetingIdMeta,
+        meetingId.isAcceptableOrUnknown(data['meeting_id']!, _meetingIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_meetingIdMeta);
+    }
+    if (data.containsKey('endpoint')) {
+      context.handle(
+        _endpointMeta,
+        endpoint.isAcceptableOrUnknown(data['endpoint']!, _endpointMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endpointMeta);
+    }
+    if (data.containsKey('credential_ref')) {
+      context.handle(
+        _credentialRefMeta,
+        credentialRef.isAcceptableOrUnknown(
+          data['credential_ref']!,
+          _credentialRefMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_credentialRefMeta);
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(
+        _profileIdMeta,
+        profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('request_json')) {
+      context.handle(
+        _requestJsonMeta,
+        requestJson.isAcceptableOrUnknown(
+          data['request_json']!,
+          _requestJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('upload_id')) {
+      context.handle(
+        _uploadIdMeta,
+        uploadId.isAcceptableOrUnknown(data['upload_id']!, _uploadIdMeta),
+      );
+    }
+    if (data.containsKey('job_id')) {
+      context.handle(
+        _jobIdMeta,
+        jobId.isAcceptableOrUnknown(data['job_id']!, _jobIdMeta),
+      );
+    }
+    if (data.containsKey('manifest_digest')) {
+      context.handle(
+        _manifestDigestMeta,
+        manifestDigest.isAcceptableOrUnknown(
+          data['manifest_digest']!,
+          _manifestDigestMeta,
+        ),
+      );
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    }
+    if (data.containsKey('failure_code')) {
+      context.handle(
+        _failureCodeMeta,
+        failureCode.isAcceptableOrUnknown(
+          data['failure_code']!,
+          _failureCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('confirmed_bytes')) {
+      context.handle(
+        _confirmedBytesMeta,
+        confirmedBytes.isAcceptableOrUnknown(
+          data['confirmed_bytes']!,
+          _confirmedBytesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('total_bytes')) {
+      context.handle(
+        _totalBytesMeta,
+        totalBytes.isAcceptableOrUnknown(data['total_bytes']!, _totalBytesMeta),
+      );
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(
+        _attemptsMeta,
+        attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    }
+    if (data.containsKey('retry_at_utc_ms')) {
+      context.handle(
+        _retryAtUtcMsMeta,
+        retryAtUtcMs.isAcceptableOrUnknown(
+          data['retry_at_utc_ms']!,
+          _retryAtUtcMsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at_utc_ms')) {
+      context.handle(
+        _createdAtUtcMsMeta,
+        createdAtUtcMs.isAcceptableOrUnknown(
+          data['created_at_utc_ms']!,
+          _createdAtUtcMsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMsMeta);
+    }
+    if (data.containsKey('updated_at_utc_ms')) {
+      context.handle(
+        _updatedAtUtcMsMeta,
+        updatedAtUtcMs.isAcceptableOrUnknown(
+          data['updated_at_utc_ms']!,
+          _updatedAtUtcMsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMsMeta);
+    }
+    if (data.containsKey('retention_seconds')) {
+      context.handle(
+        _retentionSecondsMeta,
+        retentionSeconds.isAcceptableOrUnknown(
+          data['retention_seconds']!,
+          _retentionSecondsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('expires_at_utc_ms')) {
+      context.handle(
+        _expiresAtUtcMsMeta,
+        expiresAtUtcMs.isAcceptableOrUnknown(
+          data['expires_at_utc_ms']!,
+          _expiresAtUtcMsMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RemoteTranscriptionTask map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RemoteTranscriptionTask(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      rowRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_revision'],
+      )!,
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      meetingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}meeting_id'],
+      )!,
+      endpoint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}endpoint'],
+      )!,
+      credentialRef: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}credential_ref'],
+      )!,
+      profileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_id'],
+      )!,
+      requestJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}request_json'],
+      ),
+      uploadId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}upload_id'],
+      ),
+      jobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}job_id'],
+      ),
+      manifestDigest: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}manifest_digest'],
+      ),
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+      failureCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}failure_code'],
+      ),
+      confirmedBytes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}confirmed_bytes'],
+      )!,
+      totalBytes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_bytes'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      retryAtUtcMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retry_at_utc_ms'],
+      )!,
+      createdAtUtcMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at_utc_ms'],
+      )!,
+      updatedAtUtcMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at_utc_ms'],
+      )!,
+      retentionSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retention_seconds'],
+      ),
+      expiresAtUtcMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expires_at_utc_ms'],
+      ),
+    );
+  }
+
+  @override
+  $RemoteTranscriptionTasksTable createAlias(String alias) {
+    return $RemoteTranscriptionTasksTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class RemoteTranscriptionTask extends DataClass
+    implements Insertable<RemoteTranscriptionTask> {
+  /// Stable local run and request identity, never regenerated for network retries.
+  final String id;
+
+  /// UTC creation instant in epoch milliseconds.
+  final int createdAt;
+
+  /// UTC last-update instant in epoch milliseconds.
+  final int updatedAt;
+
+  /// Monotonic row revision used by restore conflict handling.
+  final int rowRevision;
+
+  /// Whether this row is hidden by a soft delete.
+  final bool isDeleted;
+
+  /// UTC soft-delete instant in epoch milliseconds.
+  final int? deletedAt;
+
+  /// Local authoritative meeting.
+  final String meetingId;
+
+  /// Immutable destination chosen by the user for this run.
+  final String endpoint;
+
+  /// Opaque reference to a Keystore-encrypted credential outside this database.
+  final String credentialRef;
+
+  /// Server profile frozen for this run.
+  final String profileId;
+
+  /// Canonical sealed-upload declaration, populated after recording finalization.
+  final String? requestJson;
+
+  /// Server-side resumable upload identity.
+  final String? uploadId;
+
+  /// Server-side transcription job identity.
+  final String? jobId;
+
+  /// Hash of the frozen wire manifest, distinct from the native journal hash.
+  final String? manifestDigest;
+
+  /// Durable synchronization state observed by foreground and background work.
+  final String state;
+
+  /// Typed failure code without text, paths or credentials.
+  final String? failureCode;
+
+  /// Server-confirmed bytes across every original file.
+  final int confirmedBytes;
+
+  /// Declared committed bytes, independent of retry count.
+  final int totalBytes;
+
+  /// Consecutive transport attempts since the last successful synchronization.
+  final int attempts;
+
+  /// Earliest UTC epoch millisecond at which background work may retry.
+  final int retryAtUtcMs;
+
+  /// UTC creation instant in milliseconds.
+  final int createdAtUtcMs;
+
+  /// UTC last durable observation in milliseconds.
+  final int updatedAtUtcMs;
+
+  /// Server-advertised retention duration in seconds.
+  final int? retentionSeconds;
+
+  /// Actual remote retention deadline when known.
+  final int? expiresAtUtcMs;
+  const RemoteTranscriptionTask({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.rowRevision,
+    required this.isDeleted,
+    this.deletedAt,
+    required this.meetingId,
+    required this.endpoint,
+    required this.credentialRef,
+    required this.profileId,
+    this.requestJson,
+    this.uploadId,
+    this.jobId,
+    this.manifestDigest,
+    required this.state,
+    this.failureCode,
+    required this.confirmedBytes,
+    required this.totalBytes,
+    required this.attempts,
+    required this.retryAtUtcMs,
+    required this.createdAtUtcMs,
+    required this.updatedAtUtcMs,
+    this.retentionSeconds,
+    this.expiresAtUtcMs,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    map['row_revision'] = Variable<int>(rowRevision);
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['meeting_id'] = Variable<String>(meetingId);
+    map['endpoint'] = Variable<String>(endpoint);
+    map['credential_ref'] = Variable<String>(credentialRef);
+    map['profile_id'] = Variable<String>(profileId);
+    if (!nullToAbsent || requestJson != null) {
+      map['request_json'] = Variable<String>(requestJson);
+    }
+    if (!nullToAbsent || uploadId != null) {
+      map['upload_id'] = Variable<String>(uploadId);
+    }
+    if (!nullToAbsent || jobId != null) {
+      map['job_id'] = Variable<String>(jobId);
+    }
+    if (!nullToAbsent || manifestDigest != null) {
+      map['manifest_digest'] = Variable<String>(manifestDigest);
+    }
+    map['state'] = Variable<String>(state);
+    if (!nullToAbsent || failureCode != null) {
+      map['failure_code'] = Variable<String>(failureCode);
+    }
+    map['confirmed_bytes'] = Variable<int>(confirmedBytes);
+    map['total_bytes'] = Variable<int>(totalBytes);
+    map['attempts'] = Variable<int>(attempts);
+    map['retry_at_utc_ms'] = Variable<int>(retryAtUtcMs);
+    map['created_at_utc_ms'] = Variable<int>(createdAtUtcMs);
+    map['updated_at_utc_ms'] = Variable<int>(updatedAtUtcMs);
+    if (!nullToAbsent || retentionSeconds != null) {
+      map['retention_seconds'] = Variable<int>(retentionSeconds);
+    }
+    if (!nullToAbsent || expiresAtUtcMs != null) {
+      map['expires_at_utc_ms'] = Variable<int>(expiresAtUtcMs);
+    }
+    return map;
+  }
+
+  RemoteTranscriptionTasksCompanion toCompanion(bool nullToAbsent) {
+    return RemoteTranscriptionTasksCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      rowRevision: Value(rowRevision),
+      isDeleted: Value(isDeleted),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      meetingId: Value(meetingId),
+      endpoint: Value(endpoint),
+      credentialRef: Value(credentialRef),
+      profileId: Value(profileId),
+      requestJson: requestJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(requestJson),
+      uploadId: uploadId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(uploadId),
+      jobId: jobId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobId),
+      manifestDigest: manifestDigest == null && nullToAbsent
+          ? const Value.absent()
+          : Value(manifestDigest),
+      state: Value(state),
+      failureCode: failureCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(failureCode),
+      confirmedBytes: Value(confirmedBytes),
+      totalBytes: Value(totalBytes),
+      attempts: Value(attempts),
+      retryAtUtcMs: Value(retryAtUtcMs),
+      createdAtUtcMs: Value(createdAtUtcMs),
+      updatedAtUtcMs: Value(updatedAtUtcMs),
+      retentionSeconds: retentionSeconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(retentionSeconds),
+      expiresAtUtcMs: expiresAtUtcMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expiresAtUtcMs),
+    );
+  }
+
+  factory RemoteTranscriptionTask.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RemoteTranscriptionTask(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      rowRevision: serializer.fromJson<int>(json['rowRevision']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      meetingId: serializer.fromJson<String>(json['meetingId']),
+      endpoint: serializer.fromJson<String>(json['endpoint']),
+      credentialRef: serializer.fromJson<String>(json['credentialRef']),
+      profileId: serializer.fromJson<String>(json['profileId']),
+      requestJson: serializer.fromJson<String?>(json['requestJson']),
+      uploadId: serializer.fromJson<String?>(json['uploadId']),
+      jobId: serializer.fromJson<String?>(json['jobId']),
+      manifestDigest: serializer.fromJson<String?>(json['manifestDigest']),
+      state: serializer.fromJson<String>(json['state']),
+      failureCode: serializer.fromJson<String?>(json['failureCode']),
+      confirmedBytes: serializer.fromJson<int>(json['confirmedBytes']),
+      totalBytes: serializer.fromJson<int>(json['totalBytes']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      retryAtUtcMs: serializer.fromJson<int>(json['retryAtUtcMs']),
+      createdAtUtcMs: serializer.fromJson<int>(json['createdAtUtcMs']),
+      updatedAtUtcMs: serializer.fromJson<int>(json['updatedAtUtcMs']),
+      retentionSeconds: serializer.fromJson<int?>(json['retentionSeconds']),
+      expiresAtUtcMs: serializer.fromJson<int?>(json['expiresAtUtcMs']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'rowRevision': serializer.toJson<int>(rowRevision),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'meetingId': serializer.toJson<String>(meetingId),
+      'endpoint': serializer.toJson<String>(endpoint),
+      'credentialRef': serializer.toJson<String>(credentialRef),
+      'profileId': serializer.toJson<String>(profileId),
+      'requestJson': serializer.toJson<String?>(requestJson),
+      'uploadId': serializer.toJson<String?>(uploadId),
+      'jobId': serializer.toJson<String?>(jobId),
+      'manifestDigest': serializer.toJson<String?>(manifestDigest),
+      'state': serializer.toJson<String>(state),
+      'failureCode': serializer.toJson<String?>(failureCode),
+      'confirmedBytes': serializer.toJson<int>(confirmedBytes),
+      'totalBytes': serializer.toJson<int>(totalBytes),
+      'attempts': serializer.toJson<int>(attempts),
+      'retryAtUtcMs': serializer.toJson<int>(retryAtUtcMs),
+      'createdAtUtcMs': serializer.toJson<int>(createdAtUtcMs),
+      'updatedAtUtcMs': serializer.toJson<int>(updatedAtUtcMs),
+      'retentionSeconds': serializer.toJson<int?>(retentionSeconds),
+      'expiresAtUtcMs': serializer.toJson<int?>(expiresAtUtcMs),
+    };
+  }
+
+  RemoteTranscriptionTask copyWith({
+    String? id,
+    int? createdAt,
+    int? updatedAt,
+    int? rowRevision,
+    bool? isDeleted,
+    Value<int?> deletedAt = const Value.absent(),
+    String? meetingId,
+    String? endpoint,
+    String? credentialRef,
+    String? profileId,
+    Value<String?> requestJson = const Value.absent(),
+    Value<String?> uploadId = const Value.absent(),
+    Value<String?> jobId = const Value.absent(),
+    Value<String?> manifestDigest = const Value.absent(),
+    String? state,
+    Value<String?> failureCode = const Value.absent(),
+    int? confirmedBytes,
+    int? totalBytes,
+    int? attempts,
+    int? retryAtUtcMs,
+    int? createdAtUtcMs,
+    int? updatedAtUtcMs,
+    Value<int?> retentionSeconds = const Value.absent(),
+    Value<int?> expiresAtUtcMs = const Value.absent(),
+  }) => RemoteTranscriptionTask(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    rowRevision: rowRevision ?? this.rowRevision,
+    isDeleted: isDeleted ?? this.isDeleted,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    meetingId: meetingId ?? this.meetingId,
+    endpoint: endpoint ?? this.endpoint,
+    credentialRef: credentialRef ?? this.credentialRef,
+    profileId: profileId ?? this.profileId,
+    requestJson: requestJson.present ? requestJson.value : this.requestJson,
+    uploadId: uploadId.present ? uploadId.value : this.uploadId,
+    jobId: jobId.present ? jobId.value : this.jobId,
+    manifestDigest: manifestDigest.present
+        ? manifestDigest.value
+        : this.manifestDigest,
+    state: state ?? this.state,
+    failureCode: failureCode.present ? failureCode.value : this.failureCode,
+    confirmedBytes: confirmedBytes ?? this.confirmedBytes,
+    totalBytes: totalBytes ?? this.totalBytes,
+    attempts: attempts ?? this.attempts,
+    retryAtUtcMs: retryAtUtcMs ?? this.retryAtUtcMs,
+    createdAtUtcMs: createdAtUtcMs ?? this.createdAtUtcMs,
+    updatedAtUtcMs: updatedAtUtcMs ?? this.updatedAtUtcMs,
+    retentionSeconds: retentionSeconds.present
+        ? retentionSeconds.value
+        : this.retentionSeconds,
+    expiresAtUtcMs: expiresAtUtcMs.present
+        ? expiresAtUtcMs.value
+        : this.expiresAtUtcMs,
+  );
+  RemoteTranscriptionTask copyWithCompanion(
+    RemoteTranscriptionTasksCompanion data,
+  ) {
+    return RemoteTranscriptionTask(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      rowRevision: data.rowRevision.present
+          ? data.rowRevision.value
+          : this.rowRevision,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      meetingId: data.meetingId.present ? data.meetingId.value : this.meetingId,
+      endpoint: data.endpoint.present ? data.endpoint.value : this.endpoint,
+      credentialRef: data.credentialRef.present
+          ? data.credentialRef.value
+          : this.credentialRef,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      requestJson: data.requestJson.present
+          ? data.requestJson.value
+          : this.requestJson,
+      uploadId: data.uploadId.present ? data.uploadId.value : this.uploadId,
+      jobId: data.jobId.present ? data.jobId.value : this.jobId,
+      manifestDigest: data.manifestDigest.present
+          ? data.manifestDigest.value
+          : this.manifestDigest,
+      state: data.state.present ? data.state.value : this.state,
+      failureCode: data.failureCode.present
+          ? data.failureCode.value
+          : this.failureCode,
+      confirmedBytes: data.confirmedBytes.present
+          ? data.confirmedBytes.value
+          : this.confirmedBytes,
+      totalBytes: data.totalBytes.present
+          ? data.totalBytes.value
+          : this.totalBytes,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      retryAtUtcMs: data.retryAtUtcMs.present
+          ? data.retryAtUtcMs.value
+          : this.retryAtUtcMs,
+      createdAtUtcMs: data.createdAtUtcMs.present
+          ? data.createdAtUtcMs.value
+          : this.createdAtUtcMs,
+      updatedAtUtcMs: data.updatedAtUtcMs.present
+          ? data.updatedAtUtcMs.value
+          : this.updatedAtUtcMs,
+      retentionSeconds: data.retentionSeconds.present
+          ? data.retentionSeconds.value
+          : this.retentionSeconds,
+      expiresAtUtcMs: data.expiresAtUtcMs.present
+          ? data.expiresAtUtcMs.value
+          : this.expiresAtUtcMs,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RemoteTranscriptionTask(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('endpoint: $endpoint, ')
+          ..write('credentialRef: $credentialRef, ')
+          ..write('profileId: $profileId, ')
+          ..write('requestJson: $requestJson, ')
+          ..write('uploadId: $uploadId, ')
+          ..write('jobId: $jobId, ')
+          ..write('manifestDigest: $manifestDigest, ')
+          ..write('state: $state, ')
+          ..write('failureCode: $failureCode, ')
+          ..write('confirmedBytes: $confirmedBytes, ')
+          ..write('totalBytes: $totalBytes, ')
+          ..write('attempts: $attempts, ')
+          ..write('retryAtUtcMs: $retryAtUtcMs, ')
+          ..write('createdAtUtcMs: $createdAtUtcMs, ')
+          ..write('updatedAtUtcMs: $updatedAtUtcMs, ')
+          ..write('retentionSeconds: $retentionSeconds, ')
+          ..write('expiresAtUtcMs: $expiresAtUtcMs')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    meetingId,
+    endpoint,
+    credentialRef,
+    profileId,
+    requestJson,
+    uploadId,
+    jobId,
+    manifestDigest,
+    state,
+    failureCode,
+    confirmedBytes,
+    totalBytes,
+    attempts,
+    retryAtUtcMs,
+    createdAtUtcMs,
+    updatedAtUtcMs,
+    retentionSeconds,
+    expiresAtUtcMs,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RemoteTranscriptionTask &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.rowRevision == this.rowRevision &&
+          other.isDeleted == this.isDeleted &&
+          other.deletedAt == this.deletedAt &&
+          other.meetingId == this.meetingId &&
+          other.endpoint == this.endpoint &&
+          other.credentialRef == this.credentialRef &&
+          other.profileId == this.profileId &&
+          other.requestJson == this.requestJson &&
+          other.uploadId == this.uploadId &&
+          other.jobId == this.jobId &&
+          other.manifestDigest == this.manifestDigest &&
+          other.state == this.state &&
+          other.failureCode == this.failureCode &&
+          other.confirmedBytes == this.confirmedBytes &&
+          other.totalBytes == this.totalBytes &&
+          other.attempts == this.attempts &&
+          other.retryAtUtcMs == this.retryAtUtcMs &&
+          other.createdAtUtcMs == this.createdAtUtcMs &&
+          other.updatedAtUtcMs == this.updatedAtUtcMs &&
+          other.retentionSeconds == this.retentionSeconds &&
+          other.expiresAtUtcMs == this.expiresAtUtcMs);
+}
+
+class RemoteTranscriptionTasksCompanion
+    extends UpdateCompanion<RemoteTranscriptionTask> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowRevision;
+  final Value<bool> isDeleted;
+  final Value<int?> deletedAt;
+  final Value<String> meetingId;
+  final Value<String> endpoint;
+  final Value<String> credentialRef;
+  final Value<String> profileId;
+  final Value<String?> requestJson;
+  final Value<String?> uploadId;
+  final Value<String?> jobId;
+  final Value<String?> manifestDigest;
+  final Value<String> state;
+  final Value<String?> failureCode;
+  final Value<int> confirmedBytes;
+  final Value<int> totalBytes;
+  final Value<int> attempts;
+  final Value<int> retryAtUtcMs;
+  final Value<int> createdAtUtcMs;
+  final Value<int> updatedAtUtcMs;
+  final Value<int?> retentionSeconds;
+  final Value<int?> expiresAtUtcMs;
+  final Value<int> rowid;
+  const RemoteTranscriptionTasksCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.meetingId = const Value.absent(),
+    this.endpoint = const Value.absent(),
+    this.credentialRef = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.requestJson = const Value.absent(),
+    this.uploadId = const Value.absent(),
+    this.jobId = const Value.absent(),
+    this.manifestDigest = const Value.absent(),
+    this.state = const Value.absent(),
+    this.failureCode = const Value.absent(),
+    this.confirmedBytes = const Value.absent(),
+    this.totalBytes = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.retryAtUtcMs = const Value.absent(),
+    this.createdAtUtcMs = const Value.absent(),
+    this.updatedAtUtcMs = const Value.absent(),
+    this.retentionSeconds = const Value.absent(),
+    this.expiresAtUtcMs = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RemoteTranscriptionTasksCompanion.insert({
+    required String id,
+    required int createdAt,
+    required int updatedAt,
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required String meetingId,
+    required String endpoint,
+    required String credentialRef,
+    required String profileId,
+    this.requestJson = const Value.absent(),
+    this.uploadId = const Value.absent(),
+    this.jobId = const Value.absent(),
+    this.manifestDigest = const Value.absent(),
+    this.state = const Value.absent(),
+    this.failureCode = const Value.absent(),
+    this.confirmedBytes = const Value.absent(),
+    this.totalBytes = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.retryAtUtcMs = const Value.absent(),
+    required int createdAtUtcMs,
+    required int updatedAtUtcMs,
+    this.retentionSeconds = const Value.absent(),
+    this.expiresAtUtcMs = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       meetingId = Value(meetingId),
+       endpoint = Value(endpoint),
+       credentialRef = Value(credentialRef),
+       profileId = Value(profileId),
+       createdAtUtcMs = Value(createdAtUtcMs),
+       updatedAtUtcMs = Value(updatedAtUtcMs);
+  static Insertable<RemoteTranscriptionTask> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowRevision,
+    Expression<bool>? isDeleted,
+    Expression<int>? deletedAt,
+    Expression<String>? meetingId,
+    Expression<String>? endpoint,
+    Expression<String>? credentialRef,
+    Expression<String>? profileId,
+    Expression<String>? requestJson,
+    Expression<String>? uploadId,
+    Expression<String>? jobId,
+    Expression<String>? manifestDigest,
+    Expression<String>? state,
+    Expression<String>? failureCode,
+    Expression<int>? confirmedBytes,
+    Expression<int>? totalBytes,
+    Expression<int>? attempts,
+    Expression<int>? retryAtUtcMs,
+    Expression<int>? createdAtUtcMs,
+    Expression<int>? updatedAtUtcMs,
+    Expression<int>? retentionSeconds,
+    Expression<int>? expiresAtUtcMs,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowRevision != null) 'row_revision': rowRevision,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (meetingId != null) 'meeting_id': meetingId,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (credentialRef != null) 'credential_ref': credentialRef,
+      if (profileId != null) 'profile_id': profileId,
+      if (requestJson != null) 'request_json': requestJson,
+      if (uploadId != null) 'upload_id': uploadId,
+      if (jobId != null) 'job_id': jobId,
+      if (manifestDigest != null) 'manifest_digest': manifestDigest,
+      if (state != null) 'state': state,
+      if (failureCode != null) 'failure_code': failureCode,
+      if (confirmedBytes != null) 'confirmed_bytes': confirmedBytes,
+      if (totalBytes != null) 'total_bytes': totalBytes,
+      if (attempts != null) 'attempts': attempts,
+      if (retryAtUtcMs != null) 'retry_at_utc_ms': retryAtUtcMs,
+      if (createdAtUtcMs != null) 'created_at_utc_ms': createdAtUtcMs,
+      if (updatedAtUtcMs != null) 'updated_at_utc_ms': updatedAtUtcMs,
+      if (retentionSeconds != null) 'retention_seconds': retentionSeconds,
+      if (expiresAtUtcMs != null) 'expires_at_utc_ms': expiresAtUtcMs,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RemoteTranscriptionTasksCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowRevision,
+    Value<bool>? isDeleted,
+    Value<int?>? deletedAt,
+    Value<String>? meetingId,
+    Value<String>? endpoint,
+    Value<String>? credentialRef,
+    Value<String>? profileId,
+    Value<String?>? requestJson,
+    Value<String?>? uploadId,
+    Value<String?>? jobId,
+    Value<String?>? manifestDigest,
+    Value<String>? state,
+    Value<String?>? failureCode,
+    Value<int>? confirmedBytes,
+    Value<int>? totalBytes,
+    Value<int>? attempts,
+    Value<int>? retryAtUtcMs,
+    Value<int>? createdAtUtcMs,
+    Value<int>? updatedAtUtcMs,
+    Value<int?>? retentionSeconds,
+    Value<int?>? expiresAtUtcMs,
+    Value<int>? rowid,
+  }) {
+    return RemoteTranscriptionTasksCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowRevision: rowRevision ?? this.rowRevision,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
+      meetingId: meetingId ?? this.meetingId,
+      endpoint: endpoint ?? this.endpoint,
+      credentialRef: credentialRef ?? this.credentialRef,
+      profileId: profileId ?? this.profileId,
+      requestJson: requestJson ?? this.requestJson,
+      uploadId: uploadId ?? this.uploadId,
+      jobId: jobId ?? this.jobId,
+      manifestDigest: manifestDigest ?? this.manifestDigest,
+      state: state ?? this.state,
+      failureCode: failureCode ?? this.failureCode,
+      confirmedBytes: confirmedBytes ?? this.confirmedBytes,
+      totalBytes: totalBytes ?? this.totalBytes,
+      attempts: attempts ?? this.attempts,
+      retryAtUtcMs: retryAtUtcMs ?? this.retryAtUtcMs,
+      createdAtUtcMs: createdAtUtcMs ?? this.createdAtUtcMs,
+      updatedAtUtcMs: updatedAtUtcMs ?? this.updatedAtUtcMs,
+      retentionSeconds: retentionSeconds ?? this.retentionSeconds,
+      expiresAtUtcMs: expiresAtUtcMs ?? this.expiresAtUtcMs,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowRevision.present) {
+      map['row_revision'] = Variable<int>(rowRevision.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (meetingId.present) {
+      map['meeting_id'] = Variable<String>(meetingId.value);
+    }
+    if (endpoint.present) {
+      map['endpoint'] = Variable<String>(endpoint.value);
+    }
+    if (credentialRef.present) {
+      map['credential_ref'] = Variable<String>(credentialRef.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (requestJson.present) {
+      map['request_json'] = Variable<String>(requestJson.value);
+    }
+    if (uploadId.present) {
+      map['upload_id'] = Variable<String>(uploadId.value);
+    }
+    if (jobId.present) {
+      map['job_id'] = Variable<String>(jobId.value);
+    }
+    if (manifestDigest.present) {
+      map['manifest_digest'] = Variable<String>(manifestDigest.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (failureCode.present) {
+      map['failure_code'] = Variable<String>(failureCode.value);
+    }
+    if (confirmedBytes.present) {
+      map['confirmed_bytes'] = Variable<int>(confirmedBytes.value);
+    }
+    if (totalBytes.present) {
+      map['total_bytes'] = Variable<int>(totalBytes.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (retryAtUtcMs.present) {
+      map['retry_at_utc_ms'] = Variable<int>(retryAtUtcMs.value);
+    }
+    if (createdAtUtcMs.present) {
+      map['created_at_utc_ms'] = Variable<int>(createdAtUtcMs.value);
+    }
+    if (updatedAtUtcMs.present) {
+      map['updated_at_utc_ms'] = Variable<int>(updatedAtUtcMs.value);
+    }
+    if (retentionSeconds.present) {
+      map['retention_seconds'] = Variable<int>(retentionSeconds.value);
+    }
+    if (expiresAtUtcMs.present) {
+      map['expires_at_utc_ms'] = Variable<int>(expiresAtUtcMs.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RemoteTranscriptionTasksCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('endpoint: $endpoint, ')
+          ..write('credentialRef: $credentialRef, ')
+          ..write('profileId: $profileId, ')
+          ..write('requestJson: $requestJson, ')
+          ..write('uploadId: $uploadId, ')
+          ..write('jobId: $jobId, ')
+          ..write('manifestDigest: $manifestDigest, ')
+          ..write('state: $state, ')
+          ..write('failureCode: $failureCode, ')
+          ..write('confirmedBytes: $confirmedBytes, ')
+          ..write('totalBytes: $totalBytes, ')
+          ..write('attempts: $attempts, ')
+          ..write('retryAtUtcMs: $retryAtUtcMs, ')
+          ..write('createdAtUtcMs: $createdAtUtcMs, ')
+          ..write('updatedAtUtcMs: $updatedAtUtcMs, ')
+          ..write('retentionSeconds: $retentionSeconds, ')
+          ..write('expiresAtUtcMs: $expiresAtUtcMs, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RemoteTranscriptVersionsTable extends RemoteTranscriptVersions
+    with TableInfo<$RemoteTranscriptVersionsTable, RemoteTranscriptVersion> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RemoteTranscriptVersionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (created_at >= 0)',
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (updated_at >= created_at)',
+  );
+  static const VerificationMeta _rowRevisionMeta = const VerificationMeta(
+    'rowRevision',
+  );
+  @override
+  late final GeneratedColumn<int> rowRevision = GeneratedColumn<int>(
+    'row_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (row_revision >= 0)',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)',
+  );
+  static const VerificationMeta _meetingIdMeta = const VerificationMeta(
+    'meetingId',
+  );
+  @override
+  late final GeneratedColumn<String> meetingId = GeneratedColumn<String>(
+    'meeting_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES meetings (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _sourceMeetingIdMeta = const VerificationMeta(
+    'sourceMeetingId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceMeetingId = GeneratedColumn<String>(
+    'source_meeting_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sourceRunIdMeta = const VerificationMeta(
+    'sourceRunId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceRunId = GeneratedColumn<String>(
+    'source_run_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _resultJsonMeta = const VerificationMeta(
+    'resultJson',
+  );
+  @override
+  late final GeneratedColumn<String> resultJson = GeneratedColumn<String>(
+    'result_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedTextMeta = const VerificationMeta(
+    'editedText',
+  );
+  @override
+  late final GeneratedColumn<String> editedText = GeneratedColumn<String>(
+    'edited_text',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtUtcMsMeta = const VerificationMeta(
+    'createdAtUtcMs',
+  );
+  @override
+  late final GeneratedColumn<int> createdAtUtcMs = GeneratedColumn<int>(
+    'created_at_utc_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    meetingId,
+    sourceMeetingId,
+    sourceRunId,
+    resultJson,
+    editedText,
+    createdAtUtcMs,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'remote_transcript_versions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RemoteTranscriptVersion> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('row_revision')) {
+      context.handle(
+        _rowRevisionMeta,
+        rowRevision.isAcceptableOrUnknown(
+          data['row_revision']!,
+          _rowRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('meeting_id')) {
+      context.handle(
+        _meetingIdMeta,
+        meetingId.isAcceptableOrUnknown(data['meeting_id']!, _meetingIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_meetingIdMeta);
+    }
+    if (data.containsKey('source_meeting_id')) {
+      context.handle(
+        _sourceMeetingIdMeta,
+        sourceMeetingId.isAcceptableOrUnknown(
+          data['source_meeting_id']!,
+          _sourceMeetingIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('source_run_id')) {
+      context.handle(
+        _sourceRunIdMeta,
+        sourceRunId.isAcceptableOrUnknown(
+          data['source_run_id']!,
+          _sourceRunIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('result_json')) {
+      context.handle(
+        _resultJsonMeta,
+        resultJson.isAcceptableOrUnknown(data['result_json']!, _resultJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_resultJsonMeta);
+    }
+    if (data.containsKey('edited_text')) {
+      context.handle(
+        _editedTextMeta,
+        editedText.isAcceptableOrUnknown(data['edited_text']!, _editedTextMeta),
+      );
+    }
+    if (data.containsKey('created_at_utc_ms')) {
+      context.handle(
+        _createdAtUtcMsMeta,
+        createdAtUtcMs.isAcceptableOrUnknown(
+          data['created_at_utc_ms']!,
+          _createdAtUtcMsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMsMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RemoteTranscriptVersion map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RemoteTranscriptVersion(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      rowRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_revision'],
+      )!,
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      meetingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}meeting_id'],
+      )!,
+      sourceMeetingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_meeting_id'],
+      ),
+      sourceRunId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_run_id'],
+      ),
+      resultJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}result_json'],
+      )!,
+      editedText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}edited_text'],
+      ),
+      createdAtUtcMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at_utc_ms'],
+      )!,
+    );
+  }
+
+  @override
+  $RemoteTranscriptVersionsTable createAlias(String alias) {
+    return $RemoteTranscriptVersionsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class RemoteTranscriptVersion extends DataClass
+    implements Insertable<RemoteTranscriptVersion> {
+  /// Stable local run identity, also sent to the server.
+  final String id;
+
+  /// UTC creation instant in epoch milliseconds.
+  final int createdAt;
+
+  /// UTC last-update instant in epoch milliseconds.
+  final int updatedAt;
+
+  /// Monotonic row revision used by restore conflict handling.
+  final int rowRevision;
+
+  /// Whether this row is hidden by a soft delete.
+  final bool isDeleted;
+
+  /// UTC soft-delete instant in epoch milliseconds.
+  final int? deletedAt;
+
+  /// Owning meeting, without linking a fictitious bundled model.
+  final String meetingId;
+
+  /// Original meeting identity retained when restore creates a local copy.
+  final String? sourceMeetingId;
+
+  /// Original run identity retained when restore creates a local copy.
+  final String? sourceRunId;
+
+  /// Validated versioned server result including actual model provenance.
+  final String resultJson;
+
+  /// User-authored replacement text; null preserves the machine output.
+  final String? editedText;
+
+  /// UTC import instant in milliseconds.
+  final int createdAtUtcMs;
+  const RemoteTranscriptVersion({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.rowRevision,
+    required this.isDeleted,
+    this.deletedAt,
+    required this.meetingId,
+    this.sourceMeetingId,
+    this.sourceRunId,
+    required this.resultJson,
+    this.editedText,
+    required this.createdAtUtcMs,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    map['row_revision'] = Variable<int>(rowRevision);
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['meeting_id'] = Variable<String>(meetingId);
+    if (!nullToAbsent || sourceMeetingId != null) {
+      map['source_meeting_id'] = Variable<String>(sourceMeetingId);
+    }
+    if (!nullToAbsent || sourceRunId != null) {
+      map['source_run_id'] = Variable<String>(sourceRunId);
+    }
+    map['result_json'] = Variable<String>(resultJson);
+    if (!nullToAbsent || editedText != null) {
+      map['edited_text'] = Variable<String>(editedText);
+    }
+    map['created_at_utc_ms'] = Variable<int>(createdAtUtcMs);
+    return map;
+  }
+
+  RemoteTranscriptVersionsCompanion toCompanion(bool nullToAbsent) {
+    return RemoteTranscriptVersionsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      rowRevision: Value(rowRevision),
+      isDeleted: Value(isDeleted),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      meetingId: Value(meetingId),
+      sourceMeetingId: sourceMeetingId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceMeetingId),
+      sourceRunId: sourceRunId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceRunId),
+      resultJson: Value(resultJson),
+      editedText: editedText == null && nullToAbsent
+          ? const Value.absent()
+          : Value(editedText),
+      createdAtUtcMs: Value(createdAtUtcMs),
+    );
+  }
+
+  factory RemoteTranscriptVersion.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RemoteTranscriptVersion(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      rowRevision: serializer.fromJson<int>(json['rowRevision']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      meetingId: serializer.fromJson<String>(json['meetingId']),
+      sourceMeetingId: serializer.fromJson<String?>(json['sourceMeetingId']),
+      sourceRunId: serializer.fromJson<String?>(json['sourceRunId']),
+      resultJson: serializer.fromJson<String>(json['resultJson']),
+      editedText: serializer.fromJson<String?>(json['editedText']),
+      createdAtUtcMs: serializer.fromJson<int>(json['createdAtUtcMs']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'rowRevision': serializer.toJson<int>(rowRevision),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'meetingId': serializer.toJson<String>(meetingId),
+      'sourceMeetingId': serializer.toJson<String?>(sourceMeetingId),
+      'sourceRunId': serializer.toJson<String?>(sourceRunId),
+      'resultJson': serializer.toJson<String>(resultJson),
+      'editedText': serializer.toJson<String?>(editedText),
+      'createdAtUtcMs': serializer.toJson<int>(createdAtUtcMs),
+    };
+  }
+
+  RemoteTranscriptVersion copyWith({
+    String? id,
+    int? createdAt,
+    int? updatedAt,
+    int? rowRevision,
+    bool? isDeleted,
+    Value<int?> deletedAt = const Value.absent(),
+    String? meetingId,
+    Value<String?> sourceMeetingId = const Value.absent(),
+    Value<String?> sourceRunId = const Value.absent(),
+    String? resultJson,
+    Value<String?> editedText = const Value.absent(),
+    int? createdAtUtcMs,
+  }) => RemoteTranscriptVersion(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    rowRevision: rowRevision ?? this.rowRevision,
+    isDeleted: isDeleted ?? this.isDeleted,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    meetingId: meetingId ?? this.meetingId,
+    sourceMeetingId: sourceMeetingId.present
+        ? sourceMeetingId.value
+        : this.sourceMeetingId,
+    sourceRunId: sourceRunId.present ? sourceRunId.value : this.sourceRunId,
+    resultJson: resultJson ?? this.resultJson,
+    editedText: editedText.present ? editedText.value : this.editedText,
+    createdAtUtcMs: createdAtUtcMs ?? this.createdAtUtcMs,
+  );
+  RemoteTranscriptVersion copyWithCompanion(
+    RemoteTranscriptVersionsCompanion data,
+  ) {
+    return RemoteTranscriptVersion(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      rowRevision: data.rowRevision.present
+          ? data.rowRevision.value
+          : this.rowRevision,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      meetingId: data.meetingId.present ? data.meetingId.value : this.meetingId,
+      sourceMeetingId: data.sourceMeetingId.present
+          ? data.sourceMeetingId.value
+          : this.sourceMeetingId,
+      sourceRunId: data.sourceRunId.present
+          ? data.sourceRunId.value
+          : this.sourceRunId,
+      resultJson: data.resultJson.present
+          ? data.resultJson.value
+          : this.resultJson,
+      editedText: data.editedText.present
+          ? data.editedText.value
+          : this.editedText,
+      createdAtUtcMs: data.createdAtUtcMs.present
+          ? data.createdAtUtcMs.value
+          : this.createdAtUtcMs,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RemoteTranscriptVersion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('sourceMeetingId: $sourceMeetingId, ')
+          ..write('sourceRunId: $sourceRunId, ')
+          ..write('resultJson: $resultJson, ')
+          ..write('editedText: $editedText, ')
+          ..write('createdAtUtcMs: $createdAtUtcMs')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    meetingId,
+    sourceMeetingId,
+    sourceRunId,
+    resultJson,
+    editedText,
+    createdAtUtcMs,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RemoteTranscriptVersion &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.rowRevision == this.rowRevision &&
+          other.isDeleted == this.isDeleted &&
+          other.deletedAt == this.deletedAt &&
+          other.meetingId == this.meetingId &&
+          other.sourceMeetingId == this.sourceMeetingId &&
+          other.sourceRunId == this.sourceRunId &&
+          other.resultJson == this.resultJson &&
+          other.editedText == this.editedText &&
+          other.createdAtUtcMs == this.createdAtUtcMs);
+}
+
+class RemoteTranscriptVersionsCompanion
+    extends UpdateCompanion<RemoteTranscriptVersion> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowRevision;
+  final Value<bool> isDeleted;
+  final Value<int?> deletedAt;
+  final Value<String> meetingId;
+  final Value<String?> sourceMeetingId;
+  final Value<String?> sourceRunId;
+  final Value<String> resultJson;
+  final Value<String?> editedText;
+  final Value<int> createdAtUtcMs;
+  final Value<int> rowid;
+  const RemoteTranscriptVersionsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.meetingId = const Value.absent(),
+    this.sourceMeetingId = const Value.absent(),
+    this.sourceRunId = const Value.absent(),
+    this.resultJson = const Value.absent(),
+    this.editedText = const Value.absent(),
+    this.createdAtUtcMs = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RemoteTranscriptVersionsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required int updatedAt,
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required String meetingId,
+    this.sourceMeetingId = const Value.absent(),
+    this.sourceRunId = const Value.absent(),
+    required String resultJson,
+    this.editedText = const Value.absent(),
+    required int createdAtUtcMs,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       meetingId = Value(meetingId),
+       resultJson = Value(resultJson),
+       createdAtUtcMs = Value(createdAtUtcMs);
+  static Insertable<RemoteTranscriptVersion> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowRevision,
+    Expression<bool>? isDeleted,
+    Expression<int>? deletedAt,
+    Expression<String>? meetingId,
+    Expression<String>? sourceMeetingId,
+    Expression<String>? sourceRunId,
+    Expression<String>? resultJson,
+    Expression<String>? editedText,
+    Expression<int>? createdAtUtcMs,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowRevision != null) 'row_revision': rowRevision,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (meetingId != null) 'meeting_id': meetingId,
+      if (sourceMeetingId != null) 'source_meeting_id': sourceMeetingId,
+      if (sourceRunId != null) 'source_run_id': sourceRunId,
+      if (resultJson != null) 'result_json': resultJson,
+      if (editedText != null) 'edited_text': editedText,
+      if (createdAtUtcMs != null) 'created_at_utc_ms': createdAtUtcMs,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RemoteTranscriptVersionsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowRevision,
+    Value<bool>? isDeleted,
+    Value<int?>? deletedAt,
+    Value<String>? meetingId,
+    Value<String?>? sourceMeetingId,
+    Value<String?>? sourceRunId,
+    Value<String>? resultJson,
+    Value<String?>? editedText,
+    Value<int>? createdAtUtcMs,
+    Value<int>? rowid,
+  }) {
+    return RemoteTranscriptVersionsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowRevision: rowRevision ?? this.rowRevision,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
+      meetingId: meetingId ?? this.meetingId,
+      sourceMeetingId: sourceMeetingId ?? this.sourceMeetingId,
+      sourceRunId: sourceRunId ?? this.sourceRunId,
+      resultJson: resultJson ?? this.resultJson,
+      editedText: editedText ?? this.editedText,
+      createdAtUtcMs: createdAtUtcMs ?? this.createdAtUtcMs,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowRevision.present) {
+      map['row_revision'] = Variable<int>(rowRevision.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (meetingId.present) {
+      map['meeting_id'] = Variable<String>(meetingId.value);
+    }
+    if (sourceMeetingId.present) {
+      map['source_meeting_id'] = Variable<String>(sourceMeetingId.value);
+    }
+    if (sourceRunId.present) {
+      map['source_run_id'] = Variable<String>(sourceRunId.value);
+    }
+    if (resultJson.present) {
+      map['result_json'] = Variable<String>(resultJson.value);
+    }
+    if (editedText.present) {
+      map['edited_text'] = Variable<String>(editedText.value);
+    }
+    if (createdAtUtcMs.present) {
+      map['created_at_utc_ms'] = Variable<int>(createdAtUtcMs.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RemoteTranscriptVersionsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('sourceMeetingId: $sourceMeetingId, ')
+          ..write('sourceRunId: $sourceRunId, ')
+          ..write('resultJson: $resultJson, ')
+          ..write('editedText: $editedText, ')
+          ..write('createdAtUtcMs: $createdAtUtcMs, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $AudioSegmentsTable extends AudioSegments
     with TableInfo<$AudioSegmentsTable, AudioSegment> {
   @override
@@ -6126,6 +9254,853 @@ class TranscriptRunsCompanion extends UpdateCompanion<TranscriptRun> {
           ..write('endedAtUtcMs: $endedAtUtcMs, ')
           ..write('progress: $progress, ')
           ..write('failureCode: $failureCode, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TranscriptProcessingMetadataTable extends TranscriptProcessingMetadata
+    with
+        TableInfo<
+          $TranscriptProcessingMetadataTable,
+          TranscriptProcessingMetadataData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TranscriptProcessingMetadataTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (created_at >= 0)',
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (updated_at >= created_at)',
+  );
+  static const VerificationMeta _rowRevisionMeta = const VerificationMeta(
+    'rowRevision',
+  );
+  @override
+  late final GeneratedColumn<int> rowRevision = GeneratedColumn<int>(
+    'row_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (row_revision >= 0)',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK ((is_deleted = 0 AND deleted_at IS NULL) OR (is_deleted = 1 AND deleted_at IS NOT NULL))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL CHECK (deleted_at IS NULL OR deleted_at >= 0)',
+  );
+  static const VerificationMeta _transcriptRunIdMeta = const VerificationMeta(
+    'transcriptRunId',
+  );
+  @override
+  late final GeneratedColumn<String> transcriptRunId = GeneratedColumn<String>(
+    'transcript_run_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES transcript_runs (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _meetingIdMeta = const VerificationMeta(
+    'meetingId',
+  );
+  @override
+  late final GeneratedColumn<String> meetingId = GeneratedColumn<String>(
+    'meeting_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES meetings (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _processingRoleMeta = const VerificationMeta(
+    'processingRole',
+  );
+  @override
+  late final GeneratedColumn<String> processingRole = GeneratedColumn<String>(
+    'processing_role',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceRunIdMeta = const VerificationMeta(
+    'sourceRunId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceRunId = GeneratedColumn<String>(
+    'source_run_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _completenessMeta = const VerificationMeta(
+    'completeness',
+  );
+  @override
+  late final GeneratedColumn<String> completeness = GeneratedColumn<String>(
+    'completeness',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bundleManifestJsonMeta =
+      const VerificationMeta('bundleManifestJson');
+  @override
+  late final GeneratedColumn<String> bundleManifestJson =
+      GeneratedColumn<String>(
+        'bundle_manifest_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _audioInventorySha256Meta =
+      const VerificationMeta('audioInventorySha256');
+  @override
+  late final GeneratedColumn<String> audioInventorySha256 =
+      GeneratedColumn<String>(
+        'audio_inventory_sha256',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    transcriptRunId,
+    meetingId,
+    processingRole,
+    sourceRunId,
+    completeness,
+    bundleManifestJson,
+    audioInventorySha256,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'transcript_processing_metadata';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TranscriptProcessingMetadataData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('row_revision')) {
+      context.handle(
+        _rowRevisionMeta,
+        rowRevision.isAcceptableOrUnknown(
+          data['row_revision']!,
+          _rowRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('transcript_run_id')) {
+      context.handle(
+        _transcriptRunIdMeta,
+        transcriptRunId.isAcceptableOrUnknown(
+          data['transcript_run_id']!,
+          _transcriptRunIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_transcriptRunIdMeta);
+    }
+    if (data.containsKey('meeting_id')) {
+      context.handle(
+        _meetingIdMeta,
+        meetingId.isAcceptableOrUnknown(data['meeting_id']!, _meetingIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_meetingIdMeta);
+    }
+    if (data.containsKey('processing_role')) {
+      context.handle(
+        _processingRoleMeta,
+        processingRole.isAcceptableOrUnknown(
+          data['processing_role']!,
+          _processingRoleMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_processingRoleMeta);
+    }
+    if (data.containsKey('source_run_id')) {
+      context.handle(
+        _sourceRunIdMeta,
+        sourceRunId.isAcceptableOrUnknown(
+          data['source_run_id']!,
+          _sourceRunIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('completeness')) {
+      context.handle(
+        _completenessMeta,
+        completeness.isAcceptableOrUnknown(
+          data['completeness']!,
+          _completenessMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_completenessMeta);
+    }
+    if (data.containsKey('bundle_manifest_json')) {
+      context.handle(
+        _bundleManifestJsonMeta,
+        bundleManifestJson.isAcceptableOrUnknown(
+          data['bundle_manifest_json']!,
+          _bundleManifestJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_bundleManifestJsonMeta);
+    }
+    if (data.containsKey('audio_inventory_sha256')) {
+      context.handle(
+        _audioInventorySha256Meta,
+        audioInventorySha256.isAcceptableOrUnknown(
+          data['audio_inventory_sha256']!,
+          _audioInventorySha256Meta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TranscriptProcessingMetadataData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TranscriptProcessingMetadataData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      rowRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_revision'],
+      )!,
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      transcriptRunId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transcript_run_id'],
+      )!,
+      meetingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}meeting_id'],
+      )!,
+      processingRole: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}processing_role'],
+      )!,
+      sourceRunId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_run_id'],
+      ),
+      completeness: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}completeness'],
+      )!,
+      bundleManifestJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bundle_manifest_json'],
+      )!,
+      audioInventorySha256: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}audio_inventory_sha256'],
+      ),
+    );
+  }
+
+  @override
+  $TranscriptProcessingMetadataTable createAlias(String alias) {
+    return $TranscriptProcessingMetadataTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class TranscriptProcessingMetadataData extends DataClass
+    implements Insertable<TranscriptProcessingMetadataData> {
+  /// Stable UUID-style identifier.
+  final String id;
+
+  /// UTC creation instant in epoch milliseconds.
+  final int createdAt;
+
+  /// UTC last-update instant in epoch milliseconds.
+  final int updatedAt;
+
+  /// Monotonic row revision used by restore conflict handling.
+  final int rowRevision;
+
+  /// Whether this row is hidden by a soft delete.
+  final bool isDeleted;
+
+  /// UTC soft-delete instant in epoch milliseconds.
+  final int? deletedAt;
+
+  /// Run extended by this metadata, without rewriting legacy run rows.
+  final String transcriptRunId;
+
+  /// Meeting owner used for same-recording link validation.
+  final String meetingId;
+
+  /// Independent liveDraft or refinement processing role.
+  final String processingRole;
+
+  /// Optional source draft; null also permits refinement without live coverage.
+  final String? sourceRunId;
+
+  /// Complete or incomplete coverage, independent of job success.
+  final String completeness;
+
+  /// Frozen complete manifest, including each artifact's immutable provenance.
+  final String bundleManifestJson;
+
+  /// Finalized ordered authoritative audio inventory hash for refinement.
+  final String? audioInventorySha256;
+  const TranscriptProcessingMetadataData({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.rowRevision,
+    required this.isDeleted,
+    this.deletedAt,
+    required this.transcriptRunId,
+    required this.meetingId,
+    required this.processingRole,
+    this.sourceRunId,
+    required this.completeness,
+    required this.bundleManifestJson,
+    this.audioInventorySha256,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    map['row_revision'] = Variable<int>(rowRevision);
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['transcript_run_id'] = Variable<String>(transcriptRunId);
+    map['meeting_id'] = Variable<String>(meetingId);
+    map['processing_role'] = Variable<String>(processingRole);
+    if (!nullToAbsent || sourceRunId != null) {
+      map['source_run_id'] = Variable<String>(sourceRunId);
+    }
+    map['completeness'] = Variable<String>(completeness);
+    map['bundle_manifest_json'] = Variable<String>(bundleManifestJson);
+    if (!nullToAbsent || audioInventorySha256 != null) {
+      map['audio_inventory_sha256'] = Variable<String>(audioInventorySha256);
+    }
+    return map;
+  }
+
+  TranscriptProcessingMetadataCompanion toCompanion(bool nullToAbsent) {
+    return TranscriptProcessingMetadataCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      rowRevision: Value(rowRevision),
+      isDeleted: Value(isDeleted),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      transcriptRunId: Value(transcriptRunId),
+      meetingId: Value(meetingId),
+      processingRole: Value(processingRole),
+      sourceRunId: sourceRunId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceRunId),
+      completeness: Value(completeness),
+      bundleManifestJson: Value(bundleManifestJson),
+      audioInventorySha256: audioInventorySha256 == null && nullToAbsent
+          ? const Value.absent()
+          : Value(audioInventorySha256),
+    );
+  }
+
+  factory TranscriptProcessingMetadataData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TranscriptProcessingMetadataData(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      rowRevision: serializer.fromJson<int>(json['rowRevision']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      transcriptRunId: serializer.fromJson<String>(json['transcriptRunId']),
+      meetingId: serializer.fromJson<String>(json['meetingId']),
+      processingRole: serializer.fromJson<String>(json['processingRole']),
+      sourceRunId: serializer.fromJson<String?>(json['sourceRunId']),
+      completeness: serializer.fromJson<String>(json['completeness']),
+      bundleManifestJson: serializer.fromJson<String>(
+        json['bundleManifestJson'],
+      ),
+      audioInventorySha256: serializer.fromJson<String?>(
+        json['audioInventorySha256'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'rowRevision': serializer.toJson<int>(rowRevision),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'transcriptRunId': serializer.toJson<String>(transcriptRunId),
+      'meetingId': serializer.toJson<String>(meetingId),
+      'processingRole': serializer.toJson<String>(processingRole),
+      'sourceRunId': serializer.toJson<String?>(sourceRunId),
+      'completeness': serializer.toJson<String>(completeness),
+      'bundleManifestJson': serializer.toJson<String>(bundleManifestJson),
+      'audioInventorySha256': serializer.toJson<String?>(audioInventorySha256),
+    };
+  }
+
+  TranscriptProcessingMetadataData copyWith({
+    String? id,
+    int? createdAt,
+    int? updatedAt,
+    int? rowRevision,
+    bool? isDeleted,
+    Value<int?> deletedAt = const Value.absent(),
+    String? transcriptRunId,
+    String? meetingId,
+    String? processingRole,
+    Value<String?> sourceRunId = const Value.absent(),
+    String? completeness,
+    String? bundleManifestJson,
+    Value<String?> audioInventorySha256 = const Value.absent(),
+  }) => TranscriptProcessingMetadataData(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    rowRevision: rowRevision ?? this.rowRevision,
+    isDeleted: isDeleted ?? this.isDeleted,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    transcriptRunId: transcriptRunId ?? this.transcriptRunId,
+    meetingId: meetingId ?? this.meetingId,
+    processingRole: processingRole ?? this.processingRole,
+    sourceRunId: sourceRunId.present ? sourceRunId.value : this.sourceRunId,
+    completeness: completeness ?? this.completeness,
+    bundleManifestJson: bundleManifestJson ?? this.bundleManifestJson,
+    audioInventorySha256: audioInventorySha256.present
+        ? audioInventorySha256.value
+        : this.audioInventorySha256,
+  );
+  TranscriptProcessingMetadataData copyWithCompanion(
+    TranscriptProcessingMetadataCompanion data,
+  ) {
+    return TranscriptProcessingMetadataData(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      rowRevision: data.rowRevision.present
+          ? data.rowRevision.value
+          : this.rowRevision,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      transcriptRunId: data.transcriptRunId.present
+          ? data.transcriptRunId.value
+          : this.transcriptRunId,
+      meetingId: data.meetingId.present ? data.meetingId.value : this.meetingId,
+      processingRole: data.processingRole.present
+          ? data.processingRole.value
+          : this.processingRole,
+      sourceRunId: data.sourceRunId.present
+          ? data.sourceRunId.value
+          : this.sourceRunId,
+      completeness: data.completeness.present
+          ? data.completeness.value
+          : this.completeness,
+      bundleManifestJson: data.bundleManifestJson.present
+          ? data.bundleManifestJson.value
+          : this.bundleManifestJson,
+      audioInventorySha256: data.audioInventorySha256.present
+          ? data.audioInventorySha256.value
+          : this.audioInventorySha256,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TranscriptProcessingMetadataData(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('transcriptRunId: $transcriptRunId, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('processingRole: $processingRole, ')
+          ..write('sourceRunId: $sourceRunId, ')
+          ..write('completeness: $completeness, ')
+          ..write('bundleManifestJson: $bundleManifestJson, ')
+          ..write('audioInventorySha256: $audioInventorySha256')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedAt,
+    rowRevision,
+    isDeleted,
+    deletedAt,
+    transcriptRunId,
+    meetingId,
+    processingRole,
+    sourceRunId,
+    completeness,
+    bundleManifestJson,
+    audioInventorySha256,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TranscriptProcessingMetadataData &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.rowRevision == this.rowRevision &&
+          other.isDeleted == this.isDeleted &&
+          other.deletedAt == this.deletedAt &&
+          other.transcriptRunId == this.transcriptRunId &&
+          other.meetingId == this.meetingId &&
+          other.processingRole == this.processingRole &&
+          other.sourceRunId == this.sourceRunId &&
+          other.completeness == this.completeness &&
+          other.bundleManifestJson == this.bundleManifestJson &&
+          other.audioInventorySha256 == this.audioInventorySha256);
+}
+
+class TranscriptProcessingMetadataCompanion
+    extends UpdateCompanion<TranscriptProcessingMetadataData> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowRevision;
+  final Value<bool> isDeleted;
+  final Value<int?> deletedAt;
+  final Value<String> transcriptRunId;
+  final Value<String> meetingId;
+  final Value<String> processingRole;
+  final Value<String?> sourceRunId;
+  final Value<String> completeness;
+  final Value<String> bundleManifestJson;
+  final Value<String?> audioInventorySha256;
+  final Value<int> rowid;
+  const TranscriptProcessingMetadataCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.transcriptRunId = const Value.absent(),
+    this.meetingId = const Value.absent(),
+    this.processingRole = const Value.absent(),
+    this.sourceRunId = const Value.absent(),
+    this.completeness = const Value.absent(),
+    this.bundleManifestJson = const Value.absent(),
+    this.audioInventorySha256 = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TranscriptProcessingMetadataCompanion.insert({
+    required String id,
+    required int createdAt,
+    required int updatedAt,
+    this.rowRevision = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required String transcriptRunId,
+    required String meetingId,
+    required String processingRole,
+    this.sourceRunId = const Value.absent(),
+    required String completeness,
+    required String bundleManifestJson,
+    this.audioInventorySha256 = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       transcriptRunId = Value(transcriptRunId),
+       meetingId = Value(meetingId),
+       processingRole = Value(processingRole),
+       completeness = Value(completeness),
+       bundleManifestJson = Value(bundleManifestJson);
+  static Insertable<TranscriptProcessingMetadataData> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowRevision,
+    Expression<bool>? isDeleted,
+    Expression<int>? deletedAt,
+    Expression<String>? transcriptRunId,
+    Expression<String>? meetingId,
+    Expression<String>? processingRole,
+    Expression<String>? sourceRunId,
+    Expression<String>? completeness,
+    Expression<String>? bundleManifestJson,
+    Expression<String>? audioInventorySha256,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowRevision != null) 'row_revision': rowRevision,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (transcriptRunId != null) 'transcript_run_id': transcriptRunId,
+      if (meetingId != null) 'meeting_id': meetingId,
+      if (processingRole != null) 'processing_role': processingRole,
+      if (sourceRunId != null) 'source_run_id': sourceRunId,
+      if (completeness != null) 'completeness': completeness,
+      if (bundleManifestJson != null)
+        'bundle_manifest_json': bundleManifestJson,
+      if (audioInventorySha256 != null)
+        'audio_inventory_sha256': audioInventorySha256,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TranscriptProcessingMetadataCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowRevision,
+    Value<bool>? isDeleted,
+    Value<int?>? deletedAt,
+    Value<String>? transcriptRunId,
+    Value<String>? meetingId,
+    Value<String>? processingRole,
+    Value<String?>? sourceRunId,
+    Value<String>? completeness,
+    Value<String>? bundleManifestJson,
+    Value<String?>? audioInventorySha256,
+    Value<int>? rowid,
+  }) {
+    return TranscriptProcessingMetadataCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowRevision: rowRevision ?? this.rowRevision,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
+      transcriptRunId: transcriptRunId ?? this.transcriptRunId,
+      meetingId: meetingId ?? this.meetingId,
+      processingRole: processingRole ?? this.processingRole,
+      sourceRunId: sourceRunId ?? this.sourceRunId,
+      completeness: completeness ?? this.completeness,
+      bundleManifestJson: bundleManifestJson ?? this.bundleManifestJson,
+      audioInventorySha256: audioInventorySha256 ?? this.audioInventorySha256,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowRevision.present) {
+      map['row_revision'] = Variable<int>(rowRevision.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (transcriptRunId.present) {
+      map['transcript_run_id'] = Variable<String>(transcriptRunId.value);
+    }
+    if (meetingId.present) {
+      map['meeting_id'] = Variable<String>(meetingId.value);
+    }
+    if (processingRole.present) {
+      map['processing_role'] = Variable<String>(processingRole.value);
+    }
+    if (sourceRunId.present) {
+      map['source_run_id'] = Variable<String>(sourceRunId.value);
+    }
+    if (completeness.present) {
+      map['completeness'] = Variable<String>(completeness.value);
+    }
+    if (bundleManifestJson.present) {
+      map['bundle_manifest_json'] = Variable<String>(bundleManifestJson.value);
+    }
+    if (audioInventorySha256.present) {
+      map['audio_inventory_sha256'] = Variable<String>(
+        audioInventorySha256.value,
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TranscriptProcessingMetadataCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowRevision: $rowRevision, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('transcriptRunId: $transcriptRunId, ')
+          ..write('meetingId: $meetingId, ')
+          ..write('processingRole: $processingRole, ')
+          ..write('sourceRunId: $sourceRunId, ')
+          ..write('completeness: $completeness, ')
+          ..write('bundleManifestJson: $bundleManifestJson, ')
+          ..write('audioInventorySha256: $audioInventorySha256, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -15742,6 +19717,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MeetingsTable meetings = $MeetingsTable(this);
   late final $RecordingPreferencesTable recordingPreferences =
       $RecordingPreferencesTable(this);
+  late final $MeetingProcessingSelectionsTable meetingProcessingSelections =
+      $MeetingProcessingSelectionsTable(this);
+  late final $RemoteTranscriptionTasksTable remoteTranscriptionTasks =
+      $RemoteTranscriptionTasksTable(this);
+  late final $RemoteTranscriptVersionsTable remoteTranscriptVersions =
+      $RemoteTranscriptVersionsTable(this);
   late final $AudioSegmentsTable audioSegments = $AudioSegmentsTable(this);
   late final $RecoveryFindingsTable recoveryFindings = $RecoveryFindingsTable(
     this,
@@ -15750,6 +19731,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $BookmarksTable bookmarks = $BookmarksTable(this);
   late final $ModelManifestsTable modelManifests = $ModelManifestsTable(this);
   late final $TranscriptRunsTable transcriptRuns = $TranscriptRunsTable(this);
+  late final $TranscriptProcessingMetadataTable transcriptProcessingMetadata =
+      $TranscriptProcessingMetadataTable(this);
   late final $MeetingTranscriptSelectionsTable meetingTranscriptSelections =
       $MeetingTranscriptSelectionsTable(this);
   late final $DiarizationRunsTable diarizationRuns = $DiarizationRunsTable(
@@ -15777,6 +19760,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_meetings_created',
     'CREATE INDEX idx_meetings_created ON meetings (is_deleted, created_at DESC, id DESC)',
   );
+  late final Index uxMeetingProcessingSelection = Index(
+    'ux_meeting_processing_selection',
+    'CREATE UNIQUE INDEX ux_meeting_processing_selection ON meeting_processing_selections (meeting_id)',
+  );
   late final Index uxAudioSegmentsMeetingSequence = Index(
     'ux_audio_segments_meeting_sequence',
     'CREATE UNIQUE INDEX ux_audio_segments_meeting_sequence ON audio_segments (meeting_id, sequence)',
@@ -15800,6 +19787,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index uxTranscriptRunOwner = Index(
     'ux_transcript_run_owner',
     'CREATE UNIQUE INDEX ux_transcript_run_owner ON transcript_runs (id, meeting_id)',
+  );
+  late final Index uxTranscriptProcessingRun = Index(
+    'ux_transcript_processing_run',
+    'CREATE UNIQUE INDEX ux_transcript_processing_run ON transcript_processing_metadata (transcript_run_id)',
   );
   late final Index uxMeetingTranscriptSelection = Index(
     'ux_meeting_transcript_selection',
@@ -15904,12 +19895,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     meetings,
     recordingPreferences,
+    meetingProcessingSelections,
+    remoteTranscriptionTasks,
+    remoteTranscriptVersions,
     audioSegments,
     recoveryFindings,
     sessionEvents,
     bookmarks,
     modelManifests,
     transcriptRuns,
+    transcriptProcessingMetadata,
     meetingTranscriptSelections,
     diarizationRuns,
     speakers,
@@ -15924,12 +19919,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     exportRecords,
     backupRecords,
     idxMeetingsCreated,
+    uxMeetingProcessingSelection,
     uxAudioSegmentsMeetingSequence,
     idxRecoveryFindingsMeetingSequence,
     uxSessionEventsMeetingSequence,
     idxBookmarksMeetingMedia,
     idxTranscriptRunsMeetingCreated,
     uxTranscriptRunOwner,
+    uxTranscriptProcessingRun,
     uxMeetingTranscriptSelection,
     idxTranscriptSegmentsRunStart,
     uxTranscriptSegmentOwner,
@@ -15957,6 +19954,33 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'meetings',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('meeting_processing_selections', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'meetings',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('remote_transcription_tasks', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'meetings',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('remote_transcript_versions', kind: UpdateKind.delete),
+      ],
+    ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'meetings',
@@ -15991,6 +20015,24 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('transcript_runs', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'transcript_runs',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('transcript_processing_metadata', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'meetings',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('transcript_processing_metadata', kind: UpdateKind.delete),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -16165,6 +20207,81 @@ final class $$MeetingsTableReferences
     extends BaseReferences<_$AppDatabase, $MeetingsTable, Meeting> {
   $$MeetingsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
+  static MultiTypedResultKey<
+    $MeetingProcessingSelectionsTable,
+    List<MeetingProcessingSelection>
+  >
+  _meetingProcessingSelectionsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.meetingProcessingSelections,
+        aliasName: 'meetings__id__meeting_processing_selections__meeting_id',
+      );
+
+  $$MeetingProcessingSelectionsTableProcessedTableManager
+  get meetingProcessingSelectionsRefs {
+    final manager = $$MeetingProcessingSelectionsTableTableManager(
+      $_db,
+      $_db.meetingProcessingSelections,
+    ).filter((f) => f.meetingId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _meetingProcessingSelectionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $RemoteTranscriptionTasksTable,
+    List<RemoteTranscriptionTask>
+  >
+  _remoteTranscriptionTasksRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.remoteTranscriptionTasks,
+        aliasName: 'meetings__id__remote_transcription_tasks__meeting_id',
+      );
+
+  $$RemoteTranscriptionTasksTableProcessedTableManager
+  get remoteTranscriptionTasksRefs {
+    final manager = $$RemoteTranscriptionTasksTableTableManager(
+      $_db,
+      $_db.remoteTranscriptionTasks,
+    ).filter((f) => f.meetingId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _remoteTranscriptionTasksRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $RemoteTranscriptVersionsTable,
+    List<RemoteTranscriptVersion>
+  >
+  _remoteTranscriptVersionsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.remoteTranscriptVersions,
+        aliasName: 'meetings__id__remote_transcript_versions__meeting_id',
+      );
+
+  $$RemoteTranscriptVersionsTableProcessedTableManager
+  get remoteTranscriptVersionsRefs {
+    final manager = $$RemoteTranscriptVersionsTableTableManager(
+      $_db,
+      $_db.remoteTranscriptVersions,
+    ).filter((f) => f.meetingId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _remoteTranscriptVersionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$AudioSegmentsTable, List<AudioSegment>>
   _audioSegmentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.audioSegments,
@@ -16252,6 +20369,31 @@ final class $$MeetingsTableReferences
     ).filter((f) => f.meetingId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_transcriptRunsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $TranscriptProcessingMetadataTable,
+    List<TranscriptProcessingMetadataData>
+  >
+  _transcriptProcessingMetadataRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.transcriptProcessingMetadata,
+        aliasName: 'meetings__id__transcript_processing_metadata__meeting_id',
+      );
+
+  $$TranscriptProcessingMetadataTableProcessedTableManager
+  get transcriptProcessingMetadataRefs {
+    final manager = $$TranscriptProcessingMetadataTableTableManager(
+      $_db,
+      $_db.transcriptProcessingMetadata,
+    ).filter((f) => f.meetingId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _transcriptProcessingMetadataRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -16497,6 +20639,89 @@ class $$MeetingsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  Expression<bool> meetingProcessingSelectionsRefs(
+    Expression<bool> Function(
+      $$MeetingProcessingSelectionsTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$MeetingProcessingSelectionsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.meetingProcessingSelections,
+          getReferencedColumn: (t) => t.meetingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$MeetingProcessingSelectionsTableFilterComposer(
+                $db: $db,
+                $table: $db.meetingProcessingSelections,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> remoteTranscriptionTasksRefs(
+    Expression<bool> Function($$RemoteTranscriptionTasksTableFilterComposer f)
+    f,
+  ) {
+    final $$RemoteTranscriptionTasksTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.remoteTranscriptionTasks,
+          getReferencedColumn: (t) => t.meetingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RemoteTranscriptionTasksTableFilterComposer(
+                $db: $db,
+                $table: $db.remoteTranscriptionTasks,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> remoteTranscriptVersionsRefs(
+    Expression<bool> Function($$RemoteTranscriptVersionsTableFilterComposer f)
+    f,
+  ) {
+    final $$RemoteTranscriptVersionsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.remoteTranscriptVersions,
+          getReferencedColumn: (t) => t.meetingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RemoteTranscriptVersionsTableFilterComposer(
+                $db: $db,
+                $table: $db.remoteTranscriptVersions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
   Expression<bool> audioSegmentsRefs(
     Expression<bool> Function($$AudioSegmentsTableFilterComposer f) f,
   ) {
@@ -16619,6 +20844,35 @@ class $$MeetingsTableFilterComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<bool> transcriptProcessingMetadataRefs(
+    Expression<bool> Function(
+      $$TranscriptProcessingMetadataTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$TranscriptProcessingMetadataTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.transcriptProcessingMetadata,
+          getReferencedColumn: (t) => t.meetingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TranscriptProcessingMetadataTableFilterComposer(
+                $db: $db,
+                $table: $db.transcriptProcessingMetadata,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -16972,6 +21226,89 @@ class $$MeetingsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  Expression<T> meetingProcessingSelectionsRefs<T extends Object>(
+    Expression<T> Function(
+      $$MeetingProcessingSelectionsTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$MeetingProcessingSelectionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.meetingProcessingSelections,
+          getReferencedColumn: (t) => t.meetingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$MeetingProcessingSelectionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.meetingProcessingSelections,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> remoteTranscriptionTasksRefs<T extends Object>(
+    Expression<T> Function($$RemoteTranscriptionTasksTableAnnotationComposer a)
+    f,
+  ) {
+    final $$RemoteTranscriptionTasksTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.remoteTranscriptionTasks,
+          getReferencedColumn: (t) => t.meetingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RemoteTranscriptionTasksTableAnnotationComposer(
+                $db: $db,
+                $table: $db.remoteTranscriptionTasks,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> remoteTranscriptVersionsRefs<T extends Object>(
+    Expression<T> Function($$RemoteTranscriptVersionsTableAnnotationComposer a)
+    f,
+  ) {
+    final $$RemoteTranscriptVersionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.remoteTranscriptVersions,
+          getReferencedColumn: (t) => t.meetingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RemoteTranscriptVersionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.remoteTranscriptVersions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
   Expression<T> audioSegmentsRefs<T extends Object>(
     Expression<T> Function($$AudioSegmentsTableAnnotationComposer a) f,
   ) {
@@ -17094,6 +21431,35 @@ class $$MeetingsTableAnnotationComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<T> transcriptProcessingMetadataRefs<T extends Object>(
+    Expression<T> Function(
+      $$TranscriptProcessingMetadataTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$TranscriptProcessingMetadataTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.transcriptProcessingMetadata,
+          getReferencedColumn: (t) => t.meetingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TranscriptProcessingMetadataTableAnnotationComposer(
+                $db: $db,
+                $table: $db.transcriptProcessingMetadata,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -17318,11 +21684,15 @@ class $$MeetingsTableTableManager
           (Meeting, $$MeetingsTableReferences),
           Meeting,
           PrefetchHooks Function({
+            bool meetingProcessingSelectionsRefs,
+            bool remoteTranscriptionTasksRefs,
+            bool remoteTranscriptVersionsRefs,
             bool audioSegmentsRefs,
             bool recoveryFindingsRefs,
             bool sessionEventsRefs,
             bool bookmarksRefs,
             bool transcriptRunsRefs,
+            bool transcriptProcessingMetadataRefs,
             bool meetingTranscriptSelectionsRefs,
             bool diarizationRunsRefs,
             bool speakersRefs,
@@ -17422,11 +21792,15 @@ class $$MeetingsTableTableManager
               .toList(),
           prefetchHooksCallback:
               ({
+                meetingProcessingSelectionsRefs = false,
+                remoteTranscriptionTasksRefs = false,
+                remoteTranscriptVersionsRefs = false,
                 audioSegmentsRefs = false,
                 recoveryFindingsRefs = false,
                 sessionEventsRefs = false,
                 bookmarksRefs = false,
                 transcriptRunsRefs = false,
+                transcriptProcessingMetadataRefs = false,
                 meetingTranscriptSelectionsRefs = false,
                 diarizationRunsRefs = false,
                 speakersRefs = false,
@@ -17439,11 +21813,19 @@ class $$MeetingsTableTableManager
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (meetingProcessingSelectionsRefs)
+                      db.meetingProcessingSelections,
+                    if (remoteTranscriptionTasksRefs)
+                      db.remoteTranscriptionTasks,
+                    if (remoteTranscriptVersionsRefs)
+                      db.remoteTranscriptVersions,
                     if (audioSegmentsRefs) db.audioSegments,
                     if (recoveryFindingsRefs) db.recoveryFindings,
                     if (sessionEventsRefs) db.sessionEvents,
                     if (bookmarksRefs) db.bookmarks,
                     if (transcriptRunsRefs) db.transcriptRuns,
+                    if (transcriptProcessingMetadataRefs)
+                      db.transcriptProcessingMetadata,
                     if (meetingTranscriptSelectionsRefs)
                       db.meetingTranscriptSelections,
                     if (diarizationRunsRefs) db.diarizationRuns,
@@ -17457,6 +21839,69 @@ class $$MeetingsTableTableManager
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (meetingProcessingSelectionsRefs)
+                        await $_getPrefetchedData<
+                          Meeting,
+                          $MeetingsTable,
+                          MeetingProcessingSelection
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MeetingsTableReferences
+                              ._meetingProcessingSelectionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MeetingsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).meetingProcessingSelectionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.meetingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (remoteTranscriptionTasksRefs)
+                        await $_getPrefetchedData<
+                          Meeting,
+                          $MeetingsTable,
+                          RemoteTranscriptionTask
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MeetingsTableReferences
+                              ._remoteTranscriptionTasksRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MeetingsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).remoteTranscriptionTasksRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.meetingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (remoteTranscriptVersionsRefs)
+                        await $_getPrefetchedData<
+                          Meeting,
+                          $MeetingsTable,
+                          RemoteTranscriptVersion
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MeetingsTableReferences
+                              ._remoteTranscriptVersionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MeetingsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).remoteTranscriptVersionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.meetingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (audioSegmentsRefs)
                         await $_getPrefetchedData<
                           Meeting,
@@ -17556,6 +22001,27 @@ class $$MeetingsTableTableManager
                                 table,
                                 p0,
                               ).transcriptRunsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.meetingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (transcriptProcessingMetadataRefs)
+                        await $_getPrefetchedData<
+                          Meeting,
+                          $MeetingsTable,
+                          TranscriptProcessingMetadataData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MeetingsTableReferences
+                              ._transcriptProcessingMetadataRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MeetingsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).transcriptProcessingMetadataRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.meetingId == item.id,
@@ -17751,11 +22217,15 @@ typedef $$MeetingsTableProcessedTableManager =
       (Meeting, $$MeetingsTableReferences),
       Meeting,
       PrefetchHooks Function({
+        bool meetingProcessingSelectionsRefs,
+        bool remoteTranscriptionTasksRefs,
+        bool remoteTranscriptVersionsRefs,
         bool audioSegmentsRefs,
         bool recoveryFindingsRefs,
         bool sessionEventsRefs,
         bool bookmarksRefs,
         bool transcriptRunsRefs,
+        bool transcriptProcessingMetadataRefs,
         bool meetingTranscriptSelectionsRefs,
         bool diarizationRunsRefs,
         bool speakersRefs,
@@ -18076,6 +22546,1759 @@ typedef $$RecordingPreferencesTableProcessedTableManager =
       ),
       RecordingPreference,
       PrefetchHooks Function()
+    >;
+typedef $$MeetingProcessingSelectionsTableCreateCompanionBuilder =
+    MeetingProcessingSelectionsCompanion Function({
+      required String id,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      required String meetingId,
+      required String processingMode,
+      Value<String?> liveBundleManifestJson,
+      Value<String?> liveEngineVersion,
+      Value<String?> liveParametersJson,
+      Value<String?> refinementBundleManifestJson,
+      Value<String?> refinementEngineVersion,
+      Value<String?> refinementParametersJson,
+      Value<int> rowid,
+    });
+typedef $$MeetingProcessingSelectionsTableUpdateCompanionBuilder =
+    MeetingProcessingSelectionsCompanion Function({
+      Value<String> id,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      Value<String> meetingId,
+      Value<String> processingMode,
+      Value<String?> liveBundleManifestJson,
+      Value<String?> liveEngineVersion,
+      Value<String?> liveParametersJson,
+      Value<String?> refinementBundleManifestJson,
+      Value<String?> refinementEngineVersion,
+      Value<String?> refinementParametersJson,
+      Value<int> rowid,
+    });
+
+final class $$MeetingProcessingSelectionsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $MeetingProcessingSelectionsTable,
+          MeetingProcessingSelection
+        > {
+  $$MeetingProcessingSelectionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $MeetingsTable _meetingIdTable(_$AppDatabase db) => db.meetings
+      .createAlias('meeting_processing_selections__meeting_id__meetings__id');
+
+  $$MeetingsTableProcessedTableManager get meetingId {
+    final $_column = $_itemColumn<String>('meeting_id')!;
+
+    final manager = $$MeetingsTableTableManager(
+      $_db,
+      $_db.meetings,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_meetingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$MeetingProcessingSelectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $MeetingProcessingSelectionsTable> {
+  $$MeetingProcessingSelectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get processingMode => $composableBuilder(
+    column: $table.processingMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get liveBundleManifestJson => $composableBuilder(
+    column: $table.liveBundleManifestJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get liveEngineVersion => $composableBuilder(
+    column: $table.liveEngineVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get liveParametersJson => $composableBuilder(
+    column: $table.liveParametersJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get refinementBundleManifestJson => $composableBuilder(
+    column: $table.refinementBundleManifestJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get refinementEngineVersion => $composableBuilder(
+    column: $table.refinementEngineVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get refinementParametersJson => $composableBuilder(
+    column: $table.refinementParametersJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MeetingsTableFilterComposer get meetingId {
+    final $$MeetingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableFilterComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MeetingProcessingSelectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MeetingProcessingSelectionsTable> {
+  $$MeetingProcessingSelectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get processingMode => $composableBuilder(
+    column: $table.processingMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get liveBundleManifestJson => $composableBuilder(
+    column: $table.liveBundleManifestJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get liveEngineVersion => $composableBuilder(
+    column: $table.liveEngineVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get liveParametersJson => $composableBuilder(
+    column: $table.liveParametersJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get refinementBundleManifestJson =>
+      $composableBuilder(
+        column: $table.refinementBundleManifestJson,
+        builder: (column) => ColumnOrderings(column),
+      );
+
+  ColumnOrderings<String> get refinementEngineVersion => $composableBuilder(
+    column: $table.refinementEngineVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get refinementParametersJson => $composableBuilder(
+    column: $table.refinementParametersJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MeetingsTableOrderingComposer get meetingId {
+    final $$MeetingsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableOrderingComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MeetingProcessingSelectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MeetingProcessingSelectionsTable> {
+  $$MeetingProcessingSelectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get processingMode => $composableBuilder(
+    column: $table.processingMode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get liveBundleManifestJson => $composableBuilder(
+    column: $table.liveBundleManifestJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get liveEngineVersion => $composableBuilder(
+    column: $table.liveEngineVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get liveParametersJson => $composableBuilder(
+    column: $table.liveParametersJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get refinementBundleManifestJson =>
+      $composableBuilder(
+        column: $table.refinementBundleManifestJson,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<String> get refinementEngineVersion => $composableBuilder(
+    column: $table.refinementEngineVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get refinementParametersJson => $composableBuilder(
+    column: $table.refinementParametersJson,
+    builder: (column) => column,
+  );
+
+  $$MeetingsTableAnnotationComposer get meetingId {
+    final $$MeetingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MeetingProcessingSelectionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MeetingProcessingSelectionsTable,
+          MeetingProcessingSelection,
+          $$MeetingProcessingSelectionsTableFilterComposer,
+          $$MeetingProcessingSelectionsTableOrderingComposer,
+          $$MeetingProcessingSelectionsTableAnnotationComposer,
+          $$MeetingProcessingSelectionsTableCreateCompanionBuilder,
+          $$MeetingProcessingSelectionsTableUpdateCompanionBuilder,
+          (
+            MeetingProcessingSelection,
+            $$MeetingProcessingSelectionsTableReferences,
+          ),
+          MeetingProcessingSelection,
+          PrefetchHooks Function({bool meetingId})
+        > {
+  $$MeetingProcessingSelectionsTableTableManager(
+    _$AppDatabase db,
+    $MeetingProcessingSelectionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MeetingProcessingSelectionsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$MeetingProcessingSelectionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$MeetingProcessingSelectionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                Value<String> meetingId = const Value.absent(),
+                Value<String> processingMode = const Value.absent(),
+                Value<String?> liveBundleManifestJson = const Value.absent(),
+                Value<String?> liveEngineVersion = const Value.absent(),
+                Value<String?> liveParametersJson = const Value.absent(),
+                Value<String?> refinementBundleManifestJson =
+                    const Value.absent(),
+                Value<String?> refinementEngineVersion = const Value.absent(),
+                Value<String?> refinementParametersJson = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MeetingProcessingSelectionsCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                meetingId: meetingId,
+                processingMode: processingMode,
+                liveBundleManifestJson: liveBundleManifestJson,
+                liveEngineVersion: liveEngineVersion,
+                liveParametersJson: liveParametersJson,
+                refinementBundleManifestJson: refinementBundleManifestJson,
+                refinementEngineVersion: refinementEngineVersion,
+                refinementParametersJson: refinementParametersJson,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                required String meetingId,
+                required String processingMode,
+                Value<String?> liveBundleManifestJson = const Value.absent(),
+                Value<String?> liveEngineVersion = const Value.absent(),
+                Value<String?> liveParametersJson = const Value.absent(),
+                Value<String?> refinementBundleManifestJson =
+                    const Value.absent(),
+                Value<String?> refinementEngineVersion = const Value.absent(),
+                Value<String?> refinementParametersJson = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MeetingProcessingSelectionsCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                meetingId: meetingId,
+                processingMode: processingMode,
+                liveBundleManifestJson: liveBundleManifestJson,
+                liveEngineVersion: liveEngineVersion,
+                liveParametersJson: liveParametersJson,
+                refinementBundleManifestJson: refinementBundleManifestJson,
+                refinementEngineVersion: refinementEngineVersion,
+                refinementParametersJson: refinementParametersJson,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $MeetingProcessingSelectionsTable,
+                    MeetingProcessingSelection
+                  >(table),
+                  $$MeetingProcessingSelectionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({meetingId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (meetingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.meetingId,
+                                referencedTable:
+                                    $$MeetingProcessingSelectionsTableReferences
+                                        ._meetingIdTable(db),
+                                referencedColumn:
+                                    $$MeetingProcessingSelectionsTableReferences
+                                        ._meetingIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$MeetingProcessingSelectionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MeetingProcessingSelectionsTable,
+      MeetingProcessingSelection,
+      $$MeetingProcessingSelectionsTableFilterComposer,
+      $$MeetingProcessingSelectionsTableOrderingComposer,
+      $$MeetingProcessingSelectionsTableAnnotationComposer,
+      $$MeetingProcessingSelectionsTableCreateCompanionBuilder,
+      $$MeetingProcessingSelectionsTableUpdateCompanionBuilder,
+      (
+        MeetingProcessingSelection,
+        $$MeetingProcessingSelectionsTableReferences,
+      ),
+      MeetingProcessingSelection,
+      PrefetchHooks Function({bool meetingId})
+    >;
+typedef $$RemoteTranscriptionTasksTableCreateCompanionBuilder =
+    RemoteTranscriptionTasksCompanion Function({
+      required String id,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      required String meetingId,
+      required String endpoint,
+      required String credentialRef,
+      required String profileId,
+      Value<String?> requestJson,
+      Value<String?> uploadId,
+      Value<String?> jobId,
+      Value<String?> manifestDigest,
+      Value<String> state,
+      Value<String?> failureCode,
+      Value<int> confirmedBytes,
+      Value<int> totalBytes,
+      Value<int> attempts,
+      Value<int> retryAtUtcMs,
+      required int createdAtUtcMs,
+      required int updatedAtUtcMs,
+      Value<int?> retentionSeconds,
+      Value<int?> expiresAtUtcMs,
+      Value<int> rowid,
+    });
+typedef $$RemoteTranscriptionTasksTableUpdateCompanionBuilder =
+    RemoteTranscriptionTasksCompanion Function({
+      Value<String> id,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      Value<String> meetingId,
+      Value<String> endpoint,
+      Value<String> credentialRef,
+      Value<String> profileId,
+      Value<String?> requestJson,
+      Value<String?> uploadId,
+      Value<String?> jobId,
+      Value<String?> manifestDigest,
+      Value<String> state,
+      Value<String?> failureCode,
+      Value<int> confirmedBytes,
+      Value<int> totalBytes,
+      Value<int> attempts,
+      Value<int> retryAtUtcMs,
+      Value<int> createdAtUtcMs,
+      Value<int> updatedAtUtcMs,
+      Value<int?> retentionSeconds,
+      Value<int?> expiresAtUtcMs,
+      Value<int> rowid,
+    });
+
+final class $$RemoteTranscriptionTasksTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $RemoteTranscriptionTasksTable,
+          RemoteTranscriptionTask
+        > {
+  $$RemoteTranscriptionTasksTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $MeetingsTable _meetingIdTable(_$AppDatabase db) => db.meetings
+      .createAlias('remote_transcription_tasks__meeting_id__meetings__id');
+
+  $$MeetingsTableProcessedTableManager get meetingId {
+    final $_column = $_itemColumn<String>('meeting_id')!;
+
+    final manager = $$MeetingsTableTableManager(
+      $_db,
+      $_db.meetings,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_meetingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RemoteTranscriptionTasksTableFilterComposer
+    extends Composer<_$AppDatabase, $RemoteTranscriptionTasksTable> {
+  $$RemoteTranscriptionTasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endpoint => $composableBuilder(
+    column: $table.endpoint,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get credentialRef => $composableBuilder(
+    column: $table.credentialRef,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get profileId => $composableBuilder(
+    column: $table.profileId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get requestJson => $composableBuilder(
+    column: $table.requestJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get uploadId => $composableBuilder(
+    column: $table.uploadId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobId => $composableBuilder(
+    column: $table.jobId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get manifestDigest => $composableBuilder(
+    column: $table.manifestDigest,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get failureCode => $composableBuilder(
+    column: $table.failureCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get confirmedBytes => $composableBuilder(
+    column: $table.confirmedBytes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get totalBytes => $composableBuilder(
+    column: $table.totalBytes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get retryAtUtcMs => $composableBuilder(
+    column: $table.retryAtUtcMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAtUtcMs => $composableBuilder(
+    column: $table.createdAtUtcMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAtUtcMs => $composableBuilder(
+    column: $table.updatedAtUtcMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get retentionSeconds => $composableBuilder(
+    column: $table.retentionSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get expiresAtUtcMs => $composableBuilder(
+    column: $table.expiresAtUtcMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MeetingsTableFilterComposer get meetingId {
+    final $$MeetingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableFilterComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RemoteTranscriptionTasksTableOrderingComposer
+    extends Composer<_$AppDatabase, $RemoteTranscriptionTasksTable> {
+  $$RemoteTranscriptionTasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endpoint => $composableBuilder(
+    column: $table.endpoint,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get credentialRef => $composableBuilder(
+    column: $table.credentialRef,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get profileId => $composableBuilder(
+    column: $table.profileId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get requestJson => $composableBuilder(
+    column: $table.requestJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get uploadId => $composableBuilder(
+    column: $table.uploadId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jobId => $composableBuilder(
+    column: $table.jobId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get manifestDigest => $composableBuilder(
+    column: $table.manifestDigest,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get failureCode => $composableBuilder(
+    column: $table.failureCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get confirmedBytes => $composableBuilder(
+    column: $table.confirmedBytes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get totalBytes => $composableBuilder(
+    column: $table.totalBytes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get retryAtUtcMs => $composableBuilder(
+    column: $table.retryAtUtcMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAtUtcMs => $composableBuilder(
+    column: $table.createdAtUtcMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAtUtcMs => $composableBuilder(
+    column: $table.updatedAtUtcMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get retentionSeconds => $composableBuilder(
+    column: $table.retentionSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get expiresAtUtcMs => $composableBuilder(
+    column: $table.expiresAtUtcMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MeetingsTableOrderingComposer get meetingId {
+    final $$MeetingsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableOrderingComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RemoteTranscriptionTasksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RemoteTranscriptionTasksTable> {
+  $$RemoteTranscriptionTasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get endpoint =>
+      $composableBuilder(column: $table.endpoint, builder: (column) => column);
+
+  GeneratedColumn<String> get credentialRef => $composableBuilder(
+    column: $table.credentialRef,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get profileId =>
+      $composableBuilder(column: $table.profileId, builder: (column) => column);
+
+  GeneratedColumn<String> get requestJson => $composableBuilder(
+    column: $table.requestJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get uploadId =>
+      $composableBuilder(column: $table.uploadId, builder: (column) => column);
+
+  GeneratedColumn<String> get jobId =>
+      $composableBuilder(column: $table.jobId, builder: (column) => column);
+
+  GeneratedColumn<String> get manifestDigest => $composableBuilder(
+    column: $table.manifestDigest,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<String> get failureCode => $composableBuilder(
+    column: $table.failureCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get confirmedBytes => $composableBuilder(
+    column: $table.confirmedBytes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get totalBytes => $composableBuilder(
+    column: $table.totalBytes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<int> get retryAtUtcMs => $composableBuilder(
+    column: $table.retryAtUtcMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAtUtcMs => $composableBuilder(
+    column: $table.createdAtUtcMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get updatedAtUtcMs => $composableBuilder(
+    column: $table.updatedAtUtcMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get retentionSeconds => $composableBuilder(
+    column: $table.retentionSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get expiresAtUtcMs => $composableBuilder(
+    column: $table.expiresAtUtcMs,
+    builder: (column) => column,
+  );
+
+  $$MeetingsTableAnnotationComposer get meetingId {
+    final $$MeetingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RemoteTranscriptionTasksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RemoteTranscriptionTasksTable,
+          RemoteTranscriptionTask,
+          $$RemoteTranscriptionTasksTableFilterComposer,
+          $$RemoteTranscriptionTasksTableOrderingComposer,
+          $$RemoteTranscriptionTasksTableAnnotationComposer,
+          $$RemoteTranscriptionTasksTableCreateCompanionBuilder,
+          $$RemoteTranscriptionTasksTableUpdateCompanionBuilder,
+          (RemoteTranscriptionTask, $$RemoteTranscriptionTasksTableReferences),
+          RemoteTranscriptionTask,
+          PrefetchHooks Function({bool meetingId})
+        > {
+  $$RemoteTranscriptionTasksTableTableManager(
+    _$AppDatabase db,
+    $RemoteTranscriptionTasksTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RemoteTranscriptionTasksTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$RemoteTranscriptionTasksTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$RemoteTranscriptionTasksTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                Value<String> meetingId = const Value.absent(),
+                Value<String> endpoint = const Value.absent(),
+                Value<String> credentialRef = const Value.absent(),
+                Value<String> profileId = const Value.absent(),
+                Value<String?> requestJson = const Value.absent(),
+                Value<String?> uploadId = const Value.absent(),
+                Value<String?> jobId = const Value.absent(),
+                Value<String?> manifestDigest = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<String?> failureCode = const Value.absent(),
+                Value<int> confirmedBytes = const Value.absent(),
+                Value<int> totalBytes = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<int> retryAtUtcMs = const Value.absent(),
+                Value<int> createdAtUtcMs = const Value.absent(),
+                Value<int> updatedAtUtcMs = const Value.absent(),
+                Value<int?> retentionSeconds = const Value.absent(),
+                Value<int?> expiresAtUtcMs = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RemoteTranscriptionTasksCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                meetingId: meetingId,
+                endpoint: endpoint,
+                credentialRef: credentialRef,
+                profileId: profileId,
+                requestJson: requestJson,
+                uploadId: uploadId,
+                jobId: jobId,
+                manifestDigest: manifestDigest,
+                state: state,
+                failureCode: failureCode,
+                confirmedBytes: confirmedBytes,
+                totalBytes: totalBytes,
+                attempts: attempts,
+                retryAtUtcMs: retryAtUtcMs,
+                createdAtUtcMs: createdAtUtcMs,
+                updatedAtUtcMs: updatedAtUtcMs,
+                retentionSeconds: retentionSeconds,
+                expiresAtUtcMs: expiresAtUtcMs,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                required String meetingId,
+                required String endpoint,
+                required String credentialRef,
+                required String profileId,
+                Value<String?> requestJson = const Value.absent(),
+                Value<String?> uploadId = const Value.absent(),
+                Value<String?> jobId = const Value.absent(),
+                Value<String?> manifestDigest = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<String?> failureCode = const Value.absent(),
+                Value<int> confirmedBytes = const Value.absent(),
+                Value<int> totalBytes = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<int> retryAtUtcMs = const Value.absent(),
+                required int createdAtUtcMs,
+                required int updatedAtUtcMs,
+                Value<int?> retentionSeconds = const Value.absent(),
+                Value<int?> expiresAtUtcMs = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RemoteTranscriptionTasksCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                meetingId: meetingId,
+                endpoint: endpoint,
+                credentialRef: credentialRef,
+                profileId: profileId,
+                requestJson: requestJson,
+                uploadId: uploadId,
+                jobId: jobId,
+                manifestDigest: manifestDigest,
+                state: state,
+                failureCode: failureCode,
+                confirmedBytes: confirmedBytes,
+                totalBytes: totalBytes,
+                attempts: attempts,
+                retryAtUtcMs: retryAtUtcMs,
+                createdAtUtcMs: createdAtUtcMs,
+                updatedAtUtcMs: updatedAtUtcMs,
+                retentionSeconds: retentionSeconds,
+                expiresAtUtcMs: expiresAtUtcMs,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $RemoteTranscriptionTasksTable,
+                    RemoteTranscriptionTask
+                  >(table),
+                  $$RemoteTranscriptionTasksTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({meetingId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (meetingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.meetingId,
+                                referencedTable:
+                                    $$RemoteTranscriptionTasksTableReferences
+                                        ._meetingIdTable(db),
+                                referencedColumn:
+                                    $$RemoteTranscriptionTasksTableReferences
+                                        ._meetingIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$RemoteTranscriptionTasksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RemoteTranscriptionTasksTable,
+      RemoteTranscriptionTask,
+      $$RemoteTranscriptionTasksTableFilterComposer,
+      $$RemoteTranscriptionTasksTableOrderingComposer,
+      $$RemoteTranscriptionTasksTableAnnotationComposer,
+      $$RemoteTranscriptionTasksTableCreateCompanionBuilder,
+      $$RemoteTranscriptionTasksTableUpdateCompanionBuilder,
+      (RemoteTranscriptionTask, $$RemoteTranscriptionTasksTableReferences),
+      RemoteTranscriptionTask,
+      PrefetchHooks Function({bool meetingId})
+    >;
+typedef $$RemoteTranscriptVersionsTableCreateCompanionBuilder =
+    RemoteTranscriptVersionsCompanion Function({
+      required String id,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      required String meetingId,
+      Value<String?> sourceMeetingId,
+      Value<String?> sourceRunId,
+      required String resultJson,
+      Value<String?> editedText,
+      required int createdAtUtcMs,
+      Value<int> rowid,
+    });
+typedef $$RemoteTranscriptVersionsTableUpdateCompanionBuilder =
+    RemoteTranscriptVersionsCompanion Function({
+      Value<String> id,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      Value<String> meetingId,
+      Value<String?> sourceMeetingId,
+      Value<String?> sourceRunId,
+      Value<String> resultJson,
+      Value<String?> editedText,
+      Value<int> createdAtUtcMs,
+      Value<int> rowid,
+    });
+
+final class $$RemoteTranscriptVersionsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $RemoteTranscriptVersionsTable,
+          RemoteTranscriptVersion
+        > {
+  $$RemoteTranscriptVersionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $MeetingsTable _meetingIdTable(_$AppDatabase db) => db.meetings
+      .createAlias('remote_transcript_versions__meeting_id__meetings__id');
+
+  $$MeetingsTableProcessedTableManager get meetingId {
+    final $_column = $_itemColumn<String>('meeting_id')!;
+
+    final manager = $$MeetingsTableTableManager(
+      $_db,
+      $_db.meetings,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_meetingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RemoteTranscriptVersionsTableFilterComposer
+    extends Composer<_$AppDatabase, $RemoteTranscriptVersionsTable> {
+  $$RemoteTranscriptVersionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceMeetingId => $composableBuilder(
+    column: $table.sourceMeetingId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceRunId => $composableBuilder(
+    column: $table.sourceRunId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get resultJson => $composableBuilder(
+    column: $table.resultJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get editedText => $composableBuilder(
+    column: $table.editedText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAtUtcMs => $composableBuilder(
+    column: $table.createdAtUtcMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MeetingsTableFilterComposer get meetingId {
+    final $$MeetingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableFilterComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RemoteTranscriptVersionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RemoteTranscriptVersionsTable> {
+  $$RemoteTranscriptVersionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceMeetingId => $composableBuilder(
+    column: $table.sourceMeetingId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceRunId => $composableBuilder(
+    column: $table.sourceRunId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get resultJson => $composableBuilder(
+    column: $table.resultJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get editedText => $composableBuilder(
+    column: $table.editedText,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAtUtcMs => $composableBuilder(
+    column: $table.createdAtUtcMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MeetingsTableOrderingComposer get meetingId {
+    final $$MeetingsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableOrderingComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RemoteTranscriptVersionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RemoteTranscriptVersionsTable> {
+  $$RemoteTranscriptVersionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get sourceMeetingId => $composableBuilder(
+    column: $table.sourceMeetingId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceRunId => $composableBuilder(
+    column: $table.sourceRunId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get resultJson => $composableBuilder(
+    column: $table.resultJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get editedText => $composableBuilder(
+    column: $table.editedText,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAtUtcMs => $composableBuilder(
+    column: $table.createdAtUtcMs,
+    builder: (column) => column,
+  );
+
+  $$MeetingsTableAnnotationComposer get meetingId {
+    final $$MeetingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RemoteTranscriptVersionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RemoteTranscriptVersionsTable,
+          RemoteTranscriptVersion,
+          $$RemoteTranscriptVersionsTableFilterComposer,
+          $$RemoteTranscriptVersionsTableOrderingComposer,
+          $$RemoteTranscriptVersionsTableAnnotationComposer,
+          $$RemoteTranscriptVersionsTableCreateCompanionBuilder,
+          $$RemoteTranscriptVersionsTableUpdateCompanionBuilder,
+          (RemoteTranscriptVersion, $$RemoteTranscriptVersionsTableReferences),
+          RemoteTranscriptVersion,
+          PrefetchHooks Function({bool meetingId})
+        > {
+  $$RemoteTranscriptVersionsTableTableManager(
+    _$AppDatabase db,
+    $RemoteTranscriptVersionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RemoteTranscriptVersionsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$RemoteTranscriptVersionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$RemoteTranscriptVersionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                Value<String> meetingId = const Value.absent(),
+                Value<String?> sourceMeetingId = const Value.absent(),
+                Value<String?> sourceRunId = const Value.absent(),
+                Value<String> resultJson = const Value.absent(),
+                Value<String?> editedText = const Value.absent(),
+                Value<int> createdAtUtcMs = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RemoteTranscriptVersionsCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                meetingId: meetingId,
+                sourceMeetingId: sourceMeetingId,
+                sourceRunId: sourceRunId,
+                resultJson: resultJson,
+                editedText: editedText,
+                createdAtUtcMs: createdAtUtcMs,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                required String meetingId,
+                Value<String?> sourceMeetingId = const Value.absent(),
+                Value<String?> sourceRunId = const Value.absent(),
+                required String resultJson,
+                Value<String?> editedText = const Value.absent(),
+                required int createdAtUtcMs,
+                Value<int> rowid = const Value.absent(),
+              }) => RemoteTranscriptVersionsCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                meetingId: meetingId,
+                sourceMeetingId: sourceMeetingId,
+                sourceRunId: sourceRunId,
+                resultJson: resultJson,
+                editedText: editedText,
+                createdAtUtcMs: createdAtUtcMs,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $RemoteTranscriptVersionsTable,
+                    RemoteTranscriptVersion
+                  >(table),
+                  $$RemoteTranscriptVersionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({meetingId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (meetingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.meetingId,
+                                referencedTable:
+                                    $$RemoteTranscriptVersionsTableReferences
+                                        ._meetingIdTable(db),
+                                referencedColumn:
+                                    $$RemoteTranscriptVersionsTableReferences
+                                        ._meetingIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$RemoteTranscriptVersionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RemoteTranscriptVersionsTable,
+      RemoteTranscriptVersion,
+      $$RemoteTranscriptVersionsTableFilterComposer,
+      $$RemoteTranscriptVersionsTableOrderingComposer,
+      $$RemoteTranscriptVersionsTableAnnotationComposer,
+      $$RemoteTranscriptVersionsTableCreateCompanionBuilder,
+      $$RemoteTranscriptVersionsTableUpdateCompanionBuilder,
+      (RemoteTranscriptVersion, $$RemoteTranscriptVersionsTableReferences),
+      RemoteTranscriptVersion,
+      PrefetchHooks Function({bool meetingId})
     >;
 typedef $$AudioSegmentsTableCreateCompanionBuilder =
     AudioSegmentsCompanion Function({
@@ -20775,6 +26998,36 @@ final class $$TranscriptRunsTableReferences
   }
 
   static MultiTypedResultKey<
+    $TranscriptProcessingMetadataTable,
+    List<TranscriptProcessingMetadataData>
+  >
+  _transcriptProcessingMetadataRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.transcriptProcessingMetadata,
+    aliasName:
+        'transcript_runs__id__transcript_processing_metadata__transcript_run_id',
+  );
+
+  $$TranscriptProcessingMetadataTableProcessedTableManager
+  get transcriptProcessingMetadataRefs {
+    final manager =
+        $$TranscriptProcessingMetadataTableTableManager(
+          $_db,
+          $_db.transcriptProcessingMetadata,
+        ).filter(
+          (f) => f.transcriptRunId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _transcriptProcessingMetadataRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
     $MeetingTranscriptSelectionsTable,
     List<MeetingTranscriptSelection>
   >
@@ -20963,6 +27216,35 @@ class $$TranscriptRunsTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> transcriptProcessingMetadataRefs(
+    Expression<bool> Function(
+      $$TranscriptProcessingMetadataTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$TranscriptProcessingMetadataTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.transcriptProcessingMetadata,
+          getReferencedColumn: (t) => t.transcriptRunId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TranscriptProcessingMetadataTableFilterComposer(
+                $db: $db,
+                $table: $db.transcriptProcessingMetadata,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
   }
 
   Expression<bool> meetingTranscriptSelectionsRefs(
@@ -21275,6 +27557,35 @@ class $$TranscriptRunsTableAnnotationComposer
     return composer;
   }
 
+  Expression<T> transcriptProcessingMetadataRefs<T extends Object>(
+    Expression<T> Function(
+      $$TranscriptProcessingMetadataTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$TranscriptProcessingMetadataTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.transcriptProcessingMetadata,
+          getReferencedColumn: (t) => t.transcriptRunId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TranscriptProcessingMetadataTableAnnotationComposer(
+                $db: $db,
+                $table: $db.transcriptProcessingMetadata,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
   Expression<T> meetingTranscriptSelectionsRefs<T extends Object>(
     Expression<T> Function(
       $$MeetingTranscriptSelectionsTableAnnotationComposer a,
@@ -21347,6 +27658,7 @@ class $$TranscriptRunsTableTableManager
           PrefetchHooks Function({
             bool meetingId,
             bool modelId,
+            bool transcriptProcessingMetadataRefs,
             bool meetingTranscriptSelectionsRefs,
             bool transcriptSegmentsRefs,
           })
@@ -21460,12 +27772,15 @@ class $$TranscriptRunsTableTableManager
               ({
                 meetingId = false,
                 modelId = false,
+                transcriptProcessingMetadataRefs = false,
                 meetingTranscriptSelectionsRefs = false,
                 transcriptSegmentsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (transcriptProcessingMetadataRefs)
+                      db.transcriptProcessingMetadata,
                     if (meetingTranscriptSelectionsRefs)
                       db.meetingTranscriptSelections,
                     if (transcriptSegmentsRefs) db.transcriptSegments,
@@ -21521,6 +27836,27 @@ class $$TranscriptRunsTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (transcriptProcessingMetadataRefs)
+                        await $_getPrefetchedData<
+                          TranscriptRun,
+                          $TranscriptRunsTable,
+                          TranscriptProcessingMetadataData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TranscriptRunsTableReferences
+                              ._transcriptProcessingMetadataRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TranscriptRunsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).transcriptProcessingMetadataRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.transcriptRunId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (meetingTranscriptSelectionsRefs)
                         await $_getPrefetchedData<
                           TranscriptRun,
@@ -21586,9 +27922,613 @@ typedef $$TranscriptRunsTableProcessedTableManager =
       PrefetchHooks Function({
         bool meetingId,
         bool modelId,
+        bool transcriptProcessingMetadataRefs,
         bool meetingTranscriptSelectionsRefs,
         bool transcriptSegmentsRefs,
       })
+    >;
+typedef $$TranscriptProcessingMetadataTableCreateCompanionBuilder =
+    TranscriptProcessingMetadataCompanion Function({
+      required String id,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      required String transcriptRunId,
+      required String meetingId,
+      required String processingRole,
+      Value<String?> sourceRunId,
+      required String completeness,
+      required String bundleManifestJson,
+      Value<String?> audioInventorySha256,
+      Value<int> rowid,
+    });
+typedef $$TranscriptProcessingMetadataTableUpdateCompanionBuilder =
+    TranscriptProcessingMetadataCompanion Function({
+      Value<String> id,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowRevision,
+      Value<bool> isDeleted,
+      Value<int?> deletedAt,
+      Value<String> transcriptRunId,
+      Value<String> meetingId,
+      Value<String> processingRole,
+      Value<String?> sourceRunId,
+      Value<String> completeness,
+      Value<String> bundleManifestJson,
+      Value<String?> audioInventorySha256,
+      Value<int> rowid,
+    });
+
+final class $$TranscriptProcessingMetadataTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TranscriptProcessingMetadataTable,
+          TranscriptProcessingMetadataData
+        > {
+  $$TranscriptProcessingMetadataTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TranscriptRunsTable _transcriptRunIdTable(
+    _$AppDatabase db,
+  ) => db.transcriptRuns.createAlias(
+    'transcript_processing_metadata__transcript_run_id__transcript_runs__id',
+  );
+
+  $$TranscriptRunsTableProcessedTableManager get transcriptRunId {
+    final $_column = $_itemColumn<String>('transcript_run_id')!;
+
+    final manager = $$TranscriptRunsTableTableManager(
+      $_db,
+      $_db.transcriptRuns,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_transcriptRunIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $MeetingsTable _meetingIdTable(_$AppDatabase db) => db.meetings
+      .createAlias('transcript_processing_metadata__meeting_id__meetings__id');
+
+  $$MeetingsTableProcessedTableManager get meetingId {
+    final $_column = $_itemColumn<String>('meeting_id')!;
+
+    final manager = $$MeetingsTableTableManager(
+      $_db,
+      $_db.meetings,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_meetingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TranscriptProcessingMetadataTableFilterComposer
+    extends Composer<_$AppDatabase, $TranscriptProcessingMetadataTable> {
+  $$TranscriptProcessingMetadataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get processingRole => $composableBuilder(
+    column: $table.processingRole,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceRunId => $composableBuilder(
+    column: $table.sourceRunId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get completeness => $composableBuilder(
+    column: $table.completeness,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bundleManifestJson => $composableBuilder(
+    column: $table.bundleManifestJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get audioInventorySha256 => $composableBuilder(
+    column: $table.audioInventorySha256,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TranscriptRunsTableFilterComposer get transcriptRunId {
+    final $$TranscriptRunsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.transcriptRunId,
+      referencedTable: $db.transcriptRuns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TranscriptRunsTableFilterComposer(
+            $db: $db,
+            $table: $db.transcriptRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MeetingsTableFilterComposer get meetingId {
+    final $$MeetingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableFilterComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TranscriptProcessingMetadataTableOrderingComposer
+    extends Composer<_$AppDatabase, $TranscriptProcessingMetadataTable> {
+  $$TranscriptProcessingMetadataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get processingRole => $composableBuilder(
+    column: $table.processingRole,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceRunId => $composableBuilder(
+    column: $table.sourceRunId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get completeness => $composableBuilder(
+    column: $table.completeness,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bundleManifestJson => $composableBuilder(
+    column: $table.bundleManifestJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get audioInventorySha256 => $composableBuilder(
+    column: $table.audioInventorySha256,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TranscriptRunsTableOrderingComposer get transcriptRunId {
+    final $$TranscriptRunsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.transcriptRunId,
+      referencedTable: $db.transcriptRuns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TranscriptRunsTableOrderingComposer(
+            $db: $db,
+            $table: $db.transcriptRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MeetingsTableOrderingComposer get meetingId {
+    final $$MeetingsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableOrderingComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TranscriptProcessingMetadataTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TranscriptProcessingMetadataTable> {
+  $$TranscriptProcessingMetadataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get rowRevision => $composableBuilder(
+    column: $table.rowRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<int> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get processingRole => $composableBuilder(
+    column: $table.processingRole,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceRunId => $composableBuilder(
+    column: $table.sourceRunId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get completeness => $composableBuilder(
+    column: $table.completeness,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get bundleManifestJson => $composableBuilder(
+    column: $table.bundleManifestJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get audioInventorySha256 => $composableBuilder(
+    column: $table.audioInventorySha256,
+    builder: (column) => column,
+  );
+
+  $$TranscriptRunsTableAnnotationComposer get transcriptRunId {
+    final $$TranscriptRunsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.transcriptRunId,
+      referencedTable: $db.transcriptRuns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TranscriptRunsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.transcriptRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MeetingsTableAnnotationComposer get meetingId {
+    final $$MeetingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.meetingId,
+      referencedTable: $db.meetings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MeetingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.meetings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TranscriptProcessingMetadataTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TranscriptProcessingMetadataTable,
+          TranscriptProcessingMetadataData,
+          $$TranscriptProcessingMetadataTableFilterComposer,
+          $$TranscriptProcessingMetadataTableOrderingComposer,
+          $$TranscriptProcessingMetadataTableAnnotationComposer,
+          $$TranscriptProcessingMetadataTableCreateCompanionBuilder,
+          $$TranscriptProcessingMetadataTableUpdateCompanionBuilder,
+          (
+            TranscriptProcessingMetadataData,
+            $$TranscriptProcessingMetadataTableReferences,
+          ),
+          TranscriptProcessingMetadataData,
+          PrefetchHooks Function({bool transcriptRunId, bool meetingId})
+        > {
+  $$TranscriptProcessingMetadataTableTableManager(
+    _$AppDatabase db,
+    $TranscriptProcessingMetadataTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TranscriptProcessingMetadataTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$TranscriptProcessingMetadataTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TranscriptProcessingMetadataTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                Value<String> transcriptRunId = const Value.absent(),
+                Value<String> meetingId = const Value.absent(),
+                Value<String> processingRole = const Value.absent(),
+                Value<String?> sourceRunId = const Value.absent(),
+                Value<String> completeness = const Value.absent(),
+                Value<String> bundleManifestJson = const Value.absent(),
+                Value<String?> audioInventorySha256 = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TranscriptProcessingMetadataCompanion(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                transcriptRunId: transcriptRunId,
+                meetingId: meetingId,
+                processingRole: processingRole,
+                sourceRunId: sourceRunId,
+                completeness: completeness,
+                bundleManifestJson: bundleManifestJson,
+                audioInventorySha256: audioInventorySha256,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowRevision = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
+                Value<int?> deletedAt = const Value.absent(),
+                required String transcriptRunId,
+                required String meetingId,
+                required String processingRole,
+                Value<String?> sourceRunId = const Value.absent(),
+                required String completeness,
+                required String bundleManifestJson,
+                Value<String?> audioInventorySha256 = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TranscriptProcessingMetadataCompanion.insert(
+                id: id,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowRevision: rowRevision,
+                isDeleted: isDeleted,
+                deletedAt: deletedAt,
+                transcriptRunId: transcriptRunId,
+                meetingId: meetingId,
+                processingRole: processingRole,
+                sourceRunId: sourceRunId,
+                completeness: completeness,
+                bundleManifestJson: bundleManifestJson,
+                audioInventorySha256: audioInventorySha256,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $TranscriptProcessingMetadataTable,
+                    TranscriptProcessingMetadataData
+                  >(table),
+                  $$TranscriptProcessingMetadataTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({transcriptRunId = false, meetingId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (transcriptRunId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.transcriptRunId,
+                                referencedTable:
+                                    $$TranscriptProcessingMetadataTableReferences
+                                        ._transcriptRunIdTable(db),
+                                referencedColumn:
+                                    $$TranscriptProcessingMetadataTableReferences
+                                        ._transcriptRunIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (meetingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.meetingId,
+                                referencedTable:
+                                    $$TranscriptProcessingMetadataTableReferences
+                                        ._meetingIdTable(db),
+                                referencedColumn:
+                                    $$TranscriptProcessingMetadataTableReferences
+                                        ._meetingIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TranscriptProcessingMetadataTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TranscriptProcessingMetadataTable,
+      TranscriptProcessingMetadataData,
+      $$TranscriptProcessingMetadataTableFilterComposer,
+      $$TranscriptProcessingMetadataTableOrderingComposer,
+      $$TranscriptProcessingMetadataTableAnnotationComposer,
+      $$TranscriptProcessingMetadataTableCreateCompanionBuilder,
+      $$TranscriptProcessingMetadataTableUpdateCompanionBuilder,
+      (
+        TranscriptProcessingMetadataData,
+        $$TranscriptProcessingMetadataTableReferences,
+      ),
+      TranscriptProcessingMetadataData,
+      PrefetchHooks Function({bool transcriptRunId, bool meetingId})
     >;
 typedef $$MeetingTranscriptSelectionsTableCreateCompanionBuilder =
     MeetingTranscriptSelectionsCompanion Function({
@@ -28679,6 +35619,22 @@ class $AppDatabaseManager {
       $$MeetingsTableTableManager(_db, _db.meetings);
   $$RecordingPreferencesTableTableManager get recordingPreferences =>
       $$RecordingPreferencesTableTableManager(_db, _db.recordingPreferences);
+  $$MeetingProcessingSelectionsTableTableManager
+  get meetingProcessingSelections =>
+      $$MeetingProcessingSelectionsTableTableManager(
+        _db,
+        _db.meetingProcessingSelections,
+      );
+  $$RemoteTranscriptionTasksTableTableManager get remoteTranscriptionTasks =>
+      $$RemoteTranscriptionTasksTableTableManager(
+        _db,
+        _db.remoteTranscriptionTasks,
+      );
+  $$RemoteTranscriptVersionsTableTableManager get remoteTranscriptVersions =>
+      $$RemoteTranscriptVersionsTableTableManager(
+        _db,
+        _db.remoteTranscriptVersions,
+      );
   $$AudioSegmentsTableTableManager get audioSegments =>
       $$AudioSegmentsTableTableManager(_db, _db.audioSegments);
   $$RecoveryFindingsTableTableManager get recoveryFindings =>
@@ -28691,6 +35647,12 @@ class $AppDatabaseManager {
       $$ModelManifestsTableTableManager(_db, _db.modelManifests);
   $$TranscriptRunsTableTableManager get transcriptRuns =>
       $$TranscriptRunsTableTableManager(_db, _db.transcriptRuns);
+  $$TranscriptProcessingMetadataTableTableManager
+  get transcriptProcessingMetadata =>
+      $$TranscriptProcessingMetadataTableTableManager(
+        _db,
+        _db.transcriptProcessingMetadata,
+      );
   $$MeetingTranscriptSelectionsTableTableManager
   get meetingTranscriptSelections =>
       $$MeetingTranscriptSelectionsTableTableManager(

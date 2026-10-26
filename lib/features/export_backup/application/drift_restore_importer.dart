@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:loquiris/core/failure.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/data/database/app_database.dart';
+import 'package:loquiris/features/remote_transcription/domain/remote_transcript.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
@@ -409,6 +410,41 @@ final class DriftRestoreImporter {
         orderBy: 'id',
       );
     }
+    final versions = <Map<String, Object?>>[];
+    for (final row in rows[_remoteTranscriptVersions]!) {
+      try {
+        final encoded = row['result_json']! as String;
+        if (encoded.length > 16 * 1024 * 1024) {
+          throw const FormatException('result_limit');
+        }
+        final json = jsonDecode(encoded) as Map<String, Object?>;
+        final sourceMeeting =
+            row['source_meeting_id'] as String? ?? row['meeting_id']! as String;
+        final sourceRun =
+            row['source_run_id'] as String? ?? row['id']! as String;
+        final task = rows[_remoteTranscriptionTasks]!
+            .where((t) => t['id'] == row['id'])
+            .firstOrNull;
+        final digest =
+            task?['manifest_digest'] as String? ??
+            json['audioManifestDigest']! as String;
+        final parsed = RemoteTranscript.tryParse(
+          json,
+          meetingId: sourceMeeting,
+          runId: sourceRun,
+          manifestDigest: digest,
+        );
+        if (parsed == null) throw const FormatException('remote_result');
+        versions.add({
+          ...row,
+          'source_meeting_id': sourceMeeting,
+          'source_run_id': sourceRun,
+        });
+      } on Object {
+        throw const _RestoreAbort('restore_snapshot_invalid');
+      }
+    }
+    rows[_remoteTranscriptVersions] = versions;
     final transcriptSegmentIds = rows[_transcriptSegments]!
         .map((row) => row['id'])
         .whereType<String>()
@@ -498,7 +534,24 @@ final class DriftRestoreImporter {
         )
         .get();
     return result
-        .map((row) => Map<String, Object?>.unmodifiable(row.data))
+        .map(
+          (row) => Map<String, Object?>.unmodifiable(
+            table == _remoteTranscriptionTasks
+                ? {
+                    ...row.data,
+                    'credential_ref': '',
+                    'state': 'restored',
+                    'request_json': null,
+                    'upload_id': null,
+                    'job_id': null,
+                    'failure_code': 'remote_restore_requires_action',
+                    'attempts': 0,
+                    'retry_at_utc_ms': 0,
+                    'confirmed_bytes': 0,
+                  }
+                : row.data,
+          ),
+        )
         .toList(growable: false);
   }
 
@@ -533,15 +586,19 @@ final class DriftRestoreImporter {
   ) {
     final sourceStorageKey = _storageKey(source.meetingId);
     final targetStorageKey = _storageKey(targetMeetingId);
-    final idMappings = <String, String>{source.meetingId: targetMeetingId};
+    final idMappings = <String, Map<String, String>>{
+      _meetings: {source.meetingId: targetMeetingId},
+    };
     for (final entry in source.rowsByTable.entries) {
       if (entry.key == _meetings) continue;
+      final tableMappings = <String, String>{};
+      idMappings[entry.key] = tableMappings;
       for (final row in entry.value) {
         final sourceId = row['id'];
         if (sourceId is! String) {
           throw const _RestoreAbort('restore_snapshot_invalid');
         }
-        idMappings[sourceId] = uuid.v5(
+        tableMappings[sourceId] = uuid.v5(
           Namespace.url.value,
           'loquiris:restore:row:$targetMeetingId:${entry.key}:$sourceId',
         );
@@ -552,11 +609,16 @@ final class DriftRestoreImporter {
       transformed[entry.key] = entry.value
           .map((row) {
             final copy = Map<String, Object?>.of(row);
-            for (final column
-                in _identityReferenceColumns[entry.key] ?? const <String>[]) {
-              final value = copy[column];
-              if (value is String && idMappings.containsKey(value)) {
-                copy[column] = idMappings[value];
+            final references =
+                _identityReferenceColumns[entry.key] ??
+                const <String, String>{};
+            for (final reference in references.entries) {
+              final value = copy[reference.key];
+              final tableMappings = idMappings[reference.value];
+              if (value is String &&
+                  tableMappings != null &&
+                  tableMappings.containsKey(value)) {
+                copy[reference.key] = tableMappings[value];
               }
             }
             if (entry.key == _meetings) {
@@ -580,7 +642,7 @@ final class DriftRestoreImporter {
             if (entry.key == _revisions) {
               copy['payload_json'] = _remapRevisionPayload(
                 copy['payload_json'],
-                idMappings,
+                idMappings[_speakers] ?? const <String, String>{},
               );
             }
             return Map<String, Object?>.unmodifiable(copy);
@@ -694,7 +756,26 @@ final class _MeetingAggregate {
   Map<String, Object?> get canonical => Map<String, Object?>.fromEntries(
     (rowsByTable.entries.toList()
           ..sort((left, right) => left.key.compareTo(right.key)))
-        .map((entry) => MapEntry(entry.key, entry.value)),
+        // New empty optional tables must not change legacy restore identities.
+        .where(
+          (entry) =>
+              !const {
+                _transcriptProcessingMetadata,
+                _meetingProcessingSelections,
+                _remoteTranscriptionTasks,
+                _remoteTranscriptVersions,
+              }.contains(entry.key) ||
+              entry.value.isNotEmpty,
+        )
+        .map(
+          (entry) => MapEntry(
+            entry.key,
+            entry.value.toList()..sort(
+              (left, right) =>
+                  (left['id']! as String).compareTo(right['id']! as String),
+            ),
+          ),
+        ),
   );
 
   Set<String> get referencedModelIds => <String>{
@@ -827,11 +908,15 @@ final _sha256Pattern = RegExp(r'^[a-f0-9]{64}$');
 final _identifier = RegExp(r'^[a-z][a-z0-9_]*$');
 
 const _meetings = 'meetings';
+const _meetingProcessingSelections = 'meeting_processing_selections';
+const _remoteTranscriptionTasks = 'remote_transcription_tasks';
+const _remoteTranscriptVersions = 'remote_transcript_versions';
 const _audioSegments = 'audio_segments';
 const _recoveryFindings = 'recovery_findings';
 const _sessionEvents = 'session_events';
 const _bookmarks = 'bookmarks';
 const _transcriptRuns = 'transcript_runs';
+const _transcriptProcessingMetadata = 'transcript_processing_metadata';
 const _meetingTranscriptSelections = 'meeting_transcript_selections';
 const _transcriptSegments = 'transcript_segments';
 const _languageDecisions = 'language_decisions';
@@ -846,11 +931,15 @@ const _modelCapabilityEntries = 'model_capability_entries';
 const _modelModeEntries = 'model_mode_entries';
 
 const _directMeetingTables = <String>[
+  _remoteTranscriptionTasks,
+  _remoteTranscriptVersions,
+  _meetingProcessingSelections,
   _audioSegments,
   _recoveryFindings,
   _sessionEvents,
   _bookmarks,
   _transcriptRuns,
+  _transcriptProcessingMetadata,
   _meetingTranscriptSelections,
   _transcriptSegments,
   _diarizationRuns,
@@ -862,11 +951,15 @@ const _directMeetingTables = <String>[
 
 const _meetingInsertOrder = <String>[
   _meetings,
+  _remoteTranscriptionTasks,
+  _remoteTranscriptVersions,
+  _meetingProcessingSelections,
   _audioSegments,
   _recoveryFindings,
   _sessionEvents,
   _bookmarks,
   _transcriptRuns,
+  _transcriptProcessingMetadata,
   _diarizationRuns,
   _speakers,
   _speakerAssignments,
@@ -878,51 +971,76 @@ const _meetingInsertOrder = <String>[
   _processingJobs,
 ];
 
-const _identityReferenceColumns = <String, List<String>>{
-  _meetings: <String>['id'],
-  _audioSegments: <String>['id', 'meeting_id'],
-  _recoveryFindings: <String>['id', 'meeting_id'],
-  _sessionEvents: <String>['id', 'meeting_id'],
-  _bookmarks: <String>['id', 'meeting_id'],
-  _transcriptRuns: <String>['id', 'meeting_id'],
-  _meetingTranscriptSelections: <String>[
-    'id',
-    'meeting_id',
-    'transcript_run_id',
-  ],
-  _transcriptSegments: <String>[
-    'id',
-    'meeting_id',
-    'transcript_run_id',
-    'speaker_id',
-    'speaker_meeting_id',
-  ],
-  _languageDecisions: <String>['id', 'transcript_segment_id'],
-  _transcriptLanguageSelections: <String>[
-    'id',
-    'transcript_segment_id',
-    'language_decision_id',
-  ],
-  _diarizationRuns: <String>['id', 'meeting_id'],
-  _speakers: <String>['id', 'meeting_id', 'analysis_run_id'],
-  _speakerAssignments: <String>[
-    'id',
-    'meeting_id',
-    'analysis_run_id',
-    'speaker_id',
-    'speaker_analysis_run_id',
-  ],
-  _revisions: <String>[
-    'id',
-    'meeting_id',
-    'transcript_segment_id',
-    'speaker_assignment_id',
-    'speaker_id',
-  ],
-  _processingJobs: <String>[
-    'id',
-    'meeting_id',
-    'transcript_run_id',
-    'diarization_run_id',
-  ],
+const _identityReferenceColumns = <String, Map<String, String>>{
+  _remoteTranscriptionTasks: {
+    'id': _remoteTranscriptionTasks,
+    'meeting_id': _meetings,
+  },
+  _remoteTranscriptVersions: {
+    'id': _remoteTranscriptVersions,
+    'meeting_id': _meetings,
+  },
+  _meetings: {'id': _meetings},
+  _meetingProcessingSelections: {
+    'id': _meetingProcessingSelections,
+    'meeting_id': _meetings,
+  },
+  _audioSegments: {'id': _audioSegments, 'meeting_id': _meetings},
+  _recoveryFindings: {'id': _recoveryFindings, 'meeting_id': _meetings},
+  _sessionEvents: {'id': _sessionEvents, 'meeting_id': _meetings},
+  _bookmarks: {'id': _bookmarks, 'meeting_id': _meetings},
+  _transcriptRuns: {'id': _transcriptRuns, 'meeting_id': _meetings},
+  _transcriptProcessingMetadata: {
+    'id': _transcriptProcessingMetadata,
+    'meeting_id': _meetings,
+    'transcript_run_id': _transcriptRuns,
+    'source_run_id': _transcriptRuns,
+  },
+  _meetingTranscriptSelections: {
+    'id': _meetingTranscriptSelections,
+    'meeting_id': _meetings,
+    'transcript_run_id': _transcriptRuns,
+  },
+  _transcriptSegments: {
+    'id': _transcriptSegments,
+    'meeting_id': _meetings,
+    'transcript_run_id': _transcriptRuns,
+    'speaker_id': _speakers,
+    'speaker_meeting_id': _meetings,
+  },
+  _languageDecisions: {
+    'id': _languageDecisions,
+    'transcript_segment_id': _transcriptSegments,
+  },
+  _transcriptLanguageSelections: {
+    'id': _transcriptLanguageSelections,
+    'transcript_segment_id': _transcriptSegments,
+    'language_decision_id': _languageDecisions,
+  },
+  _diarizationRuns: {'id': _diarizationRuns, 'meeting_id': _meetings},
+  _speakers: {
+    'id': _speakers,
+    'meeting_id': _meetings,
+    'analysis_run_id': _diarizationRuns,
+  },
+  _speakerAssignments: {
+    'id': _speakerAssignments,
+    'meeting_id': _meetings,
+    'analysis_run_id': _diarizationRuns,
+    'speaker_id': _speakers,
+    'speaker_analysis_run_id': _diarizationRuns,
+  },
+  _revisions: {
+    'id': _revisions,
+    'meeting_id': _meetings,
+    'transcript_segment_id': _transcriptSegments,
+    'speaker_assignment_id': _speakerAssignments,
+    'speaker_id': _speakers,
+  },
+  _processingJobs: {
+    'id': _processingJobs,
+    'meeting_id': _meetings,
+    'transcript_run_id': _transcriptRuns,
+    'diarization_run_id': _diarizationRuns,
+  },
 };

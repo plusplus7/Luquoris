@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://loquiris.app/schemas/model-manifest-v2.schema.json",
+  "title": "Loquiris atomic model bundle manifest v2",
+  "description": "Shape validation only. The Dart parser additionally verifies canonical inventory digest, summed bytes, role/path uniqueness, namespace ownership, and commit-addressed source URLs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "version", "source", "sha256", "bytes", "runtime", "license", "artifacts", "capabilities", "enabledModes"],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 2},
+    "id": {"$ref": "model_manifest.schema.json#/properties/id"},
+    "version": {"$ref": "model_manifest.schema.json#/$defs/trimmedNonEmptyString"},
+    "source": {"$ref": "#/$defs/source"},
+    "sha256": {"$ref": "model_manifest.schema.json#/properties/sha256"},
+    "bytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "runtime": {
+      "type": "object", "additionalProperties": false,
+      "required": ["engineId", "engineVersion", "modelFormat"],
+      "properties": {
+        "engineId": {"$ref": "model_manifest.schema.json#/$defs/trimmedNonEmptyString"},
+        "engineVersion": {"$ref": "model_manifest.schema.json#/$defs/trimmedNonEmptyString"},
+        "modelFormat": {"$ref": "model_manifest.schema.json#/$defs/trimmedNonEmptyString"}
+      }
+    },
+    "license": {"$ref": "#/$defs/license"},
+    "artifacts": {
+      "type": "array", "minItems": 1, "maxItems": 6,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "role", "bytes", "sha256", "source", "license"],
+        "properties": {
+          "path": {"allOf": [{"$ref": "model_manifest.schema.json#/$defs/safeRelativePath"}, {"pattern": "^models/"}]},
+          "role": {"enum": ["model", "encoder", "decoder", "joiner", "tokenizer", "configuration"]},
+          "bytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+          "sha256": {"$ref": "model_manifest.schema.json#/properties/sha256"},
+          "source": {"$ref": "#/$defs/source"},
+          "license": {"$ref": "#/$defs/license"}
+        }
+      }
+    },
+    "capabilities": {"$ref": "model_manifest.schema.json#/properties/capabilities"},
+    "enabledModes": {"$ref": "model_manifest.schema.json#/properties/enabledModes"}
+  },
+  "$defs": {
+    "source": {"type": "string", "format": "uri", "pattern": "^https://[^?#]+$"},
+    "license": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "snapshotPath"],
+      "properties": {
+        "id": {"$ref": "model_manifest.schema.json#/$defs/trimmedNonEmptyString"},
+        "snapshotPath": {"allOf": [{"$ref": "model_manifest.schema.json#/$defs/safeRelativePath"}, {"pattern": "^models/licenses/"}]}
+      }
+    }
+  }
+}

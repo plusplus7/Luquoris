@@ -8,7 +8,9 @@ import 'package:loquiris/services/service_contracts.dart';
 // ignore: one_member_abstracts
 abstract interface class RecordingInventorySynchronizer {
   /// Scans native authority and persists its complete audio inventory.
-  Future<Result<void, SessionRepositoryFailure>> synchronize();
+  Future<Result<void, SessionRepositoryFailure>> synchronize({
+    String? finalizedMeetingId,
+  });
 }
 
 /// Production inventory reconciliation shared by finalization and backup.
@@ -21,13 +23,18 @@ final class NativeRecordingInventorySynchronizer
     required this._nowUtcMs,
   });
 
+  static const int _finalizationScanAttempts = 50;
+  static const Duration _finalizationRetryDelay = Duration(milliseconds: 100);
+
   final RecordingRecoveryGateway _recoveryGateway;
   final SessionRepository _sessionRepository;
   final int Function() _nowUtcMs;
 
   @override
-  Future<Result<void, SessionRepositoryFailure>> synchronize() async {
-    final inventory = await _recoveryGateway.scan();
+  Future<Result<void, SessionRepositoryFailure>> synchronize({
+    String? finalizedMeetingId,
+  }) async {
+    final inventory = await _scan(finalizedMeetingId);
     switch (inventory) {
       case Err(:final failure):
         return Err(SessionRepositoryUnavailable(failure.code));
@@ -44,6 +51,29 @@ final class NativeRecordingInventorySynchronizer
         };
     }
   }
+
+  Future<Result<RecordingRecoveryInventory, RecordingRecoveryFailure>> _scan(
+    String? finalizedMeetingId,
+  ) async {
+    for (var attempt = 0; attempt < _finalizationScanAttempts; attempt += 1) {
+      final inventory = await _recoveryGateway.scan();
+      switch (inventory) {
+        case Err():
+          return inventory;
+        case Ok(:final value):
+          if (finalizedMeetingId == null ||
+              !value.liveMeetingIds.contains(finalizedMeetingId)) {
+            return inventory;
+          }
+      }
+      if (attempt + 1 < _finalizationScanAttempts) {
+        await Future<void>.delayed(_finalizationRetryDelay);
+      }
+    }
+    return const Err(
+      RecordingRecoveryFailure('recording_recovery_finalization_pending'),
+    );
+  }
 }
 
 final class _NoopRecordingInventorySynchronizer
@@ -51,8 +81,9 @@ final class _NoopRecordingInventorySynchronizer
   const _NoopRecordingInventorySynchronizer();
 
   @override
-  Future<Result<void, SessionRepositoryFailure>> synchronize() async =>
-      const Ok(null);
+  Future<Result<void, SessionRepositoryFailure>> synchronize({
+    String? finalizedMeetingId,
+  }) async => const Ok(null);
 }
 
 /// App-scoped native inventory synchronization boundary.

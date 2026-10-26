@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../tool/release_privacy_policy.dart';
 
 void main() {
-  test('Android build accepts only verified generated model assets', () {
+  test('remote build needs no bundled transcription weights', () {
     final buildScript = File(
       'android/app/build.gradle.kts',
     ).readAsStringSync();
@@ -18,11 +18,16 @@ void main() {
     expect(buildScript, contains('model_manifests/index.json'));
     expect(
       File('pubspec.yaml').readAsStringSync(),
-      contains(
-        'build/generated/model_assets/models/whisper-base-q5_1/',
+      isNot(
+        contains(
+          'build/generated/model_assets/models/transcription/',
+        ),
       ),
     );
-    expect(buildScript, isNot(contains('assets.srcDir(')));
+    expect(
+      buildScript,
+      isNot(contains('sourceSets.getByName("main").assets.srcDir(')),
+    );
     expect(
       File(
         'android/app/src/main/kotlin/com/loquiris/transcription/'
@@ -34,7 +39,7 @@ void main() {
     expect(buildScript, contains('dependsOn(verifyImportedModels)'));
   });
 
-  test('release manifest explicitly removes network permissions', () {
+  test('release manifest preserves explicit remote access', () {
     final manifest = File(
       'android/app/src/release/AndroidManifest.xml',
     ).readAsStringSync();
@@ -55,7 +60,10 @@ void main() {
 </manifest>
 ''';
 
-      expect(validateReleaseManifest(malformed), hasLength(2));
+      expect(
+        validateReleaseManifest(malformed),
+        contains('release overlay must not remove the application'),
+      );
     },
   );
 

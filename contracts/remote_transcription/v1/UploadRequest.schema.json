@@ -1,0 +1,81 @@
+{
+  "$defs": {
+    "AudioFile": {
+      "additionalProperties": false,
+      "properties": {
+        "fileId": {
+          "pattern": "^[A-Za-z0-9_-]{1,128}$",
+          "title": "Fileid",
+          "type": "string"
+        },
+        "sizeBytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 2147483648,
+          "title": "Sizebytes",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "startMs": {
+          "maximum": 43200000,
+          "minimum": 0,
+          "title": "Startms",
+          "type": "integer"
+        },
+        "durationMs": {
+          "exclusiveMinimum": 0,
+          "maximum": 43200000,
+          "title": "Durationms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fileId",
+        "sizeBytes",
+        "sha256",
+        "startMs",
+        "durationMs"
+      ],
+      "title": "AudioFile",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "title": "Schemaversion",
+      "type": "integer"
+    },
+    "meetingId": {
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "title": "Meetingid",
+      "type": "string"
+    },
+    "runId": {
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "title": "Runid",
+      "type": "string"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/$defs/AudioFile"
+      },
+      "maxItems": 1024,
+      "minItems": 1,
+      "title": "Files",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "meetingId",
+    "runId",
+    "files"
+  ],
+  "title": "UploadRequest",
+  "type": "object"
+}

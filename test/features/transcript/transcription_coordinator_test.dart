@@ -1,10 +1,14 @@
 import 'dart:async';
 
 import 'package:clock/clock.dart';
+import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:loquiris/bootstrap/diagnostic_log.dart';
 import 'package:loquiris/core/domain/app_relative_path.dart';
 import 'package:loquiris/core/result.dart';
+import 'package:loquiris/data/database/app_database.dart' as db;
+import 'package:loquiris/data/repositories/drift_transcript_processing_repository.dart';
 import 'package:loquiris/features/models_performance/domain/model_manifest.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
@@ -13,9 +17,12 @@ import 'package:loquiris/features/transcript/application/transcription_ids.dart'
 import 'package:loquiris/features/transcript/application/transcription_parameters.dart';
 import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
 import 'package:loquiris/services/analysis_repository_contracts.dart';
+import 'package:loquiris/services/meeting_processing_selection_repository.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
+import 'package:loquiris/services/transcript_processing_repository.dart';
 
+import '../../support/fakes/fake_meeting_processing_selection_repository.dart';
 import '../../support/fakes/fake_services.dart';
 
 void main() {
@@ -584,6 +591,15 @@ final class _Harness {
         ),
         sessionRepositoryProvider.overrideWithValue(sessions),
         transcriptionJobRepositoryProvider.overrideWithValue(jobs),
+        meetingProcessingSelectionRepositoryProvider.overrideWithValue(
+          FakeMeetingProcessingSelectionRepository(),
+        ),
+        transcriptProcessingRepositoryProvider.overrideWithValue(
+          DriftTranscriptProcessingRepository(
+            processingDatabase,
+            diagnosticSink: const DisabledDiagnosticLogSink(),
+          ),
+        ),
         transcriptionEngineProvider.overrideWithValue(this.engine),
         modelManagerProvider.overrideWithValue(models),
         transcriptionModelManifestProvider.overrideWithValue(this.manifest),
@@ -592,6 +608,7 @@ final class _Harness {
   }
 
   final _DetailSessionRepository sessions = _DetailSessionRepository();
+  final processingDatabase = db.AppDatabase(NativeDatabase.memory());
   final FakeTranscriptionJobRepository jobs = FakeTranscriptionJobRepository();
   final FakeModelManager models = FakeModelManager();
   final BundledModelManifest manifest;
@@ -608,6 +625,7 @@ final class _Harness {
     container.dispose();
     await engine.dispose();
     await jobs.dispose();
+    await processingDatabase.close();
   }
 }
 

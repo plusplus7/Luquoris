@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-10-15T07:45:36Z",
+  "scope": "read-only reconnection snapshot; not controlled-state acceptance",
+  "device": {
+    "manufacturer": "Xiaomi",
+    "model": "M2104K10AC",
+    "device": "chopin",
+    "board": "chopin",
+    "boardPlatform": "mt6893",
+    "hardware": "mt6893",
+    "socManufacturer": "Mediatek",
+    "socModelProperty": "MT6891",
+    "socNote": "Properties are retained literally; no normalization of the differing board/platform and SoC strings.",
+    "fingerprint": "Redmi/chopin/chopin:13/TP1A.220624.014/V14.0.8.0.TKPCNXM:user/release-keys",
+    "androidRelease": "13",
+    "androidSdk": 33,
+    "securityPatch": "2023-11-01",
+    "firmwareIncremental": "V14.0.8.0.TKPCNXM",
+    "miuiName": "V140",
+    "miuiCode": "14",
+    "bootCount": 115,
+    "reportedUptimeMinutesApproximate": 10
+  },
+  "memory": {
+    "memTotalKiB": 5619004,
+    "memAvailableKiB": 2171756,
+    "swapTotalKiB": 4194300,
+    "memoryExtensionState": "enabled-user-reported",
+    "note": "The user confirmed memory extension remains enabled on 2026-10-15. Candidate extension properties/settings were absent. Swap size alone does not prove this setting. /proc/swaps and zram size were permission denied."
+  },
+  "storage": {
+    "dataTotalKiB": 112531424,
+    "dataUsedKiB": 23886588,
+    "dataAvailableKiB": 88423452
+  },
+  "battery": {
+    "acPowered": true,
+    "usbPowered": false,
+    "wirelessPowered": false,
+    "levelPercent": 20,
+    "statusCode": 2,
+    "healthCode": 2,
+    "voltageMv": 3869,
+    "temperatureDeciCelsius": 326,
+    "chargeCounterRaw": 722000,
+    "statusOverride": false,
+    "cycleCount": null,
+    "fullChargeCapacity": null,
+    "designCapacity": null,
+    "note": "Health code is a system category, not measured remaining capacity. Battery sysfs capacity/cycle entries were permission denied."
+  },
+  "thermal": {
+    "androidThermalStatus": 0,
+    "currentHalCpuCelsius": 45.103,
+    "currentHalGpuCelsius": 45.103,
+    "currentHalBatteryCelsius": 32.0,
+    "currentHalSkinCelsius": 38.193,
+    "note": "HAL and battery-service values were sampled separately; cached thermal readings are not substituted for current HAL values."
+  },
+  "settings": {
+    "lowPower": 0,
+    "airplaneModeOn": 0,
+    "wifiOn": 1,
+    "mobileDataSetting": 1,
+    "screenBrightnessRaw": 80,
+    "screenBrightnessMode": 1,
+    "screenOffTimeoutMs": 2147483647,
+    "debugAppStandbyBucket": 40,
+    "debugAppListedInDeviceIdleWhitelist": false,
+    "debugAppRunAnyInBackgroundAppOp": "ignore",
+    "debugAppRunInBackgroundAppOp": "default-allow",
+    "oemBatteryPolicy": "unverified",
+    "ambientTemperatureCelsius": 25,
+    "ambientTemperatureSource": "approximate-user-report",
+    "note": "Read-only observations only. Network settings are not proof of network connectivity. No settings, permissions, installed packages, or stored recordings were changed."
+  },
+  "qualification": {
+    "targetIdentityMatches": true,
+    "controlledConfigurationEstablished": false,
+    "factoryDefaultConfigurationEstablished": false,
+    "batteryAcceptanceEligible": false,
+    "task1_2Complete": false,
+    "remaining": [
+      "Confirm room temperature and stable test conditions.",
+      "Confirm user-visible memory-extension and OEM battery settings.",
+      "Establish separate controlled and default-policy profiles without factory-resetting or deleting user data.",
+      "For battery acceptance, use real off-charger operation, not a simulated dumpsys battery state."
+    ]
+  }
+}

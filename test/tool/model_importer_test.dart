@@ -34,7 +34,7 @@ void main() {
     );
     expect(
       manifest.artifactPath.value,
-      'models/whisper-base-q5_1/ggml-base-q5_1.bin',
+      'models/transcription/ggml-base-q5_1.bin',
     );
     expect(
       manifest.sha256,

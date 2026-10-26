@@ -665,6 +665,11 @@ final class _PendingSessionRepository implements SessionRepository {
   }) => Completer<Result<Meeting, SessionRepositoryFailure>>().future;
 
   @override
+  Stream<Result<List<SessionSearchHit>, SessionRepositoryFailure>> watchSearch(
+    String query,
+  ) => Stream.fromFuture(search(query));
+
+  @override
   Future<Result<List<SessionSearchHit>, SessionRepositoryFailure>> search(
     String query,
   ) async => const Ok(<SessionSearchHit>[]);

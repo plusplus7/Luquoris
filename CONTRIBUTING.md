@@ -7,7 +7,7 @@ Loquiris uses OpenSpec as the source of truth. Changes that alter behavior, priv
 1. Read the active proposal, design, relevant capability spec, and task.
 2. Use test-driven development for behavior: add a test, observe the expected failure, add the minimum implementation, then run the targeted and full suites.
 3. Keep recording correctness independent from optional AI work.
-4. Do not add network permissions, telemetry, ads, remote configuration, accounts, cloud inference, or runtime model downloads.
+4. Network access is limited to explicitly selected HTTPS transcription destinations. Do not add telemetry, ads, remote configuration, accounts, hidden model downloads or automatic uploads of historical/restored meetings.
 5. Do not commit model weights without an accepted model manifest and license review.
 6. Update `THIRD_PARTY_NOTICES.md`, tests, documentation, and evidence with dependency/model changes.
 

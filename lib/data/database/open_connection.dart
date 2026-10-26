@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:drift/native.dart';
+import 'package:loquiris/core/result.dart';
 import 'package:loquiris/data/database/app_database.dart';
+import 'package:loquiris/native/method_channel_remote_transcription_service.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
@@ -11,7 +13,16 @@ Future<AppDatabase> openApplicationDatabase() async {
   final databaseFile = File(
     path.join(supportDirectory.path, 'loquiris.sqlite'),
   );
-  return openMigratedDatabaseFile(databaseFile);
+  const remote = MethodChannelRemoteTranscriptionService();
+  final prepared = await remote.prepareDatabase();
+  if (prepared case Err()) {
+    throw StateError('remote_database_guard_unavailable');
+  }
+  try {
+    return await openMigratedDatabaseFile(databaseFile);
+  } finally {
+    await remote.resume(databaseFile.path);
+  }
 }
 
 /// Opens [databaseFile], restoring its closed-file snapshot if migration fails.

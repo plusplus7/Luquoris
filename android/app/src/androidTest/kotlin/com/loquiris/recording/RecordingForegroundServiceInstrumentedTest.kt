@@ -64,6 +64,37 @@ class RecordingForegroundServiceInstrumentedTest {
     }
 
     @Test
+    fun recoverableStateRejectsNewStartWithoutOrphaningPreparingNotification() {
+        bringTargetAppToForeground()
+        val prior = NativeRecordingSnapshot(
+            sessionId = "retained-recovery",
+            state = NativeRecordingState.recoverable,
+            elapsedMilliseconds = 1_000,
+            bytesWritten = 640,
+            revision = 7,
+        )
+        val store = SharedPreferencesRecordingStateStore(context)
+        assertTrue(store.save(prior))
+        val commandId = "recoverable-start-rejection"
+
+        assertTrue(RecordingForegroundService.start(context, "new-meeting", commandId)
+            is RecordingForegroundServiceStartResult.RequestAccepted)
+        assertTrue(waitUntil {
+            RecordingCommandReceiptStore(context).load(commandId)?.state ==
+                NativeRecordingCommandReceiptState.failed
+        })
+        assertEquals("recording_session_conflict",
+            RecordingCommandReceiptStore(context).load(commandId)?.failureCode)
+        assertEquals(prior, (store.load() as RecordingStateLoadResult.Loaded).snapshot)
+        assertTrue(waitUntil { activeNotifications().isEmpty() })
+        // Observe beyond the short foreground-promotion grace period without
+        // opening an AudioRecord source or clearing the recovery snapshot.
+        Thread.sleep(12_000)
+        assertEquals(prior, (store.load() as RecordingStateLoadResult.Loaded).snapshot)
+        assertTrue(activeNotifications().isEmpty())
+    }
+
+    @Test
     fun startCapturesCanonicalAudioAndPublishesOngoingNotification() {
         bringTargetAppToForeground()
         val result = RecordingForegroundService.start(context, "instrumented-meeting")

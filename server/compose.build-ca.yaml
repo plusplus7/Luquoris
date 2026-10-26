@@ -1,0 +1,15 @@
+# Optional build-only trust bundle for an administrator-managed TLS proxy.
+# Does not mount the certificate into running services.
+services:
+  api:
+    build:
+      secrets: [build_ca]
+  worker:
+    build:
+      secrets: [build_ca]
+  prepare:
+    build:
+      secrets: [build_ca]
+secrets:
+  build_ca:
+    file: ${LOQUIRIS_BUILD_CA_FILE:?Set the approved CA bundle path}

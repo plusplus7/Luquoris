@@ -5,12 +5,20 @@ import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/models_performance/domain/model_manifest.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
+import 'package:loquiris/features/transcript/application/refinement_providers.dart';
+import 'package:loquiris/features/transcript/application/refinement_runner.dart';
 import 'package:loquiris/features/transcript/application/transcription_ids.dart';
 import 'package:loquiris/features/transcript/application/transcription_parameters.dart';
+import 'package:loquiris/features/transcript/domain/meeting_processing_selection.dart';
 import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
+import 'package:loquiris/features/transcript/domain/transcript_processing_info.dart';
 import 'package:loquiris/services/analysis_repository_contracts.dart';
+import 'package:loquiris/services/meeting_processing_selection_repository.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
+import 'package:loquiris/services/transcript_processing_repository.dart';
+
+part 'transcription_processing_dispatch.dart';
 
 /// Typed base-model manifest installed by bootstrap.
 final transcriptionModelManifestProvider = Provider<BundledModelManifest>(
@@ -36,6 +44,7 @@ final class LiveTranscriptionSession {
     required this.runId,
     required this.events,
     required this.release,
+    this.finish,
   });
 
   /// Meeting whose canonical PCM fan-out supplies this draft.
@@ -49,6 +58,12 @@ final class LiveTranscriptionSession {
 
   /// Idempotent release bound to the engine that created this session.
   final Future<Result<void, TranscriptionFailure>> Function() release;
+
+  /// Flushes normal STOP and acknowledges native release without dropping finals.
+  ///
+  /// The event stream ends after its queued finals; consumers may drain later.
+  /// Absent on legacy sources, whose [release] remains the compatible end path.
+  final Future<Result<void, TranscriptionFailure>> Function()? finish;
 }
 
 /// Coordinates durable transcription for the lifetime of the application.
@@ -61,11 +76,15 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
   final Map<Timer, Completer<bool>> _finalizationPollWaiters =
       <Timer, Completer<bool>>{};
   Future<void> _inferenceTail = Future<void>.value();
+  Ref get _dispatchRef => ref;
 
   @override
   Future<void> build() async {
     ref.onDispose(_cancelFinalizationPollWaiters);
     try {
+      if (ref.read(transcriptionInferenceBarrierProvider).cleanupUnconfirmed) {
+        return;
+      }
       final repository = ref.watch(transcriptionJobRepositoryProvider);
       final now = _nowUtcMs;
       final recovered = await repository.recoverOrphanedRunning(
@@ -77,9 +96,11 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
       for (final job
           in (recoverable as Ok<List<ProcessingJob>, AnalysisRepositoryFailure>)
               .value) {
+        if (!await _allowLegacyForMeeting(job.meetingId)) continue;
         _scheduledMeetingIds.add(job.meetingId);
         unawaited(_serializeInference(() => _resume(job)));
       }
+      await _recoverExplicitProcessing();
     } on Object {
       // Optional AI startup never prevents recording or application launch.
     } finally {
@@ -111,6 +132,7 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
           executionMode == PerformanceMode.recordingOnly) {
         return;
       }
+      if (await _scheduleExplicitFinalized(meetingId)) return;
       final detail = await _loadDetail(meetingId);
       if (detail == null ||
           detail.meeting.lifecycle != MeetingLifecycle.finalized) {
@@ -164,6 +186,14 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
     });
   }
 
+  /// Resumes only a paused refinement through the shared inference owner.
+  Future<Result<ProcessingJob, RefinementRunFailure>> resumeRefinement(
+    String jobId,
+  ) async {
+    await _startupReady.future;
+    return _resumeExplicitRefinement(jobId);
+  }
+
   /// Requeues one failed durable job and resumes the same deterministic run.
   Future<void> retry(String jobId) async {
     await _startupReady.future;
@@ -172,6 +202,7 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
     if (loaded case Err()) return;
     final job = (loaded as Ok<ProcessingJob, AnalysisRepositoryFailure>).value;
     await _serializeMeeting(job.meetingId, () async {
+      if (await _retryExplicitProcessing(job)) return;
       final detail = await _loadDetail(job.meetingId);
       if (detail == null) return;
       final manifest = ref.read(transcriptionModelManifestProvider);
@@ -219,6 +250,13 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
     final detail = await _loadDetail(meetingId);
     if (detail == null) {
       return const Ok(null);
+    }
+    final explicit = await _explicitLivePolicy(meetingId);
+    if (explicit != null) return explicit;
+    if (ref.read(transcriptionInferenceBarrierProvider).cleanupUnconfirmed) {
+      return const Err(
+        TranscriptionUnavailable('refinement_cleanup_unconfirmed'),
+      );
     }
     final meeting = detail.meeting;
     if (meeting.transcriptionMode != MeetingTranscriptionMode.nearRealTime) {
@@ -323,6 +361,7 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
   }
 
   Future<void> _resume(ProcessingJob job) async {
+    if (!await _allowLegacyForMeeting(job.meetingId)) return;
     final detail = await _loadDetail(job.meetingId);
     if (detail == null) return;
     final manifest = ref.read(transcriptionModelManifestProvider);
@@ -562,7 +601,16 @@ final class TranscriptionCoordinator extends AsyncNotifier<void> {
   }
 
   Future<void> _serializeInference(Future<void> Function() action) {
-    final next = _inferenceTail.then((_) => _contain(action));
+    final next = _inferenceTail.then(
+      (_) => _contain(() async {
+        if (ref
+            .read(transcriptionInferenceBarrierProvider)
+            .cleanupUnconfirmed) {
+          return;
+        }
+        await action();
+      }),
+    );
     _inferenceTail = next;
     return next;
   }

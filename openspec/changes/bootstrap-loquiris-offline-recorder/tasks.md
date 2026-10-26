@@ -158,3 +158,13 @@
 - [ ] 15.8 Produce a signed validation report that grants or withholds Recorder MVP, Offline Transcription Preview, language, and diarization labels independently
 - [ ] 15.9 Complete privacy, permission, license, package-size, installed-size, reproducible-build, backup/restore, and release-notes review
 - [ ] 15.10 Present the measured release recommendation and all remaining experimental assumptions before enabling or advertising any AI capability
+
+## Related streaming two-pass evidence (not acceptance completion)
+
+[Streaming two-pass implementation evidence](../../../docs/evidence/streaming-two-pass/implementation-status.md)
+records backward-compatible bundle and persistence infrastructure, fixture
+coverage limitations, and remaining integration/device/license gates. Its parent
+compatibility section maps the evidence to tasks 4, 10, 11, 12, 14, and 15 above.
+No existing checkbox is changed by this link. The smoke-input language labels
+are not a verified bilingual accuracy corpus; new live/refinement capability
+remains unqualified and this bootstrap change remains in progress.

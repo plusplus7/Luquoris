@@ -1,0 +1,8 @@
+
+com.loquiris.remote.NativeRemoteRepositoryInstrumentedTest:....
+com.loquiris.remote.RemoteConnectionInstrumentedTest:..
+com.loquiris.remote.RemoteRuntimeInstrumentedTest:...
+
+Time: 0.266
+
+OK (9 tests)

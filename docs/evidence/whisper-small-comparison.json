@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "purpose": "experimentalModelComparisonNotAccuracyAcceptance",
+  "observedAtUtcMs": 1791960249624,
+  "deviceModel": "M2104K10AC",
+  "deviceFingerprint": "Redmi\/chopin\/chopin:13\/TP1A.220624.014\/V14.0.8.0.TKPCNXM:user\/release-keys",
+  "engineVersion": "1.9.4",
+  "languageHint": "mixed",
+  "audioDurationMs": 45000,
+  "audioSha256": "83440d4ccbd82dafd1a88346ab448e1dd309e408c598d665413b910cc92c40a7",
+  "measurements": [
+    {
+      "modelId": "whisper-base-q5_1",
+      "modelSha256": "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898",
+      "modelBytes": 59707625,
+      "loadingMs": 119,
+      "inferenceMs": 24643,
+      "realTimeFactor": 0.5476222222222222,
+      "text": "我觉得我觉得在中国更多反应在德国说反应是更多是谈赢得的尊重然后我觉得再就是体育的美丽体育应该请进来走出去我们在处理的一层为世界的球我觉得打比做得很好从头到尾连反正东三个字都不可及早些年流过两与反正中同时平台人人称见的须服点贩两人同处把一堆心理根身地看2014年是不处理想的打单把17岁的反正东推上是平散的赛场亲手脱局起这位最年轻的世界冠军那时候所有人都觉得这是一段逻辑与千里马的假话当初有多掏心头背后来就有多细续难看把一堆节散的那天两人第一次出现烈痕",
+      "segments": [
+        {
+          "startMs": 0,
+          "endMs": 5000,
+          "text": "我觉得我觉得在中国更多反应"
+        },
+        {
+          "startMs": 5000,
+          "endMs": 9000,
+          "text": "在德国说反应是更多是谈赢得的尊重"
+        },
+        {
+          "startMs": 9000,
+          "endMs": 12000,
+          "text": "然后我觉得再就是体育的美丽"
+        },
+        {
+          "startMs": 12000,
+          "endMs": 15000,
+          "text": "体育应该请进来走出去"
+        },
+        {
+          "startMs": 15000,
+          "endMs": 17000,
+          "text": "我们在处理的一层为世界的球"
+        },
+        {
+          "startMs": 17000,
+          "endMs": 19000,
+          "text": "我觉得打比做得很好"
+        },
+        {
+          "startMs": 19000,
+          "endMs": 22000,
+          "text": "从头到尾连反正东三个字都不可及"
+        },
+        {
+          "startMs": 22000,
+          "endMs": 24000,
+          "text": "早些年流过两与反正中同时平台"
+        },
+        {
+          "startMs": 24000,
+          "endMs": 26000,
+          "text": "人人称见的须服点贩"
+        },
+        {
+          "startMs": 26000,
+          "endMs": 28000,
+          "text": "两人同处把一堆心理根身地看"
+        },
+        {
+          "startMs": 28000,
+          "endMs": 30000,
+          "text": "2014年是不处理想的"
+        },
+        {
+          "startMs": 30000,
+          "endMs": 33000,
+          "text": "打单把17岁的反正东推上是平散的赛场"
+        },
+        {
+          "startMs": 33000,
+          "endMs": 35000,
+          "text": "亲手脱局起这位最年轻的世界冠军"
+        },
+        {
+          "startMs": 35000,
+          "endMs": 37000,
+          "text": "那时候所有人都觉得"
+        },
+        {
+          "startMs": 37000,
+          "endMs": 39000,
+          "text": "这是一段逻辑与千里马的假话"
+        },
+        {
+          "startMs": 39000,
+          "endMs": 41000,
+          "text": "当初有多掏心头背"
+        },
+        {
+          "startMs": 41000,
+          "endMs": 42000,
+          "text": "后来就有多细续难看"
+        },
+        {
+          "startMs": 42000,
+          "endMs": 43000,
+          "text": "把一堆节散的那天"
+        },
+        {
+          "startMs": 43000,
+          "endMs": 45000,
+          "text": "两人第一次出现烈痕"
+        }
+      ]
+    },
+    {
+      "modelId": "whisper-small-q5_1",
+      "modelSha256": "ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb",
+      "modelBytes": 190085487,
+      "loadingMs": 272,
+      "inferenceMs": 70824,
+      "realTimeFactor": 1.5738666666666667,
+      "text": "好像在中国内似乎有一些差距其实我觉得他在中国更受欢迎在德国受欢迎是更多是他赢得了尊重然后我觉得这就是体育的美丽体育应该请您来走出去我们的球迹可以成为世界的球迹我觉得他做得很好从头到尾连凡正东三个字都不肯定早些年刘国良与凡正东曾是平台人人称县的师傅典范两人同处八一位 情义根深地好 第一次年生日 和两个人在中国打胆把17岁的凡正东推上视频赛的赛场亲手拖举起这位最年轻的世界冠军那时候所有人都觉得这是一段陌论与千里马的佳化当初有多掏心掏肺后来就有多戏剧难看八一队解散的那天两人第一次出现裂痕",
+      "segments": [
+        {
+          "startMs": 0,
+          "endMs": 2880,
+          "text": "好像在中国内似乎有一些差距"
+        },
+        {
+          "startMs": 2880,
+          "endMs": 6120,
+          "text": "其实我觉得他在中国更受欢迎"
+        },
+        {
+          "startMs": 6120,
+          "endMs": 10440,
+          "text": "在德国受欢迎是更多是他赢得了尊重"
+        },
+        {
+          "startMs": 10440,
+          "endMs": 13120,
+          "text": "然后我觉得这就是体育的美丽"
+        },
+        {
+          "startMs": 13120,
+          "endMs": 15600,
+          "text": "体育应该请您来走出去"
+        },
+        {
+          "startMs": 15600,
+          "endMs": 18440,
+          "text": "我们的球迹可以成为世界的球迹"
+        },
+        {
+          "startMs": 18440,
+          "endMs": 20320,
+          "text": "我觉得他做得很好"
+        },
+        {
+          "startMs": 20320,
+          "endMs": 22680,
+          "text": "从头到尾连凡正东三个字都不肯定"
+        },
+        {
+          "startMs": 22680,
+          "endMs": 25080,
+          "text": "早些年刘国良与凡正东曾是平台"
+        },
+        {
+          "startMs": 25080,
+          "endMs": 26600,
+          "text": "人人称县的师傅典范"
+        },
+        {
+          "startMs": 26600,
+          "endMs": 28760,
+          "text": "两人同处八一位 情义根深地"
+        },
+        {
+          "startMs": 28760,
+          "endMs": 31320,
+          "text": "好 第一次年生日 和两个人在中国打胆"
+        },
+        {
+          "startMs": 31320,
+          "endMs": 33720,
+          "text": "把17岁的凡正东推上视频赛的赛场"
+        },
+        {
+          "startMs": 33720,
+          "endMs": 36000,
+          "text": "亲手拖举起这位最年轻的世界冠军"
+        },
+        {
+          "startMs": 36000,
+          "endMs": 37400,
+          "text": "那时候所有人都觉得"
+        },
+        {
+          "startMs": 37400,
+          "endMs": 39440,
+          "text": "这是一段陌论与千里马的佳化"
+        },
+        {
+          "startMs": 39440,
+          "endMs": 40920,
+          "text": "当初有多掏心掏肺"
+        },
+        {
+          "startMs": 40920,
+          "endMs": 42320,
+          "text": "后来就有多戏剧难看"
+        },
+        {
+          "startMs": 42320,
+          "endMs": 43560,
+          "text": "八一队解散的那天"
+        },
+        {
+          "startMs": 43560,
+          "endMs": 45000,
+          "text": "两人第一次出现裂痕"
+        }
+      ]
+    }
+  ],
+  "accuracyReferenceAvailable": false,
+  "allNativeHandlesReleased": true
+}

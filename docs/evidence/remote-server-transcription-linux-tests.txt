@@ -1,0 +1,10 @@
+   Building loquiris-server @ file:///app
+Downloading pygments (1.2MiB)
+Downloading ruff (9.9MiB)
+ Downloading ruff
+ Downloading pygments
+      Built loquiris-server @ file:///app
+Uninstalled 1 package in 8ms
+Installed 13 packages in 5ms
+.............sss................................                         [100%]
+45 passed, 3 skipped in 7.91s

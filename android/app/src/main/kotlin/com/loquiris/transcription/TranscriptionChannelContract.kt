@@ -49,7 +49,8 @@ object TranscriptionChannelContract {
     const val channelName = "com.loquiris/transcription_v1"
     const val eventChannelName = "com.loquiris/transcription_events_v1"
     const val version = 1
-    const val supportedModelId = "whisper-base-q5_1"
+    val supportedModelId: String
+        get() = WhisperModelStore.selectedModelSpec.id
     const val supportedParameterVersion = 1
 
     private val transcribeKeys =

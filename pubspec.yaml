@@ -1,5 +1,5 @@
 name: loquiris
-description: "Offline-first local meeting recorder and transcription app."
+description: "Recording-first meeting recorder with optional remote transcription."
 publish_to: "none"
 version: 0.1.0+1
 
@@ -39,6 +39,3 @@ flutter:
   assets:
     - assets/benchmarks/audio/manifest.json
     - assets/benchmarks/audio/zh_en_mixed_v1.wav
-    - build/generated/model_assets/model_manifests/
-    - build/generated/model_assets/models/licenses/
-    - build/generated/model_assets/models/whisper-base-q5_1/

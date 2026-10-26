@@ -6,10 +6,12 @@ import 'package:loquiris/bootstrap/diagnostic_log.dart';
 import 'package:loquiris/core/domain/app_relative_path.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/data/database/app_database.dart' as db;
+import 'package:loquiris/data/repositories/transcript_processing_validation.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/speakers/domain/speaker_entities.dart';
 import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
+import 'package:loquiris/features/transcript/domain/transcript_processing_info.dart';
 import 'package:loquiris/services/analysis_repository_contracts.dart';
 
 /// Drift-backed parallel transcript-version repository.
@@ -166,6 +168,38 @@ final class DriftTranscriptRepository implements TranscriptRepository {
         _storeFailure(
           diagnosticSink,
           'transcript_version_list_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  @override
+  Stream<Result<List<TranscriptVersion>, AnalysisRepositoryFailure>>
+  watchVersions(String meetingId) async* {
+    try {
+      final changes = database.customSelect(
+        'SELECT 1',
+        readsFrom: {
+          database.transcriptRuns,
+          database.transcriptSegments,
+          database.meetingTranscriptSelections,
+          database.transcriptLanguageSelections,
+          database.languageDecisions,
+          database.speakers,
+          database.revisions,
+          database.transcriptProcessingMetadata,
+        },
+      );
+      await for (final _ in changes.watch()) {
+        yield await database.transaction(() => listVersions(meetingId));
+      }
+    } on SqliteException catch (error, stackTrace) {
+      yield Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcript_versions_watch_failed',
           error,
           stackTrace,
         ),
@@ -348,6 +382,73 @@ final class DriftTranscriptRepository implements TranscriptRepository {
       }
     }
     return (languages: languages, speakers: speakers);
+  }
+
+  @override
+  Future<Result<void, AnalysisRepositoryFailure>> selectReadableVersion(
+    TranscriptRun expectedRun,
+    TranscriptProcessingInfo? expectedProcessing, {
+    required int selectedAtUtcMs,
+  }) async {
+    if (selectedAtUtcMs < 0) return const Err(AnalysisConflict());
+    try {
+      return await database.transaction(() async {
+        final meeting =
+            await (database.select(database.meetings)
+                  ..where((row) => row.id.equals(expectedRun.meetingId)))
+                .getSingleOrNull();
+        if (meeting == null ||
+            meeting.isDeleted ||
+            ![
+              'finalized',
+              'recoverable',
+              'failedFinalization',
+            ].contains(meeting.lifecycle)) {
+          throw const _AnalysisStateError('analysis_editing_locked');
+        }
+        final run = await (database.select(
+          database.transcriptRuns,
+        )..where((row) => row.id.equals(expectedRun.id))).getSingleOrNull();
+        if (run == null ||
+            run.isDeleted ||
+            _readTranscriptRun(run) != expectedRun) {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        final processing =
+            await (database.select(database.transcriptProcessingMetadata)
+                  ..where((row) => row.transcriptRunId.equals(run.id)))
+                .getSingleOrNull();
+        if (expectedProcessing == null) {
+          if (processing != null || run.runState != 'completed') {
+            throw const _AnalysisStateError('analysis_conflict');
+          }
+        } else if (processing == null ||
+            processingInfoFromRow(processing) != expectedProcessing ||
+            !await validStoredProcessing(database, run, processing) ||
+            !(run.runState == 'completed' ||
+                (processing.processingRole == 'liveDraft' &&
+                    run.runState == 'failed'))) {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        // Nested transactions share this locked snapshot until selection commits.
+        return selectCurrent(
+          expectedRun.meetingId,
+          expectedRun.id,
+          selectedAtUtcMs: selectedAtUtcMs,
+        );
+      });
+    } on _AnalysisStateError catch (error) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'transcript_selection_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
   }
 
   @override
@@ -582,7 +683,14 @@ final class DriftTranscriptionJobRepository
 
   @override
   Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
-  listRecoverable() async {
+  listRecoverable() => _recoverableJobs(refinement: false);
+
+  /// Lists explicit refinement work without exposing it to legacy recovery.
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  listRecoverableRefinements() => _recoverableJobs(refinement: true);
+
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  _recoverableJobs({required bool refinement}) async {
     try {
       final rows =
           await (database.select(database.processingJobs)
@@ -594,6 +702,10 @@ final class DriftTranscriptionJobRepository
                         'running',
                         'paused',
                       ]) &
+                      _executionRolePredicate(
+                        row.transcriptRunId,
+                        refinement: refinement,
+                      ) &
                       row.isDeleted.equals(false),
                 )
                 ..orderBy([
@@ -620,12 +732,26 @@ final class DriftTranscriptionJobRepository
   Future<Result<ProcessingJob, AnalysisRepositoryFailure>> start(
     String jobId, {
     required int startedAtUtcMs,
+  }) => _startJob(jobId, startedAtUtcMs: startedAtUtcMs, refinement: false);
+
+  /// Claims only a validated refinement, never an unextended legacy run.
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> startRefinement(
+    String jobId, {
+    required int startedAtUtcMs,
+  }) => _startJob(jobId, startedAtUtcMs: startedAtUtcMs, refinement: true);
+
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> _startJob(
+    String jobId, {
+    required int startedAtUtcMs,
+    required bool refinement,
   }) async {
     if (startedAtUtcMs < 0) return const Err(AnalysisConflict());
     try {
       final job = await database.transaction(() async {
         final current = await _requiredJob(jobId);
         final run = await _requiredOwnedRun(current);
+        await _requireExecutionRole(current, run, refinement: refinement);
+        if (refinement) await _requireRefinementMeeting(run);
         if ((current.jobState != 'queued' && current.jobState != 'paused') ||
             run.runState != 'queued') {
           throw const _AnalysisStateError('analysis_conflict');
@@ -747,7 +873,25 @@ final class DriftTranscriptionJobRepository
 
   @override
   Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
-  recoverOrphanedRunning({required int recoveredAtUtcMs}) async {
+  recoverOrphanedRunning({required int recoveredAtUtcMs}) =>
+      _recoverOrphanedJobs(
+        recoveredAtUtcMs: recoveredAtUtcMs,
+        refinement: false,
+      );
+
+  /// Recovers only validated explicit refinements after process death.
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  recoverOrphanedRefinements({required int recoveredAtUtcMs}) =>
+      _recoverOrphanedJobs(
+        recoveredAtUtcMs: recoveredAtUtcMs,
+        refinement: true,
+      );
+
+  Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
+  _recoverOrphanedJobs({
+    required int recoveredAtUtcMs,
+    required bool refinement,
+  }) async {
     if (recoveredAtUtcMs < 0) return const Err(AnalysisConflict());
     try {
       final recovered = await database.transaction(() async {
@@ -756,12 +900,17 @@ final class DriftTranscriptionJobRepository
                   (row) =>
                       row.jobKind.equals(ProcessingJobKind.transcription.name) &
                       row.jobState.equals('running') &
+                      _executionRolePredicate(
+                        row.transcriptRunId,
+                        refinement: refinement,
+                      ) &
                       row.isDeleted.equals(false),
                 ))
                 .get();
         final result = <ProcessingJob>[];
         for (final current in rows) {
           final run = await _requiredOwnedRun(current);
+          await _requireExecutionRole(current, run, refinement: refinement);
           if (run.runState != 'running') {
             throw const _AnalysisStateError('analysis_conflict');
           }
@@ -833,6 +982,18 @@ final class DriftTranscriptionJobRepository
             current.modelId != completedRun.provenance.modelId) {
           throw const _AnalysisStateError('analysis_conflict');
         }
+        final processing =
+            await (database.select(
+                  database.transcriptProcessingMetadata,
+                )..where((row) => row.transcriptRunId.equals(run.id)))
+                .getSingleOrNull();
+        if (processing != null &&
+            !await validStoredProcessing(database, run, processing)) {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        if (processing?.processingRole == 'refinement') {
+          await _requireRefinementMeeting(run);
+        }
         final existingSegments = await (database.select(
           database.transcriptSegments,
         )..where((row) => row.transcriptRunId.equals(run.id))).get();
@@ -898,7 +1059,21 @@ final class DriftTranscriptionJobRepository
                   database.meetingTranscriptSelections,
                 )..where((row) => row.meetingId.equals(run.meetingId)))
                 .getSingleOrNull();
-        final isCurrent = selection == null;
+        if (processing != null) {
+          await (database.update(
+            database.transcriptProcessingMetadata,
+          )..where((row) => row.id.equals(processing.id))).write(
+            db.TranscriptProcessingMetadataCompanion(
+              updatedAt: Value(storedAtUtcMs),
+              rowRevision: Value(processing.rowRevision + 1),
+              completeness: Value(
+                warningCode == null ? 'complete' : 'incomplete',
+              ),
+            ),
+          );
+        }
+        final isCurrent =
+            selection == null && processing?.processingRole != 'refinement';
         if (isCurrent) {
           await database
               .into(database.meetingTranscriptSelections)
@@ -1018,12 +1193,26 @@ final class DriftTranscriptionJobRepository
   Future<Result<ProcessingJob, AnalysisRepositoryFailure>> retry(
     String jobId, {
     required int queuedAtUtcMs,
+  }) => _retryJob(jobId, queuedAtUtcMs: queuedAtUtcMs, refinement: false);
+
+  /// Retries a failed refinement without rewriting any frozen provenance.
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> retryRefinement(
+    String jobId, {
+    required int queuedAtUtcMs,
+  }) => _retryJob(jobId, queuedAtUtcMs: queuedAtUtcMs, refinement: true);
+
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> _retryJob(
+    String jobId, {
+    required int queuedAtUtcMs,
+    required bool refinement,
   }) async {
     if (queuedAtUtcMs < 0) return const Err(AnalysisConflict());
     try {
       final job = await database.transaction(() async {
         final current = await _requiredJob(jobId);
         final run = await _requiredOwnedRun(current);
+        await _requireExecutionRole(current, run, refinement: refinement);
+        if (refinement) await _requireRefinementMeeting(run);
         if (current.jobState != 'failed' || run.runState != 'failed') {
           throw const _AnalysisStateError('analysis_conflict');
         }
@@ -1066,6 +1255,123 @@ final class DriftTranscriptionJobRepository
         ),
       );
     }
+  }
+
+  /// Persists a cooperative refinement yield without clearing completed progress.
+  Future<Result<ProcessingJob, AnalysisRepositoryFailure>> pauseRefinement(
+    String jobId, {
+    required String reasonCode,
+    required int pausedAtUtcMs,
+  }) async {
+    if (!_privacySafeCode.hasMatch(reasonCode) || pausedAtUtcMs < 0) {
+      return const Err(AnalysisConflict());
+    }
+    try {
+      final paused = await database.transaction(() async {
+        final current = await _requiredJob(jobId);
+        final run = await _requiredOwnedRun(current);
+        await _requireExecutionRole(current, run, refinement: true);
+        if (!const ['queued', 'running', 'paused'].contains(current.jobState) ||
+            (current.jobState == 'running'
+                ? run.runState != 'running'
+                : run.runState != 'queued') ||
+            pausedAtUtcMs < (run.startedAtUtcMs ?? run.createdAt)) {
+          throw const _AnalysisStateError('analysis_conflict');
+        }
+        if (current.jobState == 'paused' && current.reasonCode == reasonCode) {
+          return _readTranscriptionJob(current);
+        }
+        await (database.update(
+          database.transcriptRuns,
+        )..where((row) => row.id.equals(run.id))).write(
+          db.TranscriptRunsCompanion(
+            updatedAt: Value(pausedAtUtcMs),
+            rowRevision: Value(run.rowRevision + 1),
+            runState: const Value('queued'),
+            startedAtUtcMs: const Value(null),
+            endedAtUtcMs: const Value(null),
+            failureCode: const Value(null),
+          ),
+        );
+        await (database.update(
+          database.processingJobs,
+        )..where((row) => row.id.equals(current.id))).write(
+          db.ProcessingJobsCompanion(
+            updatedAt: Value(pausedAtUtcMs),
+            rowRevision: Value(current.rowRevision + 1),
+            jobState: const Value('paused'),
+            progress: Value(current.progress),
+            reasonCode: Value(reasonCode),
+            failureCode: const Value(null),
+          ),
+        );
+        return _readTranscriptionJob((await _jobRow(jobId))!);
+      });
+      return Ok(paused);
+    } on _AnalysisStateError catch (error) {
+      return Err(_stateFailure(error));
+    } on SqliteException catch (error, stackTrace) {
+      return Err(
+        _storeFailure(
+          diagnosticSink,
+          'refinement_job_pause_failed',
+          error,
+          stackTrace,
+        ),
+      );
+    }
+  }
+
+  Expression<bool> _executionRolePredicate(
+    Expression<String> runId, {
+    required bool refinement,
+  }) {
+    final metadata = database.select(database.transcriptProcessingMetadata)
+      ..where(
+        (row) =>
+            row.transcriptRunId.equalsExp(runId) &
+            (refinement
+                ? row.processingRole.equals('refinement') &
+                      row.isDeleted.equals(false)
+                : const Constant(true)),
+      );
+    return refinement ? existsQuery(metadata) : notExistsQuery(metadata);
+  }
+
+  Future<void> _requireExecutionRole(
+    db.ProcessingJob job,
+    db.TranscriptRun run, {
+    required bool refinement,
+  }) async {
+    if (!refinement) return _requireLegacyExecution(run);
+    final metadata = await (database.select(
+      database.transcriptProcessingMetadata,
+    )..where((row) => row.transcriptRunId.equals(run.id))).getSingleOrNull();
+    if (job.modelId != run.modelId ||
+        metadata == null ||
+        metadata.processingRole != 'refinement' ||
+        !await validStoredProcessing(database, run, metadata)) {
+      throw const _AnalysisStateError('analysis_conflict');
+    }
+  }
+
+  Future<void> _requireRefinementMeeting(db.TranscriptRun run) async {
+    final meeting = await (database.select(
+      database.meetings,
+    )..where((row) => row.id.equals(run.meetingId))).getSingleOrNull();
+    if (meeting == null ||
+        meeting.isDeleted ||
+        meeting.lifecycle != 'finalized') {
+      throw const _AnalysisStateError('analysis_conflict');
+    }
+  }
+
+  Future<void> _requireLegacyExecution(db.TranscriptRun run) async {
+    final metadata = await (database.select(
+      database.transcriptProcessingMetadata,
+    )..where((row) => row.transcriptRunId.equals(run.id))).getSingleOrNull();
+    // Even deleted/corrupt new metadata is never permission to use a legacy engine.
+    if (metadata != null) throw const _AnalysisStateError('analysis_conflict');
   }
 
   Future<db.ProcessingJob?> _jobRow(String jobId) => (database.select(
@@ -1807,26 +2113,7 @@ int? _transcriptionParameterVersion(String parametersJson) {
 bool _validStableSegments(
   String runId,
   List<TranscriptSegment> segments,
-) {
-  final ids = <String>{};
-  final ranges = <(int, int)>{};
-  var previousEndUs = 0;
-  for (final segment in segments) {
-    final startUs = segment.start.inMicroseconds;
-    final endUs = segment.end.inMicroseconds;
-    if (segment.id.isEmpty ||
-        segment.transcriptRunId != runId ||
-        segment.revisionState != TranscriptRevisionState.machine ||
-        startUs < previousEndUs ||
-        endUs <= startUs ||
-        !ids.add(segment.id) ||
-        !ranges.add((startUs, endUs))) {
-      return false;
-    }
-    previousEndUs = endUs;
-  }
-  return true;
-}
+) => validMachineTranscriptSegments(runId, segments);
 
 TranscriptRun _readTranscriptRun(db.TranscriptRun row) => TranscriptRun(
   id: row.id,

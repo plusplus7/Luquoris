@@ -2,12 +2,17 @@
   "schemaVersion": 1,
   "id": "zh-en-mixed-v1",
   "purpose": "firstRunPerformanceBenchmark",
-  "languageCoverage": [
-    "zh-CN",
-    "en",
-    "zh-en-code-switching"
-  ],
-  "annotationVersion": 1,
+  "languageCoverage": [],
+  "annotationVersion": 2,
+  "coverageAudit": {
+    "auditDate": "2026-10-14",
+    "status": "human-review-required",
+    "humanVerified": false,
+    "accuracyAcceptanceEligible": false,
+    "originalDeclaredCoverage": ["zh-CN", "en", "zh-en-code-switching"],
+    "machineOutputObservation": "The paired base/small outputs contain Chinese text. They do not establish English or within-utterance switching in the immutable audio.",
+    "reason": "No human reference transcript or token-level language annotation is present. Keep this fixed excerpt for smoke/performance checks, not language-stratified accuracy acceptance."
+  },
   "source": {
     "kind": "contributor-authorized-recording",
     "sourceId": "contributor-recording-2026-09-29-2244",

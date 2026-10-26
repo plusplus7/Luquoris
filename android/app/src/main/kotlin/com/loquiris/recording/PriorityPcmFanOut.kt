@@ -1,7 +1,11 @@
 package com.loquiris.recording
 
 import java.io.Closeable
+import java.util.Collections
+import java.util.IdentityHashMap
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -13,17 +17,29 @@ import kotlin.concurrent.withLock
 class PcmCaptureFrame(
     val sequence: Long,
     bytes: ByteArray,
+    /** Offset in canonical mono PCM16 samples, never sequence-derived or wall time. */
+    val canonicalStartSample: Long? = null,
+    /** Successful pause/resume generation; not a recognizer owner epoch. */
+    val captureEpoch: Long = 0,
 ) {
     private val payload = bytes.copyOf()
+    val canonicalEndSampleExclusive: Long?
 
     init {
         require(sequence >= 0) { "PCM sequence must be non-negative" }
         require(bytes.isNotEmpty()) { "PCM payload must not be empty" }
+        require(captureEpoch >= 0) { "capture epoch must be non-negative" }
+        canonicalEndSampleExclusive = canonicalStartSample?.let { start ->
+            require(start >= 0) { "canonical sample offset must be non-negative" }
+            require(payload.size % 2 == 0) { "canonical PCM16 must contain complete samples" }
+            Math.addExact(start, payload.size.toLong() / 2)
+        }
     }
 
     fun copyBytes(): ByteArray = payload.copyOf()
 
-    internal fun isolatedCopy(): PcmCaptureFrame = PcmCaptureFrame(sequence, payload)
+    internal fun isolatedCopy(): PcmCaptureFrame =
+        PcmCaptureFrame(sequence, payload, canonicalStartSample, captureEpoch)
 }
 
 enum class PcmFanOutPublishResult {
@@ -32,6 +48,9 @@ enum class PcmFanOutPublishResult {
     canonicalSinkFailed,
     closed,
 }
+
+/** Ordered worker completion only, never evidence of native resource release. */
+enum class PcmInferenceBoundaryResult { completed, detached, queueFull, closed, failed }
 
 data class PriorityPcmFanOutMetrics(
     val canonicalAcceptedFrames: Long,
@@ -56,6 +75,14 @@ fun interface PcmInferenceConsumer {
     fun onFailure(code: String) = Unit
 }
 
+/** Exact canonical coordinates, including capture discontinuity generation. */
+data class CanonicalPcmInterval(val startSample: Long, val endSampleExclusive: Long, val captureEpoch: Long)
+
+/** Immutable metadata only; no PCM is copied into a monitoring snapshot. */
+class PcmInferenceBacklog(intervals: List<CanonicalPcmInterval>, val pendingFrames: Int, val hasUnknownPosition: Boolean) {
+    val intervals: List<CanonicalPcmInterval> = Collections.unmodifiableList(intervals.toList())
+}
+
 class PriorityPcmFanOut(
     canonicalCapacity: Int,
     inferenceCapacity: Int,
@@ -63,6 +90,114 @@ class PriorityPcmFanOut(
     private val workerJoinTimeoutMillis: Long = WORKER_JOIN_TIMEOUT_MILLISECONDS,
     private val workerInterruptJoinTimeoutMillis: Long = WORKER_INTERRUPT_JOIN_TIMEOUT_MILLISECONDS,
 ) : Closeable {
+    /** Cancel only derived work; notification is nonblocking and never joins a worker. */
+    fun abortInference(failed: Boolean = false) {
+        val result = if (failed) PcmInferenceBoundaryResult.failed else PcmInferenceBoundaryResult.closed
+        val (discarded, consumer) = synchronized(inferenceBacklogLock) {
+            inferenceAdmissionClosed = true
+            // A completed worker STOP is not a native release acknowledgement.
+            val previous = (inferenceConsumer.getAndSet(null) ?: inferenceTerminalOwner) as? PcmCaptureBoundaryConsumer
+            val (frames, boundaries) = drainQueuedInferenceLocked()
+            inferenceDropped.addAndGet(frames.size.toLong())
+            inferenceBacklogLock.notifyAll()
+            boundaries to previous
+        }
+        discarded.forEach { it.completion.complete(result) }
+        if (consumer != null) runCatching { consumer.onBoundaryRejected(result) }
+    }
+
+    fun notifyCaptureBoundary(boundary: PcmCaptureBoundary): CompletionStage<PcmInferenceBoundaryResult> {
+        val consumer = inferenceConsumer.get() as? PcmCaptureBoundaryConsumer
+            ?: return CompletableFuture.completedFuture(PcmInferenceBoundaryResult.detached)
+        val stage = if (boundary == PcmCaptureBoundary.STOP) {
+            finishInference(consumer) { consumer.onCaptureBoundary(boundary) }
+        } else enqueueInferenceBoundary(consumer) { consumer.onCaptureBoundary(boundary) }
+        stage.whenComplete { outcome, _ ->
+            if (outcome != PcmInferenceBoundaryResult.completed) {
+                runCatching { consumer.onBoundaryRejected(outcome ?: PcmInferenceBoundaryResult.failed) }
+            }
+        }
+        return stage
+    }
+
+    /** Seal derived input and enqueue final work; canonical recording is unaffected. */
+    fun finishInference(consumer: PcmInferenceConsumer, action: () -> Unit): CompletionStage<PcmInferenceBoundaryResult> =
+        admitInferenceBoundary(consumer, action, terminal = true)
+
+    /**
+     * At most sixteen queued controls; native work never runs on the caller.
+     * Completion listeners may run synchronously on the worker or detaching
+     * caller. They may enqueue, but must never wait for this worker's work.
+     */
+    fun enqueueInferenceBoundary(consumer: PcmInferenceConsumer, action: () -> Unit): CompletionStage<PcmInferenceBoundaryResult> =
+        admitInferenceBoundary(consumer, action, terminal = false)
+
+    private fun admitInferenceBoundary(consumer: PcmInferenceConsumer, action: () -> Unit,
+        terminal: Boolean): CompletionStage<PcmInferenceBoundaryResult> {
+        val completion = CompletableFuture<PcmInferenceBoundaryResult>()
+        val rejected = synchronized(inferenceBacklogLock) {
+            if (terminal && inferenceTerminalOwner === consumer) {
+                inferenceTerminalCompletion?.let { return InferenceBoundaryStage(it) }
+            }
+            when {
+                closed.get() || inferenceAdmissionClosed -> PcmInferenceBoundaryResult.closed
+                inferenceConsumer.get() !== consumer -> PcmInferenceBoundaryResult.detached
+                inferenceBoundaries.size >= MAX_PENDING_INFERENCE_BOUNDARIES -> PcmInferenceBoundaryResult.queueFull
+                else -> {
+                    val marker = InferenceBoundary(consumer, nextInferenceOrdinal, action, completion, terminal)
+                    inferenceBoundaries.addLast(marker)
+                    if (terminal) {
+                        inferenceTerminal = marker
+                        inferenceTerminalOwner = consumer
+                        inferenceTerminalCompletion = completion
+                        inferenceAdmissionClosed = true
+                    }
+                    inferenceBacklogLock.notifyAll()
+                    null
+                }
+            }
+        }
+        if (rejected != null) completion.complete(rejected)
+        return InferenceBoundaryStage(completion)
+    }
+
+    private class InferenceBoundary(val consumer: PcmInferenceConsumer, val beforeOrdinal: Long,
+        val action: () -> Unit, val completion: CompletableFuture<PcmInferenceBoundaryResult>, val terminal: Boolean)
+    private sealed interface InferenceWork {
+        class Frame(val consumer: PcmInferenceConsumer, val frame: PcmCaptureFrame) : InferenceWork
+        class Boundary(val boundary: InferenceBoundary) : InferenceWork
+    }
+
+    /** Queued plus in-flight ownership; dequeue alone never reduces backlog. */
+    fun inferenceBacklog(): PcmInferenceBacklog {
+        val intervals = synchronized(inferenceBacklogLock) {
+            inferencePending.map { frame ->
+                val start = frame.canonicalStartSample
+                val end = frame.canonicalEndSampleExclusive
+                if (start == null || end == null) null else CanonicalPcmInterval(start, end, frame.captureEpoch)
+            }
+        }
+        return PcmInferenceBacklog(
+            intervals.filterNotNull().sortedWith(compareBy({ it.startSample }, { it.endSampleExclusive }, { it.captureEpoch })),
+            intervals.size,
+            intervals.any { it == null },
+        )
+    }
+
+    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+    private val inferenceBacklogLock = java.lang.Object()
+    // The same frame identities already owned by the queue/worker, not PCM copies.
+    // At most inferenceCapacity queued frames plus the single worker's frame.
+    private val inferencePending = Collections.newSetFromMap(IdentityHashMap<PcmCaptureFrame, Boolean>())
+    // Ordinals are internal admission order, never caller sequence or media time.
+    private val inferenceOrdinals = IdentityHashMap<PcmCaptureFrame, Long>()
+    private val inferenceBoundaries = java.util.ArrayDeque<InferenceBoundary>()
+    private var nextInferenceOrdinal = 0L
+    private var inferenceTerminal: InferenceBoundary? = null
+    private var inferenceTerminalOwner: PcmInferenceConsumer? = null
+    private var inferenceTerminalCompletion: CompletableFuture<PcmInferenceBoundaryResult>? = null
+    private var inferenceAdmissionClosed = false
+    private var inferenceClosed = false
     private val canonicalQueue: ArrayBlockingQueue<PcmCaptureFrame>
     private val inferenceQueue: ArrayBlockingQueue<PcmCaptureFrame>
     private val closed = AtomicBoolean()
@@ -135,25 +270,46 @@ class PriorityPcmFanOut(
             }
         }
         val inferenceFrame = frame.isolatedCopy()
-        if (inferenceQueue.offer(inferenceFrame)) {
-            inferenceAccepted.incrementAndGet()
-        } else if (inferenceConsumer.get() != null) {
-            inferenceQueue.poll()
-            inferenceDropped.incrementAndGet()
-            if (inferenceQueue.offer(inferenceFrame)) inferenceAccepted.incrementAndGet()
-        } else {
-            inferenceDropped.incrementAndGet()
+        synchronized(inferenceBacklogLock) {
+            // shutdown may follow canonical admission but precede derived work.
+            if (closed.get() || inferenceAdmissionClosed) return PcmFanOutPublishResult.accepted
+            inferencePending.add(inferenceFrame)
+            if (inferenceQueue.offer(inferenceFrame)) {
+                inferenceAccepted.incrementAndGet()
+                inferenceOrdinals[inferenceFrame] = nextInferenceOrdinal++
+            }
+            else if (inferenceConsumer.get() != null) {
+                inferenceQueue.poll()?.let { inferencePending.remove(it); inferenceOrdinals.remove(it) }
+                inferenceDropped.incrementAndGet()
+                if (inferenceQueue.offer(inferenceFrame)) {
+                    inferenceAccepted.incrementAndGet()
+                    inferenceOrdinals[inferenceFrame] = nextInferenceOrdinal++
+                }
+                else inferencePending.remove(inferenceFrame)
+            } else {
+                inferencePending.remove(inferenceFrame)
+                inferenceDropped.incrementAndGet()
+            }
+            inferenceBacklogLock.notifyAll()
         }
         return PcmFanOutPublishResult.accepted
     }
 
     fun replaceInferenceConsumer(consumer: PcmInferenceConsumer?) {
-        val previous = inferenceConsumer.getAndSet(consumer)
-        if (consumer == null || previous != null && previous !== consumer) {
-            inferenceDropped.addAndGet(inferenceQueue.size.toLong())
-            inferenceQueue.clear()
+        val discarded = synchronized(inferenceBacklogLock) {
+            val previous = inferenceConsumer.getAndSet(consumer)
+            val removed = if (consumer == null || previous != null && previous !== consumer) {
+                drainQueuedInferenceLocked().also { inferenceDropped.addAndGet(it.first.size.toLong()) }.second
+            } else emptyList()
+            if (consumer != null && previous !== consumer) {
+                inferenceAdmissionClosed = false
+                inferenceTerminalOwner = null
+                inferenceTerminalCompletion = null
+            }
+            inferenceBacklogLock.notifyAll()
+            removed
         }
-        inferenceWorker.interrupt()
+        discarded.forEach { it.completion.complete(PcmInferenceBoundaryResult.detached) }
     }
 
     fun awaitCanonicalProcessed(
@@ -173,23 +329,55 @@ class PriorityPcmFanOut(
         return true
     }
 
+    /**
+     * Transfer queued derived frames to the caller, removing ledger ownership.
+     * Work pending in that external caller is no longer part of inferenceBacklog.
+     * Streaming observers must not use this manual-drain path as a decoder queue.
+     */
     fun drainInference(): List<PcmCaptureFrame> {
+        val (frames, boundaries) = synchronized(inferenceBacklogLock) { drainQueuedInferenceLocked() }
+        boundaries.forEach { it.completion.complete(PcmInferenceBoundaryResult.detached) }
+        return frames
+    }
+
+    /** Caller holds the metadata lock; never completes caller callbacks here. */
+    private fun drainQueuedInferenceLocked(): Pair<List<PcmCaptureFrame>, List<InferenceBoundary>> {
         val frames = mutableListOf<PcmCaptureFrame>()
         inferenceQueue.drainTo(frames)
-        return frames
+        frames.forEach { inferencePending.remove(it); inferenceOrdinals.remove(it) }
+        val boundaries = inferenceBoundaries.toList()
+        inferenceBoundaries.clear()
+        inferenceTerminal = null
+        return frames to boundaries
+    }
+
+    private fun forgetInferenceFrame(frame: PcmCaptureFrame) {
+        synchronized(inferenceBacklogLock) { inferencePending.remove(frame); inferenceOrdinals.remove(frame) }
     }
 
     override fun close() {
         shutdown()
     }
 
-    fun shutdown(): Boolean {
+    fun shutdown(preserveInferenceBoundary: Boolean = false): Boolean {
         val newlyClosed = synchronized(lifecycleLock) { closed.compareAndSet(false, true) }
         if (newlyClosed) canonicalQueueLock.withLock { canonicalQueueChanged.signalAll() }
-        inferenceConsumer.set(null)
-        inferenceDropped.addAndGet(inferenceQueue.size.toLong())
-        inferenceQueue.clear()
-        inferenceWorker.interrupt()
+        val (discarded, preserve, abortedConsumer) = synchronized(inferenceBacklogLock) {
+            inferenceClosed = true
+            val keepFinal = preserveInferenceBoundary && inferenceTerminal != null && inferenceConsumer.get() != null
+            val aborted = if (keepFinal) null else inferenceConsumer.get() as? PcmCaptureBoundaryConsumer
+            val boundaries = if (keepFinal) emptyList() else {
+                inferenceConsumer.set(null)
+                val (frames, removed) = drainQueuedInferenceLocked()
+                inferenceDropped.addAndGet(frames.size.toLong())
+                removed
+            }
+            inferenceBacklogLock.notifyAll()
+            Triple(boundaries, keepFinal, aborted)
+        }
+        discarded.forEach { it.completion.complete(PcmInferenceBoundaryResult.closed) }
+        if (abortedConsumer != null) runCatching { abortedConsumer.onBoundaryRejected(PcmInferenceBoundaryResult.closed) }
+        if (!preserve) inferenceWorker.interrupt()
         worker.join(workerJoinTimeoutMillis)
         if (worker.isAlive) {
             worker.interrupt()
@@ -216,33 +404,73 @@ class PriorityPcmFanOut(
     }
 
     private fun drainInferenceConsumer() {
-        while (!closed.get()) {
-            val consumer = inferenceConsumer.get()
-            if (consumer == null) {
-                try {
-                    Thread.sleep(WORKER_POLL_MILLISECONDS)
-                } catch (_: InterruptedException) {
-                    continue
+        while (true) {
+            when (val work = takeInferenceWork() ?: return) {
+                is InferenceWork.Frame -> {
+                    try {
+                        work.consumer.onBacklog(inferenceQueue.size, inferenceDropped.get())
+                        work.consumer.consume(work.frame)
+                        inferenceProcessed.incrementAndGet()
+                    } catch (_: Throwable) {
+                        failInferenceConsumer(work.consumer, "transcription_live_consumer_failed")
+                    } finally { forgetInferenceFrame(work.frame) }
                 }
-                continue
-            }
-            val frame =
-                try {
-                    inferenceQueue.poll(WORKER_POLL_MILLISECONDS, TimeUnit.MILLISECONDS)
-                } catch (_: InterruptedException) {
-                    continue
-                } ?: continue
-            try {
-                consumer.onBacklog(inferenceQueue.size, inferenceDropped.get())
-                consumer.consume(frame)
-                inferenceProcessed.incrementAndGet()
-            } catch (_: Exception) {
-                if (closed.get()) return
-                inferenceConsumer.compareAndSet(consumer, null)
-                inferenceConsumerFailures.incrementAndGet()
-                runCatching { consumer.onFailure("transcription_live_consumer_failed") }
+                is InferenceWork.Boundary -> {
+                    val marker = work.boundary
+                    val aborted = synchronized(inferenceBacklogLock) { inferenceClosed && inferenceTerminal == null }
+                    val outcome = if (aborted) PcmInferenceBoundaryResult.closed
+                        else if (inferenceConsumer.get() !== marker.consumer) PcmInferenceBoundaryResult.detached
+                        else try {
+                            marker.action()
+                            PcmInferenceBoundaryResult.completed
+                        } catch (_: Throwable) {
+                            failInferenceConsumer(marker.consumer, "transcription_live_boundary_failed")
+                            PcmInferenceBoundaryResult.failed
+                        }
+                    if (marker.terminal) synchronized(inferenceBacklogLock) {
+                        if (inferenceTerminal === marker) {
+                            inferenceTerminal = null
+                            inferenceConsumer.compareAndSet(marker.consumer, null)
+                            inferenceBacklogLock.notifyAll()
+                        }
+                    }
+                    marker.completion.complete(outcome)
+                }
             }
         }
+    }
+
+    private fun takeInferenceWork(): InferenceWork? = synchronized(inferenceBacklogLock) {
+        while (!inferenceClosed || inferenceTerminal != null) {
+            val consumer = inferenceConsumer.get()
+            if (consumer != null) {
+                val marker = inferenceBoundaries.peekFirst()
+                val frame = inferenceQueue.peek()
+                if (marker != null && (frame == null || checkNotNull(inferenceOrdinals[frame]) >= marker.beforeOrdinal)) {
+                    inferenceBoundaries.removeFirst()
+                    return@synchronized InferenceWork.Boundary(marker)
+                }
+                if (frame != null) {
+                    inferenceQueue.poll()
+                    return@synchronized InferenceWork.Frame(consumer, frame)
+                }
+            }
+            try { inferenceBacklogLock.wait(WORKER_POLL_MILLISECONDS) }
+            catch (_: InterruptedException) { if (inferenceClosed && inferenceTerminal == null) return@synchronized null }
+        }
+        null
+    }
+
+    private fun failInferenceConsumer(consumer: PcmInferenceConsumer, code: String) {
+        val discarded = synchronized(inferenceBacklogLock) {
+            if (!inferenceConsumer.compareAndSet(consumer, null)) return
+            val (frames, boundaries) = drainQueuedInferenceLocked()
+            inferenceDropped.addAndGet(frames.size.toLong())
+            inferenceConsumerFailures.incrementAndGet()
+            boundaries
+        }
+        discarded.forEach { it.completion.complete(PcmInferenceBoundaryResult.detached) }
+        runCatching { consumer.onFailure(code) }
     }
 
     private fun markProcessed() {
@@ -263,8 +491,13 @@ class PriorityPcmFanOut(
         }
 
     private companion object {
+        const val MAX_PENDING_INFERENCE_BOUNDARIES = 16
         const val WORKER_POLL_MILLISECONDS = 50L
         const val WORKER_JOIN_TIMEOUT_MILLISECONDS = 5_000L
         const val WORKER_INTERRUPT_JOIN_TIMEOUT_MILLISECONDS = 1_000L
     }
+}
+
+private class InferenceBoundaryStage<T>(private val root: CompletableFuture<T>) : CompletionStage<T> by root {
+    override fun toCompletableFuture(): CompletableFuture<T> = root.thenApply { it }
 }

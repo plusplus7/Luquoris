@@ -67,6 +67,13 @@ fun interface ForegroundPromoter {
 }
 
 object RecordingForegroundPromotion {
+    /** Reports promotion separately from potentially disk-backed preparation. */
+    fun beforePreparation(promoter: ForegroundPromoter, prepare: () -> Unit): Boolean {
+        if (!attempt(promoter)) return false
+        prepare()
+        return true
+    }
+
     fun attempt(promoter: ForegroundPromoter): Boolean =
         try {
             promoter.promote()

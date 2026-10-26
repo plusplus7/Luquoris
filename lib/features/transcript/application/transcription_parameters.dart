@@ -1,12 +1,19 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:loquiris/features/models_performance/domain/model_manifest.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:meta/meta.dart';
 
-/// Stable identifier of the bundled multilingual base model.
-const String transcriptionModelId = 'whisper-base-q5_1';
+/// Enables the unapproved larger model only in explicitly opted-in debug builds.
+const bool experimentalSmallTranscriptionModel =
+    kDebugMode && bool.fromEnvironment('LOQUIRIS_EXPERIMENTAL_SMALL');
+
+/// Stable identifier shared by live and post-session transcription requests.
+const String transcriptionModelId = experimentalSmallTranscriptionModel
+    ? 'whisper-small-q5_1'
+    : 'whisper-base-q5_1';
 
 /// Exact native engine release used to derive durable run identity.
 const String transcriptionEngineVersion = '1.9.4';

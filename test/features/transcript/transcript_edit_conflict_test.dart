@@ -5,6 +5,7 @@ import 'package:loquiris/features/models_performance/domain/processing_entities.
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/speakers/domain/speaker_entities.dart';
 import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
+import 'package:loquiris/features/transcript/domain/transcript_processing_info.dart';
 import 'package:loquiris/features/transcript/presentation/transcript_editor_controller.dart';
 import 'package:loquiris/services/analysis_repository_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
@@ -88,8 +89,25 @@ final class _StableTranscriptRepository implements TranscriptRepository {
   loadEditor(String meetingId) async => Ok(document);
 
   @override
+  Stream<Result<List<TranscriptVersion>, AnalysisRepositoryFailure>>
+  watchVersions(String meetingId) async* {
+    yield await listVersions(meetingId);
+  }
+
+  @override
   Future<Result<List<TranscriptVersion>, AnalysisRepositoryFailure>>
   listVersions(String meetingId) async => Ok([document.currentVersion!]);
+
+  @override
+  Future<Result<void, AnalysisRepositoryFailure>> selectReadableVersion(
+    TranscriptRun expectedRun,
+    TranscriptProcessingInfo? expectedProcessing, {
+    required int selectedAtUtcMs,
+  }) => selectCurrent(
+    expectedRun.meetingId,
+    expectedRun.id,
+    selectedAtUtcMs: selectedAtUtcMs,
+  );
 
   @override
   Future<Result<void, AnalysisRepositoryFailure>> selectCurrent(

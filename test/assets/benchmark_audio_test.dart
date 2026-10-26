@@ -25,8 +25,17 @@ void main() {
       expect(manifest['purpose'], 'firstRunPerformanceBenchmark');
       expect(
         manifest['languageCoverage'],
-        <Object?>['zh-CN', 'en', 'zh-en-code-switching'],
+        isEmpty,
       );
+      expect(manifest['annotationVersion'], 2);
+      final coverage = manifest['coverageAudit']! as Map<String, Object?>;
+      expect(coverage['humanVerified'], isFalse);
+      expect(coverage['accuracyAcceptanceEligible'], isFalse);
+      expect(coverage['originalDeclaredCoverage'], <Object?>[
+        'zh-CN',
+        'en',
+        'zh-en-code-switching',
+      ]);
       final source = manifest['source']! as Map<String, Object?>;
       expect(source['kind'], 'contributor-authorized-recording');
       expect(

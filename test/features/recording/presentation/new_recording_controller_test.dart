@@ -9,6 +9,7 @@ import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
 
 import '../../../support/fakes/fake_services.dart';
+import '../../../support/recording_processing_fixture.dart';
 
 void main() {
   test('loads the locally remembered recording setup', () async {
@@ -22,6 +23,7 @@ void main() {
     addTearDown(capture.dispose);
     final container = ProviderContainer.test(
       overrides: [
+        ...recordingProcessingOverrides(),
         sessionRepositoryProvider.overrideWithValue(repository),
         audioCaptureServiceProvider.overrideWithValue(capture),
       ],
@@ -40,7 +42,10 @@ void main() {
   });
 
   test('persists setup and meeting before starting native capture', () async {
-    final repository = FakeSessionRepository();
+    final repository = FakeSessionRepository()
+      ..recordingDefaults = const RecordingDefaults(
+        transcriptionMode: MeetingTranscriptionMode.nearRealTime,
+      );
     final capture = FakeAudioCaptureService()
       ..startResult = const Ok(
         AudioCaptureSnapshot(
@@ -53,6 +58,7 @@ void main() {
     addTearDown(capture.dispose);
     final container = ProviderContainer.test(
       overrides: [
+        ...recordingProcessingOverrides(),
         sessionRepositoryProvider.overrideWithValue(repository),
         audioCaptureServiceProvider.overrideWithValue(capture),
         clockProvider.overrideWithValue(
@@ -74,7 +80,6 @@ void main() {
     await container.read(recordingControllerProvider.future);
     await container.read(newRecordingControllerProvider.future);
     container.read(newRecordingControllerProvider.notifier)
-      ..selectTranscriptionMode(MeetingTranscriptionMode.nearRealTime)
       ..selectLanguageMode(MeetingLanguageMode.english)
       ..selectExpectedSpeakerCount(6)
       ..start(title: 'Meeting · October 1, 2026 · 10:03 AM');
@@ -88,7 +93,7 @@ void main() {
         expectedSpeakerCount: 6,
       ),
     );
-    expect(repository.savedMeetings, hasLength(2));
+    expect(repository.savedMeetings, hasLength(3));
     expect(
       repository.savedMeetings.first,
       const Meeting(
@@ -96,9 +101,8 @@ void main() {
         title: 'Meeting · October 1, 2026 · 10:03 AM',
         createdAtUtcMs: 1790820180000,
         mediaDuration: Duration.zero,
-        lifecycle: MeetingLifecycle.preparing,
+        lifecycle: MeetingLifecycle.draft,
         languageMode: MeetingLanguageMode.english,
-        transcriptionMode: MeetingTranscriptionMode.nearRealTime,
         expectedSpeakerCount: 6,
       ),
     );
@@ -145,6 +149,7 @@ void main() {
       addTearDown(capture.dispose);
       final container = ProviderContainer.test(
         overrides: [
+          ...recordingProcessingOverrides(),
           sessionRepositoryProvider.overrideWithValue(repository),
           audioCaptureServiceProvider.overrideWithValue(capture),
           clockProvider.overrideWithValue(Clock(() => now)),
@@ -222,6 +227,7 @@ void main() {
       addTearDown(capture.dispose);
       final container = ProviderContainer.test(
         overrides: [
+          ...recordingProcessingOverrides(),
           sessionRepositoryProvider.overrideWithValue(repository),
           audioCaptureServiceProvider.overrideWithValue(capture),
           meetingIdFactoryProvider.overrideWithValue(() => 'meeting-timeout'),
@@ -241,7 +247,7 @@ void main() {
 
       final state = container.read(newRecordingControllerProvider).requireValue;
       expect(repository.discardedUnstartedMeetingIds, isEmpty);
-      expect(repository.savedMeetings.single.id, 'meeting-timeout');
+      expect(repository.savedMeetings.last.id, 'meeting-timeout');
       expect(state.failure, isA<NewRecordingCaptureOutcomeUnknown>());
       expect(state.canStart, isFalse);
     },
@@ -265,6 +271,7 @@ void main() {
     addTearDown(capture.dispose);
     final container = ProviderContainer.test(
       overrides: [
+        ...recordingProcessingOverrides(),
         sessionRepositoryProvider.overrideWithValue(repository),
         audioCaptureServiceProvider.overrideWithValue(capture),
         meetingIdFactoryProvider.overrideWithValue(() => 'meeting-active'),
@@ -303,6 +310,7 @@ void main() {
     addTearDown(capture.dispose);
     final container = ProviderContainer.test(
       overrides: [
+        ...recordingProcessingOverrides(),
         sessionRepositoryProvider.overrideWithValue(repository),
         audioCaptureServiceProvider.overrideWithValue(capture),
         meetingIdFactoryProvider.overrideWithValue(() => 'meeting-protected'),

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "meetingId": "meeting-1",
+  "runId": "run-1",
+  "files": [
+    {
+      "fileId": "segment-0",
+      "sizeBytes": 32044,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "startMs": 0,
+      "durationMs": 1000
+    },
+    {
+      "fileId": "segment-1",
+      "sizeBytes": 32044,
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "startMs": 1000,
+      "durationMs": 1000
+    }
+  ]
+}

@@ -19,10 +19,11 @@ void main() {
   test(
     'current database matches the committed latest schema snapshot',
     () async {
-      final connection = await verifier.startAt(3);
+      final latest = GeneratedHelper.versions.last;
+      final connection = await verifier.startAt(latest);
       final database = AppDatabase(connection);
 
-      await verifier.migrateAndValidate(database, 3);
+      await verifier.migrateAndValidate(database, latest);
 
       expect(
         database.schemaVersion,

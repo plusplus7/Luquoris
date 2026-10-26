@@ -12,7 +12,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 add_compile_options(-O3 -ffunction-sections -fdata-sections)
 
-# Loquiris ships one JNI library. All whisper.cpp and ggml code is linked into
+# Production ships one app-owned JNI library. All whisper.cpp and ggml code is linked into
 # it statically so no implementation libraries leak into the APK surface.
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(WHISPER_BUILD_IS_DEV OFF CACHE BOOL "" FORCE)
@@ -63,3 +63,9 @@ target_link_options(
     -Wl,--gc-sections
 )
 target_link_libraries(loquiris_whisper PRIVATE whisper log android)
+
+# Explicit debug opt-in only; profile/release never compile or package this spike.
+string(TOLOWER "${CMAKE_BUILD_TYPE}" loquiris_build_type)
+if(loquiris_build_type STREQUAL "debug" AND LOQUIRIS_STREAMING_NATIVE_SPIKE)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../debug/cpp" "streaming_debug")
+endif()

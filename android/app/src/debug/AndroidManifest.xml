@@ -5,4 +5,14 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <application>
+        <service android:name=".transcription.StreamingInferenceService"
+            android:exported="false" android:process=":streaming" />
+        <service android:name=".spike.StreamingProcessProbeService"
+            android:exported="false" android:process=":streaming_probe" />
+        <service android:name=".spike.StreamingLinkFailureProbeService"
+            android:exported="false" android:process=":streaming_link_failure" />
+        <service android:name=".spike.StreamingNativeKernelProbeService"
+            android:exported="false" android:process=":streaming_native_probe" />
+    </application>
 </manifest>

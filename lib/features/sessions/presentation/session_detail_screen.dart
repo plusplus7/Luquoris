@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
+import 'package:loquiris/features/remote_transcription/application/remote_feature.dart';
+import 'package:loquiris/features/remote_transcription/presentation/remote_transcription_panel.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/sessions/presentation/session_detail_controller.dart';
 import 'package:loquiris/features/transcript/presentation/meeting_transcription_status.dart';
+import 'package:loquiris/features/transcript/presentation/transcript_version_readiness_notice.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
 import 'package:loquiris/routing/routes.dart';
 import 'package:loquiris/services/service_contracts.dart';
@@ -34,30 +37,36 @@ final class SessionDetailScreen extends ConsumerWidget {
       initialOffset: initialOffset,
     );
     final state = ref.watch(sessionDetailControllerProvider(request));
+    final remoteEnabled = ref.watch(remoteTranscriptionEnabledProvider);
+    final hasLegacyTranscript =
+        state.value?.detail.meeting.currentTranscriptRunId != null;
     return Scaffold(
       key: ValueKey<String>('session-detail:$meetingId'),
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).sessionDetailTitle),
         actions: [
-          IconButton(
-            key: const Key('session-detail-open-export'),
-            tooltip: AppLocalizations.of(context).exportTitle,
-            onPressed: () => context.push(AppRoutes.export(meetingId)),
-            icon: const ExcludeSemantics(
-              child: Icon(Icons.ios_share_outlined),
+          if (!remoteEnabled || hasLegacyTranscript)
+            IconButton(
+              key: const Key('session-detail-open-export'),
+              tooltip: AppLocalizations.of(context).exportTitle,
+              onPressed: () => context.push(AppRoutes.export(meetingId)),
+              icon: const ExcludeSemantics(
+                child: Icon(Icons.ios_share_outlined),
+              ),
             ),
-          ),
-          IconButton(
-            key: const Key('session-detail-open-editor'),
-            tooltip: AppLocalizations.of(context).transcriptEditorTitle,
-            onPressed: () => context.push(AppRoutes.editor(meetingId)),
-            icon: const Icon(Icons.edit_note_rounded),
-          ),
+          if (!remoteEnabled || hasLegacyTranscript)
+            IconButton(
+              key: const Key('session-detail-open-editor'),
+              tooltip: AppLocalizations.of(context).transcriptEditorTitle,
+              onPressed: () => context.push(AppRoutes.editor(meetingId)),
+              icon: const Icon(Icons.edit_note_rounded),
+            ),
         ],
       ),
       body: switch (state) {
         AsyncData(:final value) => _DetailContent(
           state: value,
+          remoteEnabled: remoteEnabled,
           onToggle: () => ref
               .read(sessionDetailControllerProvider(request).notifier)
               .togglePlayback(),
@@ -79,9 +88,11 @@ final class _DetailContent extends StatelessWidget {
     required this.state,
     required this.onToggle,
     required this.onSeek,
+    required this.remoteEnabled,
   });
 
   final SessionDetailViewState state;
+  final bool remoteEnabled;
   final VoidCallback onToggle;
   final ValueChanged<Duration> onSeek;
 
@@ -90,9 +101,6 @@ final class _DetailContent extends StatelessWidget {
     final detail = state.detail;
     final l10n = AppLocalizations.of(context);
     final spacing = LoquirisSpacing.of(context);
-    final otherProcessingJobs = detail.processingJobs
-        .where((job) => job.kind != ProcessingJobKind.transcription)
-        .toList(growable: false);
     return LoquirisAdaptivePage(
       child: ListView(
         children: [
@@ -105,7 +113,16 @@ final class _DetailContent extends StatelessWidget {
           SizedBox(height: spacing.section),
           _PlaybackCard(state: state, onToggle: onToggle, onSeek: onSeek),
           SizedBox(height: spacing.section),
-          MeetingTranscriptionStatus(meetingId: detail.meeting.id),
+          if (!remoteEnabled)
+            MeetingTranscriptionStatus(meetingId: detail.meeting.id),
+          RemoteTranscriptionPanel(meetingId: detail.meeting.id),
+          if (!remoteEnabled || detail.meeting.currentTranscriptRunId != null)
+            TranscriptVersionReadinessNotice(
+              meetingId: detail.meeting.id,
+              onOpenVersions: () => context.push<void>(
+                AppRoutes.transcriptVersions(detail.meeting.id),
+              ),
+            ),
           _Section(
             title: l10n.sessionDetailMarkersTitle,
             emptyLabel: l10n.sessionDetailNoMarkers,
@@ -131,58 +148,7 @@ final class _DetailContent extends StatelessWidget {
                 )
                 .toList(),
           ),
-          _Section(
-            title: l10n.sessionDetailSegmentsTitle,
-            emptyLabel: l10n.sessionDetailNoSegments,
-            children: detail.segments
-                .map(
-                  (segment) => ListTile(
-                    key: Key('session-detail-segment:${segment.id}'),
-                    leading: const Icon(Icons.audio_file_outlined),
-                    title: Text(
-                      l10n.sessionDetailSegment(segment.sequence + 1),
-                    ),
-                    subtitle: Text(
-                      '${_formatDuration(segment.mediaStart)}–'
-                      '${_formatDuration(segment.mediaStart + segment.mediaDuration)} · '
-                      '${_formatBytes(segment.committedBytes)} · '
-                      '${_segmentStateLabel(l10n, segment.state)}',
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-          _Section(
-            title: l10n.sessionDetailEventsTitle,
-            emptyLabel: l10n.sessionDetailNoEvents,
-            children: detail.events
-                .map(
-                  (event) => ListTile(
-                    key: Key('session-detail-event:${event.id}'),
-                    leading: const Icon(Icons.timeline_rounded),
-                    title: Text(_eventLabel(l10n, event.type)),
-                    subtitle: Text(
-                      '${DateFormat.yMd(Localizations.localeOf(context).toString()).add_jm().format(DateTime.fromMillisecondsSinceEpoch(event.wallClockUtcMs))} · '
-                      '${_formatDuration(event.mediaOffset)}',
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-          if (otherProcessingJobs.isNotEmpty)
-            _Section(
-              title: l10n.sessionDetailProcessingTitle,
-              emptyLabel: l10n.sessionDetailNoProcessing,
-              children: otherProcessingJobs
-                  .map(
-                    (job) => ListTile(
-                      leading: const Icon(Icons.memory_rounded),
-                      title: Text(_processingKindLabel(l10n, job.kind)),
-                      subtitle: Text(_processingLabel(l10n, job.state)),
-                    ),
-                  )
-                  .toList(),
-            ),
+          _RecordingDiagnostics(detail: detail, collapsed: remoteEnabled),
           if (detail.recoveryDiagnostics.isNotEmpty)
             _Section(
               title: l10n.sessionDetailRecoveryTitle,
@@ -200,6 +166,83 @@ final class _DetailContent extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+final class _RecordingDiagnostics extends StatelessWidget {
+  const _RecordingDiagnostics({required this.detail, required this.collapsed});
+  final SessionDetail detail;
+  final bool collapsed;
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final otherProcessingJobs = detail.processingJobs
+        .where((job) => job.kind != ProcessingJobKind.transcription)
+        .toList(growable: false);
+    final children = <Widget>[
+      _Section(
+        title: l10n.sessionDetailSegmentsTitle,
+        emptyLabel: l10n.sessionDetailNoSegments,
+        children: detail.segments
+            .map(
+              (segment) => ListTile(
+                key: Key('session-detail-segment:${segment.id}'),
+                leading: const Icon(Icons.audio_file_outlined),
+                title: Text(
+                  l10n.sessionDetailSegment(segment.sequence + 1),
+                ),
+                subtitle: Text(
+                  '${_formatDuration(segment.mediaStart)}–'
+                  '${_formatDuration(segment.mediaStart + segment.mediaDuration)} · '
+                  '${_formatBytes(segment.committedBytes)} · '
+                  '${_segmentStateLabel(l10n, segment.state)}',
+                ),
+              ),
+            )
+            .toList(),
+      ),
+      _Section(
+        title: l10n.sessionDetailEventsTitle,
+        emptyLabel: l10n.sessionDetailNoEvents,
+        children: detail.events
+            .map(
+              (event) => ListTile(
+                key: Key('session-detail-event:${event.id}'),
+                leading: const Icon(Icons.timeline_rounded),
+                title: Text(_eventLabel(l10n, event.type)),
+                subtitle: Text(
+                  '${DateFormat.yMd(Localizations.localeOf(context).toString()).add_jm().format(DateTime.fromMillisecondsSinceEpoch(event.wallClockUtcMs))} · '
+                  '${_formatDuration(event.mediaOffset)}',
+                ),
+              ),
+            )
+            .toList(),
+      ),
+      if (otherProcessingJobs.isNotEmpty)
+        _Section(
+          title: l10n.sessionDetailProcessingTitle,
+          emptyLabel: l10n.sessionDetailNoProcessing,
+          children: otherProcessingJobs
+              .map(
+                (job) => ListTile(
+                  leading: const Icon(Icons.memory_rounded),
+                  title: Text(_processingKindLabel(l10n, job.kind)),
+                  subtitle: Text(_processingLabel(l10n, job.state)),
+                ),
+              )
+              .toList(),
+        ),
+    ];
+    return collapsed
+        ? ExpansionTile(
+            expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+            title: Text(l10n.remoteRecordingDetails),
+            children: children,
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: children,
+          );
   }
 }
 

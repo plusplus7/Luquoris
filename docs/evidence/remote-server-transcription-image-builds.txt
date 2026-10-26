@@ -1,0 +1,32 @@
+=== api successful image export ===
+#13 2.019  + typing-extensions==4.16.0
+#13 2.019  + typing-inspection==0.4.4
+#13 2.019  + uvicorn==0.54.0
+#13 DONE 2.1s
+
+#14 exporting to image
+#14 exporting layers
+#14 exporting layers 10.6s done
+#14 exporting manifest sha256:dff79da384cf2807ed211c69e6997c165d0602ebafa19fab949b5728ce9c2048
+#14 exporting manifest sha256:dff79da384cf2807ed211c69e6997c165d0602ebafa19fab949b5728ce9c2048 done
+#14 exporting config sha256:55bf5510a306f699661bdd5fe65c36a4fbe0a42964d6ad7bb0d29c0dffb67dc4 done
+#14 exporting attestation manifest sha256:271021bc8b9f3573708bf244749f23236c2a4c36b3d4a95be35d8d387f13e304 done
+#14 exporting manifest list sha256:714a703d3446614ff13bf89d9cb41c00edc6ccd1ec631299148dfbf9bd8df6fd done
+#14 naming to docker.io/library/loquiris-api:verify done
+#14 DONE 10.6s
+=== worker successful image export ===
+#14 46.69  + triton==3.2.0
+#14 46.69  + typer==0.27.3
+#14 46.69  + urllib3==2.8.0
+#14 46.69  + werkzeug==3.1.9
+#14 DONE 47.5s
+
+#15 exporting to image
+#15 exporting layers
+#15 exporting layers 136.5s done
+#15 exporting manifest sha256:e4a35d4d00aa704ec1868c65814efb007b24f1ebdaf9d1db571c8a0ef2f342d6 done
+#15 exporting config sha256:eb25b47244fc6677490ab7413707b11e4db569e94c3cba21cb206b983fa29a26 done
+#15 exporting attestation manifest sha256:d18a8685167342a6fe9eeab2c1a5df1bd80ee97a23aedf9f1bea4c0a2a11a846 done
+#15 exporting manifest list sha256:40d77a098238c2ac35ce7eb03e1fa5a6114a1b91d9e4ce3e112e4d8dd7da378f done
+#15 naming to docker.io/library/loquiris-worker:verify done
+#15 DONE 136.5s

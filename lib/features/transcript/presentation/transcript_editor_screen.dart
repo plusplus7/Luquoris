@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
 import 'package:loquiris/features/transcript/presentation/transcript_editor_controller.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
+import 'package:loquiris/routing/routes.dart';
 import 'package:loquiris/theme/components/loquiris_adaptive_page.dart';
 import 'package:loquiris/theme/loquiris_tokens.dart';
 
@@ -21,7 +23,17 @@ final class TranscriptEditorScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       key: ValueKey<String>('transcript-editor:$meetingId'),
-      appBar: AppBar(title: Text(l10n.transcriptEditorTitle)),
+      appBar: AppBar(
+        title: Text(l10n.transcriptEditorTitle),
+        actions: [
+          IconButton(
+            tooltip: l10n.transcriptVersionsTitle,
+            onPressed: () =>
+                context.push<void>(AppRoutes.transcriptVersions(meetingId)),
+            icon: const ExcludeSemantics(child: Icon(Icons.history_rounded)),
+          ),
+        ],
+      ),
       body: switch (snapshot) {
         AsyncData(:final value) => _EditorContent(
           state: value,

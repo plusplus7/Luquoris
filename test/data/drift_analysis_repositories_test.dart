@@ -722,6 +722,152 @@ void main() {
     },
   );
 
+  test(
+    'version watch reflects committed additions and explicit selection',
+    () async {
+      await _seedTranscription(database);
+      final transcripts = DriftTranscriptRepository(
+        database,
+        diagnosticSink: const DisabledDiagnosticLogSink(),
+      );
+      final iterator = StreamIterator(transcripts.watchVersions('meeting-1'));
+      addTearDown(iterator.cancel);
+      expect(await iterator.moveNext(), isTrue);
+      expect(
+        (iterator.current
+                as Ok<List<TranscriptVersion>, AnalysisRepositoryFailure>)
+            .value,
+        isEmpty,
+      );
+      await _ok(
+        transcripts.saveVersion(
+          _completedRun('run-1', createdAt: 2),
+          [_segment('segment-1', 'run-1', 'first')],
+          storedAtUtcMs: 2,
+        ),
+      );
+      expect(await iterator.moveNext(), isTrue);
+      var versions =
+          (iterator.current
+                  as Ok<List<TranscriptVersion>, AnalysisRepositoryFailure>)
+              .value;
+      expect(versions.single.run.id, 'run-1');
+      expect(versions.single.isCurrent, isFalse);
+      await _ok(
+        transcripts.selectCurrent('meeting-1', 'run-1', selectedAtUtcMs: 3),
+      );
+      expect(await iterator.moveNext(), isTrue);
+      versions =
+          (iterator.current
+                  as Ok<List<TranscriptVersion>, AnalysisRepositoryFailure>)
+              .value;
+      expect(versions.single.isCurrent, isTrue);
+      await _ok(
+        transcripts.saveVersion(
+          _completedRun('run-2', createdAt: 4),
+          [_segment('segment-2', 'run-2', 'second')],
+          storedAtUtcMs: 4,
+        ),
+      );
+      expect(await iterator.moveNext(), isTrue);
+      versions =
+          (iterator.current
+                  as Ok<List<TranscriptVersion>, AnalysisRepositoryFailure>)
+              .value;
+      expect(versions.map((version) => version.run.id), ['run-2', 'run-1']);
+      expect(
+        versions.singleWhere((version) => version.isCurrent).run.id,
+        'run-1',
+      );
+      await _ok(
+        transcripts.selectCurrent('meeting-1', 'run-2', selectedAtUtcMs: 5),
+      );
+      expect(await iterator.moveNext(), isTrue);
+      versions =
+          (iterator.current
+                  as Ok<List<TranscriptVersion>, AnalysisRepositoryFailure>)
+              .value;
+      expect(
+        versions.singleWhere((version) => version.isCurrent).run.id,
+        'run-2',
+      );
+      expect(versions.last.segments.single.rawModelText, 'first');
+    },
+  );
+
+  test(
+    'version watch refreshes human text and selected language without jobs',
+    () async {
+      await _seedTranscription(database);
+      final transcripts = DriftTranscriptRepository(
+        database,
+        diagnosticSink: const DisabledDiagnosticLogSink(),
+      );
+      final revisions = DriftRevisionRepository(
+        database,
+        diagnosticSink: const DisabledDiagnosticLogSink(),
+      );
+      await _ok(
+        transcripts.saveVersion(
+          _completedRun('run-1', createdAt: 2),
+          [_segment('segment-1', 'run-1', 'machine')],
+          storedAtUtcMs: 2,
+        ),
+      );
+      await _ok(
+        transcripts.selectCurrent('meeting-1', 'run-1', selectedAtUtcMs: 3),
+      );
+      await _insertAutomaticLanguage(database);
+      final iterator = StreamIterator(transcripts.watchVersions('meeting-1'));
+      addTearDown(iterator.cancel);
+      expect(await iterator.moveNext(), isTrue);
+      await _ok(
+        revisions.apply(
+          const Revision(
+            id: 'human-text',
+            meetingId: 'meeting-1',
+            targetId: 'segment-1',
+            change: TranscriptTextChange(
+              previousText: 'machine',
+              revisedText: 'human',
+            ),
+            createdAtUtcMs: 4,
+          ),
+        ),
+      );
+      expect(await iterator.moveNext(), isTrue);
+      var version =
+          (iterator.current
+                  as Ok<List<TranscriptVersion>, AnalysisRepositoryFailure>)
+              .value
+              .single;
+      expect(version.segments.single.displayedText, 'human');
+      expect(version.segments.single.rawModelText, 'machine');
+      await _ok(
+        revisions.apply(
+          const Revision(
+            id: 'human-language',
+            meetingId: 'meeting-1',
+            targetId: 'segment-1',
+            change: LanguageLabelChange(
+              previous: LanguageTag.chinese,
+              revised: LanguageTag.mixed,
+            ),
+            createdAtUtcMs: 5,
+          ),
+        ),
+      );
+      expect(await iterator.moveNext(), isTrue);
+      version =
+          (iterator.current
+                  as Ok<List<TranscriptVersion>, AnalysisRepositoryFailure>)
+              .value
+              .single;
+      expect(version.languagesBySegmentId['segment-1']?.tag, LanguageTag.mixed);
+      expect(version.segments.single.rawModelText, 'machine');
+    },
+  );
+
   test('text and language corrections preserve machine evidence', () async {
     await _insertMeeting(database, 'meeting-1');
     await _ok(repository.registerBundled(_model(), observedAtUtcMs: 1));

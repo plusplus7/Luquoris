@@ -120,6 +120,107 @@ void main() {
     },
   );
 
+  test(
+    'retries finalized persistence once without reissuing capture',
+    () async {
+      const finalized = AudioCaptureSnapshot(
+        sessionId: 'meeting-1',
+        state: AudioCaptureState.finalized,
+        elapsed: Duration(seconds: 12),
+        bytesWritten: 4096,
+        revision: 9,
+      );
+      final capture = FakeAudioCaptureService()
+        ..currentResult = const Ok(finalized);
+      final repository = _repositoryWithMeeting()
+        ..synchronizeRecordingProgressFailure =
+            const SessionRepositoryUnavailable(
+              'recording_progress_sync_failed',
+            );
+      addTearDown(capture.dispose);
+      final container = ProviderContainer.test(
+        overrides: [
+          audioCaptureServiceProvider.overrideWithValue(capture),
+          sessionRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      await container.read(recordingControllerProvider.future);
+      final completion = Completer<Result<Meeting, SessionRepositoryFailure>>();
+      repository
+        ..synchronizeRecordingProgressFailure = null
+        ..synchronizeRecordingProgressOverride =
+            (
+              meetingId, {
+              required lifecycle,
+              required mediaDuration,
+              required atUtcMs,
+            }) => completion.future;
+
+      container.read(recordingControllerProvider.notifier)
+        ..retryFinalizationPersistence()
+        ..retryFinalizationPersistence();
+      await pumpEventQueue();
+
+      expect(repository.synchronizedRecordingProgress, hasLength(2));
+      expect(
+        container
+            .read(recordingControllerProvider)
+            .requireValue
+            .persistencePending,
+        isTrue,
+      );
+      completion.complete(Ok(repository.savedMeetings.single));
+      await pumpEventQueue();
+
+      expect(
+        container.read(recordingControllerProvider).requireValue,
+        const RecordingViewState(snapshot: finalized),
+      );
+      container
+          .read(recordingControllerProvider.notifier)
+          .retryFinalizationPersistence();
+      await pumpEventQueue();
+      expect(repository.synchronizedRecordingProgress, hasLength(2));
+      expect(capture.startRequests, isEmpty);
+      expect(capture.stopCalls, 0);
+    },
+  );
+
+  test(
+    'does not retry finalization persistence on an active recording',
+    () async {
+      final capture = FakeAudioCaptureService()
+        ..currentResult = const Ok(restored);
+      final repository = _repositoryWithMeeting()
+        ..synchronizeRecordingProgressFailure =
+            const SessionRepositoryUnavailable(
+              'recording_progress_sync_failed',
+            );
+      addTearDown(capture.dispose);
+      final container = ProviderContainer.test(
+        overrides: [
+          audioCaptureServiceProvider.overrideWithValue(capture),
+          sessionRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      await container.read(recordingControllerProvider.future);
+
+      container
+          .read(recordingControllerProvider.notifier)
+          .retryFinalizationPersistence();
+      await pumpEventQueue();
+
+      expect(repository.synchronizedRecordingProgress, hasLength(1));
+      expect(
+        container
+            .read(recordingControllerProvider)
+            .requireValue
+            .persistencePending,
+        isFalse,
+      );
+    },
+  );
+
   test('keeps native subscription while screen listeners are absent', () async {
     final capture = FakeAudioCaptureService()
       ..currentResult = const Ok(restored);

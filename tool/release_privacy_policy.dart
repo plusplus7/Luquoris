@@ -5,7 +5,7 @@ import 'package:xml/xml.dart';
 
 const _androidNamespace = 'http://schemas.android.com/apk/res/android';
 const _toolsNamespace = 'http://schemas.android.com/tools';
-const _forbiddenPermissions = {'INTERNET', 'ACCESS_NETWORK_STATE'};
+const _remotePermissions = {'INTERNET', 'ACCESS_NETWORK_STATE'};
 const _dataExtractionRulesReference = '@xml/data_extraction_rules';
 const _backupDomains = <String>{
   'root',
@@ -19,41 +19,62 @@ const _backupDomains = <String>{
   'device_sharedpref',
 };
 
-/// Returns violations in a release manifest overlay.
+/// Rejects overlays that disable the explicitly authorized LAN transport.
 List<String> validateReleaseManifest(String source) {
   final document = XmlDocument.parse(source);
-  final permissions = document.findAllElements('uses-permission');
   final violations = <String>[];
-
-  for (final permission in _forbiddenPermissions) {
-    final qualifiedName = 'android.permission.$permission';
-    final matching = permissions.where(
-      (element) =>
-          element.getAttribute('name', namespace: _androidNamespace) ==
-          qualifiedName,
-    );
-    if (matching.length != 1 ||
-        matching.single.getAttribute('node', namespace: _toolsNamespace) !=
+  for (final permission in document.findAllElements('uses-permission')) {
+    final name = permission.getAttribute('name', namespace: _androidNamespace);
+    if (name != null &&
+        _remotePermissions.any(name.endsWith) &&
+        permission.getAttribute('node', namespace: _toolsNamespace) ==
             'remove') {
       violations.add(
-        '$qualifiedName must have exactly one tools:node="remove" element',
+        '$name must remain available for explicit remote transcription',
       );
+    }
+  }
+  for (final application in document.findAllElements('application')) {
+    if (application.getAttribute('node', namespace: _toolsNamespace) ==
+        'remove') {
+      violations.add('release overlay must not remove the application');
+    }
+    final cleartext = application.getAttribute(
+      'usesCleartextTraffic',
+      namespace: _androidNamespace,
+    );
+    if (cleartext != null && cleartext != 'true') {
+      violations.add('authorized LAN HTTP must remain available');
     }
   }
   return violations;
 }
 
-/// Returns forbidden network permissions declared by the main manifest.
+/// Verifies explicit remote permissions alongside local backup isolation and LAN HTTP.
 List<String> validateMainManifest(String source) {
   final document = XmlDocument.parse(source);
   final violations = <String>[];
-  for (final element in document.findAllElements('uses-permission')) {
-    final name = element.getAttribute('name', namespace: _androidNamespace);
-    if (name != null && _forbiddenPermissions.any(name.endsWith)) {
-      violations.add(name);
+  for (final permission in _remotePermissions) {
+    final matching = document
+        .findAllElements('uses-permission')
+        .where(
+          (element) =>
+              element.getAttribute('name', namespace: _androidNamespace) ==
+              'android.permission.$permission',
+        );
+    if (matching.length != 1) {
+      violations.add('$permission must be declared exactly once');
     }
   }
-
+  final applications = document.findAllElements('application').toList();
+  if (applications.length != 1 ||
+      applications.single.getAttribute(
+            'usesCleartextTraffic',
+            namespace: _androidNamespace,
+          ) !=
+          'true') {
+    violations.add('application must permit authorized LAN HTTP');
+  }
   violations.addAll(validateBackupManifest(source));
   return violations;
 }

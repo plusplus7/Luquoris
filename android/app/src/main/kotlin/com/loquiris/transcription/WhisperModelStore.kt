@@ -3,6 +3,7 @@ package com.loquiris.transcription
 import android.content.Context
 import android.system.Os
 import android.system.OsConstants
+import com.loquiris.BuildConfig
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -17,11 +18,12 @@ class WhisperModelStore(
     private val openAsset: () -> InputStream,
     private val directorySync: (File) -> Boolean = { true },
 ) : WhisperModelProvider {
-    constructor(context: Context) : this(
+    constructor(context: Context, modelSpec: ModelArtifactSpec = selectedModelSpec) : this(
         modelRoot = File(context.applicationContext.filesDir, "models"),
+        spec = modelSpec,
         openAsset = {
             context.applicationContext.assets.open(
-                "flutter_assets/build/generated/model_assets/${REVIEWED_BASE_Q5_MODEL.assetPath}",
+                "flutter_assets/build/generated/model_assets/${modelSpec.assetPath}",
             )
         },
         directorySync = ::syncDirectory,
@@ -98,10 +100,25 @@ class WhisperModelStore(
         val REVIEWED_BASE_Q5_MODEL =
             ModelArtifactSpec(
                 id = "whisper-base-q5_1",
-                assetPath = "models/whisper-base-q5_1/ggml-base-q5_1.bin",
+                assetPath = "models/transcription/ggml-base-q5_1.bin",
                 bytes = 59_707_625L,
                 sha256 = "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898",
             )
+
+        val EXPERIMENTAL_SMALL_Q5_MODEL =
+            ModelArtifactSpec(
+                id = "whisper-small-q5_1",
+                assetPath = "models/transcription/ggml-small-q5_1.bin",
+                bytes = 190_085_487L,
+                sha256 = "ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb",
+            )
+
+        val selectedModelSpec: ModelArtifactSpec
+            get() = if (BuildConfig.DEBUG && BuildConfig.LOQUIRIS_EXPERIMENTAL_SMALL) {
+                EXPERIMENTAL_SMALL_Q5_MODEL
+            } else {
+                REVIEWED_BASE_Q5_MODEL
+            }
 
         private fun syncDirectory(directory: File): Boolean =
             try {

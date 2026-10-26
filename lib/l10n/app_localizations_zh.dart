@@ -359,7 +359,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get markerAddFailed => '无法保存此标记，录音仍在继续。';
 
   @override
-  String get recordingMetadataSaveWarning => '录音仍在继续，但会议信息暂时无法写入本地数据库。';
+  String get recordingMetadataSaveWarning => '会议信息暂时无法写入本地数据库。';
 
   @override
   String get recordingControlFailed => '录音操作未完成，已保存的音频没有改变。';
@@ -702,6 +702,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get exportFailed => '导出未能完成，原始会议没有改变。';
 
   @override
+  String get exportTranscriptSelectionRequired => '请先选择转写版本，再导出文本或字幕。';
+
+  @override
+  String get exportTranscriptChanged => '准备导出时，所选转写发生了变化，请重试。';
+
+  @override
   String get exportIncompleteOutputWarning =>
       '导出已停止，但 Android 无法删除未完成文件。请检查你选择的保存位置。';
 
@@ -1037,6 +1043,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get liveTranscriptIncomplete => '这份实时草稿可能不完整。';
 
   @override
+  String get liveTranscriptDiscontinuity => '这份草稿缺少一段音频的文字，后续实时文字仍可继续显示。';
+
+  @override
   String get liveTranscriptThermalFallback => '设备温度过高，实时转写已暂停。';
 
   @override
@@ -1047,4 +1056,288 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get liveTranscriptPostSessionFallback => '录音结束后将运行完整转写。';
+
+  @override
+  String get transcriptVersionsTitle => '转写版本';
+
+  @override
+  String get transcriptVersionsHelp => '选择用于阅读、搜索、播放文字和导出的版本。其他版本及其人工校正会分别保留。';
+
+  @override
+  String get transcriptVersionsLoading => '正在读取转写版本…';
+
+  @override
+  String get transcriptVersionsLoadFailed => '无法读取转写版本，请重试。';
+
+  @override
+  String get transcriptVersionsEmpty => '还没有已保存的转写版本。';
+
+  @override
+  String get transcriptVersionSelectionFailed => '无法切换版本，当前转写未改变。请重试。';
+
+  @override
+  String get transcriptRefinementReady => '有可选择的精修版本，不会自动替换当前转写。';
+
+  @override
+  String transcriptVersionRole(String role) {
+    String _temp0 = intl.Intl.selectLogic(
+      role,
+      {
+        'liveDraft': '实时初稿',
+        'refinement': '精修转写',
+        'unverified': '未验证版本',
+        'other': '已保存转写',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String transcriptVersionIdentity(String role, DateTime date, DateTime time) {
+    final intl.DateFormat dateDateFormat = intl.DateFormat.yMMMd(localeName);
+    final String dateString = dateDateFormat.format(date);
+    final intl.DateFormat timeDateFormat = intl.DateFormat.Hms(localeName);
+    final String timeString = timeDateFormat.format(time);
+
+    return '$role · $dateString $timeString';
+  }
+
+  @override
+  String transcriptVersionCoverage(String coverage) {
+    String _temp0 = intl.Intl.selectLogic(
+      coverage,
+      {
+        'complete': '覆盖完整',
+        'incomplete': '覆盖不完整',
+        'other': '未记录覆盖状态',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String transcriptVersionProvenance(
+    String model,
+    String version,
+    String engine,
+    String engineVersion,
+    String hash,
+  ) {
+    return '模型：$model（$version）\n运行时：$engine $engineVersion\n模型包 SHA-256：$hash';
+  }
+
+  @override
+  String get transcriptVersionUnverified => '无法验证此版本的来源，暂不能选择。';
+
+  @override
+  String get transcriptVersionNotReady => '此版本尚不能选择。';
+
+  @override
+  String get transcriptVersionCurrent => '当前版本';
+
+  @override
+  String get transcriptVersionUse => '使用此版本';
+
+  @override
+  String transcriptVersionUseSemantic(String version) {
+    return '使用$version';
+  }
+
+  @override
+  String get transcriptVersionSelecting => '正在切换…';
+
+  @override
+  String get recordingOnlyChoice => '仅录音';
+
+  @override
+  String get recordingOnlyChoiceDescription => '保存原始音频，本场会议不运行转写。';
+
+  @override
+  String get twoPassChoice => '实时初稿 + 会后精修';
+
+  @override
+  String get twoPassUnavailable => '流式模型组合尚未通过必要检查，暂不可用。请选择会后转写或仅录音。';
+
+  @override
+  String get recordingProcessingUnavailable => '转写配置未能保存。请重试或选择仅录音。录音尚未开始。';
+
+  @override
+  String get refinementResumeAction => '恢复精修';
+
+  @override
+  String get refinementResuming => '正在恢复精修…';
+
+  @override
+  String refinementPausedMessage(String reasonCode) {
+    String _temp0 = intl.Intl.selectLogic(
+      reasonCode,
+      {
+        'refinement_thermal_severe': '设备温度过高，精修已暂停。请待设备冷却后再恢复，录音不受影响。',
+        'refinement_battery_low': '电量过低，精修已暂停。请充电后再恢复。',
+        'refinement_memory_pressure': '可用内存不足，精修已暂停。请关闭其他应用后再恢复。',
+        'refinement_power_save': '省电模式已开启，精修已暂停。请关闭省电模式后再恢复。',
+        'refinement_recording_active': '精修已暂停以优先保障录音。请在录音结束后恢复。',
+        'refinement_resources_unavailable': '无法确认设备资源状态，精修已暂停。请稍后尝试恢复。',
+        'other': '精修已暂停，录音不受影响。可稍后尝试恢复。',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remoteTitle => '远端转录';
+
+  @override
+  String get remoteExplanation =>
+      '原始录音保留在手机。选择远端转录会上传副本到你配置的服务器；实际保留策略和过期时间由服务器返回，本地转录和修改会保留。';
+
+  @override
+  String get remoteEndpoint => '服务器地址';
+
+  @override
+  String get remoteToken => '服务器访问令牌';
+
+  @override
+  String get remoteConfigure => '保存连接';
+
+  @override
+  String get remoteStart => '开始转录';
+
+  @override
+  String get remoteCancel => '取消远端任务';
+
+  @override
+  String get remoteEdit => '编辑此版本';
+
+  @override
+  String get remoteSave => '保存修改';
+
+  @override
+  String get remoteExportText => '导出文本';
+
+  @override
+  String get remoteExportJson => '导出 JSON';
+
+  @override
+  String get remoteExportSubtitles => '导出原始字幕';
+
+  @override
+  String get remoteEmpty => '录音结束后，远端转录结果会显示在这里。';
+
+  @override
+  String get remoteInputInvalid =>
+      '请输入有效的 HTTPS 地址或内网 HTTP IP 地址，以及至少 32 个字符的访问令牌。';
+
+  @override
+  String remoteVersionSource(String model, String revision) {
+    return '模型：$model · 版本：$revision';
+  }
+
+  @override
+  String remoteFailure(String code) {
+    String _temp0 = intl.Intl.selectLogic(
+      code,
+      {
+        'remote_authentication': '服务器凭据无效，请重新配置连接。',
+        'remote_credentials_missing': '本机凭据不可用，请重新配置连接。',
+        'remote_transport': '网络暂不可用，请检查连接后重试。',
+        'remote_quota': '服务器存储配额不足。',
+        'remote_expired': '服务端副本已过期，可从本地录音重新转录。',
+        'remote_model_failed': '服务端模型失败，请检查服务端后重新转录。',
+        'remote_submission_pending': '正在恢复已提交任务的身份。',
+        'remote_restore_requires_action': '此任务来自备份；重新转录需显式发起并配置连接。',
+        'remote_audio_unavailable': '录音音频暂不可用。',
+        'remote_audio_changed': '录音内容与已排队任务不一致。',
+        'other': '远端任务需要处理：$code',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String remoteTaskProgress(int done, int total) {
+    return '已上传 $done / $total 字节';
+  }
+
+  @override
+  String remoteState(String state) {
+    String _temp0 = intl.Intl.selectLogic(
+      state,
+      {
+        'waitingSetup': '请配置服务器',
+        'waitingAudio': '等待录音结束',
+        'uploading': '正在上传',
+        'submitting': '正在提交',
+        'waitingNetwork': '等待网络重试',
+        'queued': '服务器排队中',
+        'running': '正在转录',
+        'completed': '已保存到手机',
+        'failed': '失败，可创建新任务重试',
+        'cancelled': '已取消',
+        'restored': '已恢复，需重新授权',
+        'expired': '远端结果已过期',
+        'other': '等待中',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remotePostSessionDescription => '手机可靠录音，结束后上传到服务器转录，无需手机本地模型。';
+
+  @override
+  String get remoteRecordingNote => '断网也能录音；远端转录会等待服务器配置和网络就绪。';
+
+  @override
+  String remoteRetention(int seconds) {
+    return '服务端保留时长：$seconds 秒';
+  }
+
+  @override
+  String remoteExpires(String deadline) {
+    return '服务端副本过期时间：$deadline';
+  }
+
+  @override
+  String get remoteModelPageNote =>
+      '远端转录在你配置的服务器运行，无需在手机安装识别模型。此页仅测试手机本地推理能力；历史本地转录仍可查看。';
+
+  @override
+  String get remoteRestart => '重新转录';
+
+  @override
+  String get remoteServerSettings => '转录服务器';
+
+  @override
+  String get remoteAutomaticRecognition => '语言自动识别，录音结束后转录。';
+
+  @override
+  String get remoteLanExplanation =>
+      '内网可使用 http://192.168.1.20:18000。HTTP 不加密音频和访问令牌，仅在可信局域网使用。';
+
+  @override
+  String get remoteConnectionSaved => '服务器连接已保存';
+
+  @override
+  String get remoteChangeConnection => '修改连接';
+
+  @override
+  String get remoteOpenSettings => '配置服务器';
+
+  @override
+  String get remoteResultTitle => '转录结果';
+
+  @override
+  String get remoteExport => '导出';
+
+  @override
+  String get remoteRecordingDetails => '录音详情';
+
+  @override
+  String remoteVersionNumber(int number) {
+    return '转录版本 $number';
+  }
+
+  @override
+  String get remoteNoSpeech => '未检测到可转录的语音。';
 }

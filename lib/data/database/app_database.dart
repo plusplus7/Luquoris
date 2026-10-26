@@ -1,9 +1,12 @@
 import 'package:drift/drift.dart';
 import 'package:loquiris/data/database/schema_versions.dart';
+import 'package:loquiris/data/database/tables/meeting_processing_selection_tables.dart';
 import 'package:loquiris/data/database/tables/meeting_tables.dart';
 import 'package:loquiris/data/database/tables/model_export_tables.dart';
+import 'package:loquiris/data/database/tables/remote_transcription_tables.dart';
 import 'package:loquiris/data/database/tables/revision_job_tables.dart';
 import 'package:loquiris/data/database/tables/speaker_tables.dart';
+import 'package:loquiris/data/database/tables/transcript_processing_tables.dart';
 import 'package:loquiris/data/database/tables/transcription_tables.dart';
 
 part 'app_database.g.dart';
@@ -13,11 +16,15 @@ part 'app_database.g.dart';
   tables: <Type>[
     Meetings,
     RecordingPreferences,
+    MeetingProcessingSelections,
+    RemoteTranscriptionTasks,
+    RemoteTranscriptVersions,
     AudioSegments,
     RecoveryFindings,
     SessionEvents,
     Bookmarks,
     TranscriptRuns,
+    TranscriptProcessingMetadata,
     MeetingTranscriptSelections,
     TranscriptSegments,
     LanguageDecisions,
@@ -47,7 +54,7 @@ final class AppDatabase extends _$AppDatabase {
   ];
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -83,6 +90,18 @@ final class AppDatabase extends _$AppDatabase {
             },
           ),
         );
+      },
+      from4To5: (migrator, schema) async {
+        await migrator.createTable(schema.transcriptProcessingMetadata);
+        await migrator.createIndex(schema.uxTranscriptProcessingRun);
+      },
+      from5To6: (migrator, schema) async {
+        await migrator.createTable(schema.meetingProcessingSelections);
+        await migrator.createIndex(schema.uxMeetingProcessingSelection);
+      },
+      from6To7: (migrator, schema) async {
+        await migrator.createTable(schema.remoteTranscriptionTasks);
+        await migrator.createTable(schema.remoteTranscriptVersions);
       },
     ),
     beforeOpen: (details) async {

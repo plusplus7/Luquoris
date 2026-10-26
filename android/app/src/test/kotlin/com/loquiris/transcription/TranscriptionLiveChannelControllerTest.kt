@@ -168,7 +168,7 @@ private fun liveArguments(runId: String = "draft-1"): Map<String, Any?> =
         "v" to TranscriptionChannelContract.version,
         "runId" to runId,
         "meetingId" to "meeting-1",
-        "modelId" to "whisper-base-q5_1",
+        "modelId" to TranscriptionChannelContract.supportedModelId,
         "languageHint" to "mixed",
         "parameterVersion" to 1,
     )

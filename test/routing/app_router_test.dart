@@ -14,6 +14,10 @@ void main() {
   test('id-bearing locations encode identity in the path', () {
     expect(AppRoutes.session('meeting/one'), '/sessions/meeting%2Fone');
     expect(AppRoutes.editor('meeting one'), '/sessions/meeting%20one/edit');
+    expect(
+      AppRoutes.transcriptVersions('meeting/one'),
+      '/sessions/meeting%2Fone/versions',
+    );
     expect(AppRoutes.export('会议 1'), '/sessions/%E4%BC%9A%E8%AE%AE%201/export');
     expect(AppRoutes.activeRecording('draft/1'), '/recordings/draft%2F1');
   });
@@ -45,6 +49,7 @@ void main() {
       ('/recordings/draft-1', 'active-recording:draft-1'),
       ('/sessions/meeting-1', 'session-detail:meeting-1'),
       ('/sessions/meeting-1/edit', 'transcript-editor:meeting-1'),
+      ('/sessions/meeting-1/versions', 'transcript-versions:meeting-1'),
       ('/sessions/meeting-1/export', 'export:meeting-1'),
       (AppRoutes.modelsPerformance, 'models-performance'),
       (AppRoutes.storagePrivacy, 'storage-privacy'),

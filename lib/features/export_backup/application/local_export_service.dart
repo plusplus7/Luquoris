@@ -208,6 +208,19 @@ final class LocalExportService implements ExportService {
             );
           }
       }
+      if (needsTranscript && transcript?.currentVersion == null) {
+        return _recordFailure(
+          request.operationId,
+          const ExportUnavailable('export_transcript_selection_required'),
+        );
+      }
+      if (detail.meeting.currentTranscriptRunId !=
+          transcript?.currentVersion?.run.id) {
+        return _recordFailure(
+          request.operationId,
+          const ExportUnavailable('export_transcript_changed'),
+        );
+      }
     }
     if (request.format case ExportFormat.json || ExportFormat.archive) {
       final versionsResult = await _transcriptRepository.listVersions(
@@ -225,6 +238,15 @@ final class LocalExportService implements ExportService {
               ),
             );
           }
+      }
+      if (!_coherentTranscript(
+        transcript?.currentVersion,
+        transcriptVersions,
+      )) {
+        return _recordFailure(
+          request.operationId,
+          const ExportUnavailable('export_transcript_changed'),
+        );
       }
     }
 
@@ -246,9 +268,9 @@ final class LocalExportService implements ExportService {
           transcript: transcript,
           transcriptVersions: transcriptVersions,
         );
-        if (transcript != null) {
+        if (transcript?.currentVersion != null) {
           documents['transcript.txt'] = ExportDocumentBuilder.plainText(
-            transcript,
+            transcript!,
           );
           documents['transcript.srt'] = ExportDocumentBuilder.subtitles(
             transcript,
@@ -333,6 +355,32 @@ final class LocalExportService implements ExportService {
       );
     }
     return Err(failure);
+  }
+
+  static bool _coherentTranscript(
+    TranscriptVersion? selected,
+    List<TranscriptVersion> retained,
+  ) {
+    final current = retained.where((version) => version.isCurrent).toList();
+    if (selected == null) return current.isEmpty;
+    if (current.length != 1) return false;
+    final version = current.single;
+    if (version.run != selected.run ||
+        version.segments.length != selected.segments.length ||
+        version.languagesBySegmentId.length !=
+            selected.languagesBySegmentId.length ||
+        version.speakersById.length != selected.speakersById.length) {
+      return false;
+    }
+    for (var index = 0; index < version.segments.length; index++) {
+      if (version.segments[index] != selected.segments[index]) return false;
+    }
+    return version.languagesBySegmentId.entries.every(
+          (entry) => entry.value == selected.languagesBySegmentId[entry.key],
+        ) &&
+        version.speakersById.entries.every(
+          (entry) => entry.value == selected.speakersById[entry.key],
+        );
   }
 
   @override

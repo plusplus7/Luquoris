@@ -873,6 +873,11 @@ final class FakeSessionRepository implements SessionRepository {
   }
 
   @override
+  Stream<Result<List<SessionSearchHit>, SessionRepositoryFailure>> watchSearch(
+    String query,
+  ) => Stream.fromFuture(search(query));
+
+  @override
   Future<Result<List<SessionSearchHit>, SessionRepositoryFailure>> search(
     String query,
   ) async {

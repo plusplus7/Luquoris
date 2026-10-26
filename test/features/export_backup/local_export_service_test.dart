@@ -8,6 +8,7 @@ import 'package:loquiris/features/models_performance/domain/processing_entities.
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/speakers/domain/speaker_entities.dart';
 import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
+import 'package:loquiris/features/transcript/domain/transcript_processing_info.dart';
 import 'package:loquiris/services/analysis_repository_contracts.dart';
 import 'package:loquiris/services/export_record_repository_contract.dart';
 import 'package:loquiris/services/service_contracts.dart';
@@ -19,7 +20,12 @@ void main() {
     'text export sends corrected local text under a private default name',
     () async {
       final sessions = FakeSessionRepository()
-        ..detailResult = Ok(_detail(title: 'Alice confidential interview'));
+        ..detailResult = Ok(
+          _detail(
+            title: 'Alice confidential interview',
+            currentTranscriptRunId: 'run-1',
+          ),
+        );
       final gateway = _FakeExportDestinationGateway();
       final records = _ExportRecordRepository();
       final service = LocalExportService(
@@ -148,7 +154,9 @@ void main() {
     'destination failure is durably recorded with its stable code',
     () async {
       final sessions = FakeSessionRepository()
-        ..detailResult = Ok(_detail(title: 'Sensitive'));
+        ..detailResult = Ok(
+          _detail(title: 'Sensitive', currentTranscriptRunId: 'run-1'),
+        );
       final gateway = _FakeExportDestinationGateway()
         ..result = const Err(
           ExportUnavailable('export_incomplete_output_cleanup_failed'),
@@ -220,7 +228,10 @@ AppRelativePath _path(String value) => AppRelativePath.tryParse(value).fold(
   (failure) => throw StateError(failure.code),
 );
 
-SessionDetail _detail({required String title}) => SessionDetail(
+SessionDetail _detail({
+  required String title,
+  String? currentTranscriptRunId,
+}) => SessionDetail(
   meeting: Meeting(
     id: 'meeting-1',
     title: title,
@@ -228,6 +239,7 @@ SessionDetail _detail({required String title}) => SessionDetail(
     mediaDuration: const Duration(seconds: 2),
     lifecycle: MeetingLifecycle.finalized,
     languageMode: MeetingLanguageMode.mixed,
+    currentTranscriptRunId: currentTranscriptRunId,
   ),
   segments: const [],
   events: const [],
@@ -291,11 +303,28 @@ final class _TranscriptRepository implements TranscriptRepository {
       document == null ? const Err(AnalysisNotFound()) : Ok(document!);
 
   @override
+  Stream<Result<List<TranscriptVersion>, AnalysisRepositoryFailure>>
+  watchVersions(String meetingId) async* {
+    yield await listVersions(meetingId);
+  }
+
+  @override
   Future<Result<List<TranscriptVersion>, AnalysisRepositoryFailure>>
   listVersions(String meetingId) async => Ok(
     document?.currentVersion == null
         ? const []
         : <TranscriptVersion>[document!.currentVersion!],
+  );
+
+  @override
+  Future<Result<void, AnalysisRepositoryFailure>> selectReadableVersion(
+    TranscriptRun expectedRun,
+    TranscriptProcessingInfo? expectedProcessing, {
+    required int selectedAtUtcMs,
+  }) => selectCurrent(
+    expectedRun.meetingId,
+    expectedRun.id,
+    selectedAtUtcMs: selectedAtUtcMs,
   );
 
   @override

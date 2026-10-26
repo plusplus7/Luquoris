@@ -180,6 +180,21 @@ final class RecordingController extends AsyncNotifier<RecordingViewState> {
     unawaited(_run(ref.read(audioCaptureServiceProvider).stop()));
   }
 
+  /// Retries failed finalization metadata without issuing a capture command.
+  void retryFinalizationPersistence() {
+    final current = state.value;
+    final snapshot = current?.snapshot;
+    if (current == null ||
+        snapshot == null ||
+        snapshot.state != AudioCaptureState.finalized ||
+        current.persistencePending ||
+        current.persistenceFailure == null) {
+      return;
+    }
+    state = AsyncData(current.copyWith(persistencePending: true));
+    _queueSnapshotSynchronization(snapshot);
+  }
+
   /// Accepts an authoritative command snapshot through this coordinator's
   /// monotonic state and serialized persistence path.
   void acceptAuthoritativeSnapshot(AudioCaptureSnapshot snapshot) {
@@ -302,7 +317,7 @@ final class RecordingController extends AsyncNotifier<RecordingViewState> {
     if (snapshot.state != AudioCaptureState.finalized) return null;
     final inventory = await ref
         .read(recordingInventorySynchronizerProvider)
-        .synchronize();
+        .synchronize(finalizedMeetingId: meetingId);
     return switch (inventory) {
       Ok() => null,
       Err(:final failure) => failure,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loquiris/features/recording/presentation/new_recording_controller.dart';
+import 'package:loquiris/features/remote_transcription/application/remote_feature.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
+import 'package:loquiris/features/transcript/domain/meeting_processing_selection.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
 import 'package:loquiris/l10n/meeting_formatting.dart';
 import 'package:loquiris/routing/routes.dart';
@@ -29,9 +32,10 @@ final class NewRecordingScreen extends ConsumerWidget {
     final content = switch (snapshot) {
       AsyncData(:final value) => _NewRecordingForm(
         state: value,
-        onSelectTranscriptionMode: (mode) => ref
+        remoteEnabled: ref.watch(remoteTranscriptionEnabledProvider),
+        onSelectProcessingMode: (mode) => ref
             .read(newRecordingControllerProvider.notifier)
-            .selectTranscriptionMode(mode),
+            .selectProcessingMode(mode),
         onSelectLanguageMode: (mode) => ref
             .read(newRecordingControllerProvider.notifier)
             .selectLanguageMode(mode),
@@ -62,14 +66,16 @@ final class NewRecordingScreen extends ConsumerWidget {
 final class _NewRecordingForm extends StatelessWidget {
   const _NewRecordingForm({
     required this.state,
-    required this.onSelectTranscriptionMode,
+    required this.remoteEnabled,
+    required this.onSelectProcessingMode,
     required this.onSelectLanguageMode,
     required this.onSelectExpectedSpeakerCount,
     required this.onStart,
   });
 
   final NewRecordingState state;
-  final ValueChanged<MeetingTranscriptionMode> onSelectTranscriptionMode;
+  final bool remoteEnabled;
+  final ValueChanged<MeetingProcessingMode> onSelectProcessingMode;
   final ValueChanged<MeetingLanguageMode> onSelectLanguageMode;
   final ValueChanged<int?> onSelectExpectedSpeakerCount;
   final VoidCallback onStart;
@@ -93,83 +99,117 @@ final class _NewRecordingForm extends StatelessWidget {
               SizedBox(height: spacing.section),
               _SectionLabel(l10n.transcriptionModeLabel),
               SizedBox(height: spacing.related),
-              _ModeChoice(
-                key: const Key('new-recording-mode-near-real-time'),
-                label: l10n.nearRealTimeMode,
-                description: l10n.nearRealTimeModeDescription,
-                selected:
-                    state.transcriptionMode ==
-                    MeetingTranscriptionMode.nearRealTime,
-                onSelected: () => onSelectTranscriptionMode(
-                  MeetingTranscriptionMode.nearRealTime,
+              if (!remoteEnabled) ...[
+                _ModeChoice(
+                  key: const Key('new-recording-mode-two-pass'),
+                  label: l10n.twoPassChoice,
+                  description: l10n.twoPassUnavailable,
+                  selected:
+                      state.processingMode == MeetingProcessingMode.twoPass,
+                  priority: 1,
+                  onSelected: null,
                 ),
-              ),
-              SizedBox(height: spacing.related),
+                SizedBox(height: spacing.related),
+              ],
               _ModeChoice(
                 key: const Key('new-recording-mode-post-session'),
-                label: l10n.postSessionMode,
-                description: l10n.postSessionModeDescription,
+                label: remoteEnabled ? l10n.remoteTitle : l10n.postSessionMode,
+                description: remoteEnabled
+                    ? l10n.remotePostSessionDescription
+                    : l10n.postSessionModeDescription,
                 selected:
-                    state.transcriptionMode ==
-                    MeetingTranscriptionMode.postSession,
-                onSelected: () => onSelectTranscriptionMode(
-                  MeetingTranscriptionMode.postSession,
-                ),
+                    state.processingMode == MeetingProcessingMode.postSession,
+                priority: 2,
+                onSelected: state.canStart
+                    ? () => onSelectProcessingMode(
+                        MeetingProcessingMode.postSession,
+                      )
+                    : null,
+              ),
+              SizedBox(height: spacing.related),
+              _ModeChoice(
+                key: const Key('new-recording-mode-recording-only'),
+                label: l10n.recordingOnlyChoice,
+                description: l10n.recordingOnlyChoiceDescription,
+                selected:
+                    state.processingMode == MeetingProcessingMode.recordingOnly,
+                priority: 3,
+                onSelected: state.canStart
+                    ? () => onSelectProcessingMode(
+                        MeetingProcessingMode.recordingOnly,
+                      )
+                    : null,
               ),
               SizedBox(height: spacing.section),
-              _SectionLabel(l10n.languageModeLabel),
-              SizedBox(height: spacing.related),
-              Wrap(
-                spacing: spacing.related,
-                runSpacing: spacing.related,
-                children: [
-                  _ChoiceChip(
-                    key: const Key('new-recording-language-chinese'),
-                    label: l10n.languageChinese,
-                    selected: state.languageMode == MeetingLanguageMode.chinese,
-                    onSelected: () =>
-                        onSelectLanguageMode(MeetingLanguageMode.chinese),
-                  ),
-                  _ChoiceChip(
-                    key: const Key('new-recording-language-english'),
-                    label: l10n.languageEnglish,
-                    selected: state.languageMode == MeetingLanguageMode.english,
-                    onSelected: () =>
-                        onSelectLanguageMode(MeetingLanguageMode.english),
-                  ),
-                  _ChoiceChip(
-                    key: const Key('new-recording-language-mixed'),
-                    label: l10n.languageMixed,
-                    selected: state.languageMode == MeetingLanguageMode.mixed,
-                    onSelected: () =>
-                        onSelectLanguageMode(MeetingLanguageMode.mixed),
-                  ),
-                ],
-              ),
-              SizedBox(height: spacing.section),
-              _SectionLabel(l10n.speakerCountLabel),
-              SizedBox(height: spacing.related),
-              Wrap(
-                spacing: spacing.related,
-                runSpacing: spacing.related,
-                children: [
-                  _ChoiceChip(
-                    key: const Key('new-recording-speakers-auto'),
-                    label: l10n.speakerCountAutomatic,
-                    selected: state.expectedSpeakerCount == null,
-                    onSelected: () => onSelectExpectedSpeakerCount(null),
-                  ),
-                  for (var count = 2; count <= 6; count += 1)
+              if (!remoteEnabled) ...[
+                _SectionLabel(l10n.languageModeLabel),
+                SizedBox(height: spacing.related),
+                Wrap(
+                  spacing: spacing.related,
+                  runSpacing: spacing.related,
+                  children: [
                     _ChoiceChip(
-                      key: Key('new-recording-speakers-$count'),
-                      label: l10n.speakerCountOption(count),
-                      selected: state.expectedSpeakerCount == count,
-                      onSelected: () => onSelectExpectedSpeakerCount(count),
+                      key: const Key('new-recording-language-chinese'),
+                      label: l10n.languageChinese,
+                      selected:
+                          state.languageMode == MeetingLanguageMode.chinese,
+                      onSelected: () =>
+                          onSelectLanguageMode(MeetingLanguageMode.chinese),
                     ),
-                ],
+                    _ChoiceChip(
+                      key: const Key('new-recording-language-english'),
+                      label: l10n.languageEnglish,
+                      selected:
+                          state.languageMode == MeetingLanguageMode.english,
+                      onSelected: () =>
+                          onSelectLanguageMode(MeetingLanguageMode.english),
+                    ),
+                    _ChoiceChip(
+                      key: const Key('new-recording-language-mixed'),
+                      label: l10n.languageMixed,
+                      selected: state.languageMode == MeetingLanguageMode.mixed,
+                      onSelected: () =>
+                          onSelectLanguageMode(MeetingLanguageMode.mixed),
+                    ),
+                  ],
+                ),
+                SizedBox(height: spacing.section),
+                _SectionLabel(l10n.speakerCountLabel),
+                SizedBox(height: spacing.related),
+                Wrap(
+                  spacing: spacing.related,
+                  runSpacing: spacing.related,
+                  children: [
+                    _ChoiceChip(
+                      key: const Key('new-recording-speakers-auto'),
+                      label: l10n.speakerCountAutomatic,
+                      selected: state.expectedSpeakerCount == null,
+                      onSelected: () => onSelectExpectedSpeakerCount(null),
+                    ),
+                    for (var count = 2; count <= 6; count += 1)
+                      _ChoiceChip(
+                        key: Key('new-recording-speakers-$count'),
+                        label: l10n.speakerCountOption(count),
+                        selected: state.expectedSpeakerCount == count,
+                        onSelected: () => onSelectExpectedSpeakerCount(count),
+                      ),
+                  ],
+                ),
+                SizedBox(height: spacing.section),
+              ] else ...[
+                Text(l10n.remoteAutomaticRecognition),
+                TextButton.icon(
+                  onPressed: () => context.go(AppRoutes.modelsPerformance),
+                  icon: const Icon(Icons.dns_outlined),
+                  label: Text(l10n.remoteServerSettings),
+                ),
+                SizedBox(height: spacing.related),
+              ],
+              _OfflineNote(
+                remoteEnabled
+                    ? l10n.remoteRecordingNote
+                    : l10n.newRecordingOfflineNote,
               ),
-              SizedBox(height: spacing.section),
-              _OfflineNote(l10n.newRecordingOfflineNote),
               if (state.status == NewRecordingStatus.submitting) ...[
                 SizedBox(height: spacing.related),
                 Semantics(
@@ -230,6 +270,9 @@ String _failureMessage(
   AppLocalizations l10n,
   NewRecordingFailure? failure,
 ) => switch (failure) {
+  NewRecordingProcessingFailure(code: 'recording_streaming_unavailable') =>
+    l10n.twoPassUnavailable,
+  NewRecordingProcessingFailure() => l10n.recordingProcessingUnavailable,
   NewRecordingCaptureFailure(code: 'recording_permission_denied') =>
     l10n.recordingMicrophonePermissionDenied,
   NewRecordingCaptureFailure(
@@ -274,6 +317,7 @@ final class _ModeChoice extends StatelessWidget {
     required this.label,
     required this.description,
     required this.selected,
+    required this.priority,
     required this.onSelected,
     super.key,
   });
@@ -281,13 +325,17 @@ final class _ModeChoice extends StatelessWidget {
   final String label;
   final String description;
   final bool selected;
-  final VoidCallback onSelected;
+  final double priority;
+  final VoidCallback? onSelected;
 
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
+    enabled: onSelected != null,
     selected: selected,
-    label: '$label. $description',
+    label: label,
+    hint: description,
+    sortKey: OrdinalSortKey(priority),
     onTap: onSelected,
     excludeSemantics: true,
     child: Card(

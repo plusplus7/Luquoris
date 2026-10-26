@@ -1,4 +1,6 @@
 import java.security.MessageDigest
+import java.util.Base64
+import groovy.json.JsonSlurper
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 import org.gradle.api.attributes.Attribute
@@ -12,6 +14,20 @@ plugins {
 val generatedModelAssetsDirectory =
     rootProject.layout.buildDirectory.dir("generated/model_assets")
 
+// Development-only native/file-input spike. Never enables the default service.
+val streamingNativeSpike = providers.gradleProperty("loquirisStreamingNativeSpike").orNull == "true"
+
+// Flutter forwards dart-defines to Gradle as comma-separated Base64 strings.
+val experimentalSmallModel = providers.gradleProperty("dart-defines")
+    .orElse("")
+    .get()
+    .split(',')
+    .filter { it.isNotBlank() }
+    .map { String(Base64.getDecoder().decode(it), Charsets.UTF_8) }
+    .contains("LOQUIRIS_EXPERIMENTAL_SMALL=true")
+
+val requiresOfflineModels = providers.gradleProperty("loquirisRequireOfflineModels").orNull == "true"
+
 val verifyImportedModels by tasks.registering {
     group = "verification"
     description = "Rejects Android builds without verified offline model assets."
@@ -24,13 +40,44 @@ val verifyImportedModels by tasks.registering {
         if (!index.isFile || !models.isDirectory) {
             throw GradleException("model_assets_not_imported")
         }
+        val modelIndex = JsonSlurper().parse(index) as Map<*, *>
+        val manifestPaths = modelIndex["manifests"] as? List<*>
+            ?: throw GradleException("model_catalog_invalid")
+        val expectedPaths = if (experimentalSmallModel) {
+            listOf("model_manifests/whisper-base-q5_1.json", "model_manifests/whisper-small-q5_1.json")
+        } else {
+            listOf("model_manifests/whisper-base-q5_1.json")
+        }
+        if (manifestPaths != expectedPaths) {
+            throw GradleException("model_selection_assets_mismatch")
+        }
+    }
+}
+
+val verifyProductionModelAssets by tasks.registering {
+    group = "verification"
+    description = "Prevents experimental transcription weights entering production builds."
+    dependsOn(verifyImportedModels)
+    doLast {
+        val assetsRoot = generatedModelAssetsDirectory.get().asFile
+        if (experimentalSmallModel ||
+            assetsRoot.walkTopDown().any { it.name.contains("small-q5_1") }
+        ) {
+            throw GradleException("experimental_transcription_model_debug_only")
+        }
     }
 }
 
 android {
     namespace = "com.loquiris"
+    sourceSets.getByName("androidTest").assets.srcDir("../../contracts/remote_transcription/v1/fixtures")
+    sourceSets.getByName("androidTest").assets.srcDir("../../build/remote_native_test")
     compileSdk = 36
     ndkVersion = "28.2.13676358"
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -44,6 +91,13 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Opt-in side-by-side IPC tests preserve an installed legacy test APK
+        // signed by a different development key. Normal test IDs are unchanged.
+        if (providers.gradleProperty("loquirisIsolatedStreamingIpcTests").orNull == "true") {
+            testApplicationId = "com.loquiris.debug.streamingtest"
+        }
+        buildConfigField("boolean", "LOQUIRIS_EXPERIMENTAL_SMALL", experimentalSmallModel.toString())
+        buildConfigField("boolean", "LOQUIRIS_STREAMING_NATIVE_SPIKE", "false")
         ndk {
             abiFilters += "arm64-v8a"
         }
@@ -58,6 +112,11 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
+            buildConfigField("boolean", "LOQUIRIS_STREAMING_NATIVE_SPIKE", streamingNativeSpike.toString())
+            externalNativeBuild.cmake.arguments += listOf(
+                "-DLOQUIRIS_STREAMING_NATIVE_SPIKE=$streamingNativeSpike",
+                "-DLOQUIRIS_STREAMING_RUNTIME=${rootProject.file("../build/streaming_spike/runtime").absolutePath}",
+            )
         }
         release {
             // Release signing is supplied outside source control by the release workflow.
@@ -83,6 +142,7 @@ kotlin {
 }
 
 dependencies {
+    implementation("androidx.sqlite:sqlite-bundled:2.6.2")
     testImplementation("junit:junit:4.13.2")
     // The Flutter SDK integration_test plugin declares rules:1.2+ on the
     // debug runtime. Align it with this app's AndroidTest stack without
@@ -98,7 +158,11 @@ flutter {
 }
 
 tasks.named("preBuild").configure {
-    dependsOn(verifyImportedModels)
+    if (requiresOfflineModels) dependsOn(verifyImportedModels)
+}
+
+tasks.matching { it.name == "preReleaseBuild" || it.name == "preProfileBuild" }.configureEach {
+    if (requiresOfflineModels) dependsOn(verifyProductionModelAssets)
 }
 
 val releaseRuntimeClasspath =

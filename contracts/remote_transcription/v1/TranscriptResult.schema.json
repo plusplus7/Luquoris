@@ -1,0 +1,120 @@
+{
+  "$defs": {
+    "Segment": {
+      "additionalProperties": false,
+      "properties": {
+        "startMs": {
+          "maximum": 43200000,
+          "minimum": 0,
+          "title": "Startms",
+          "type": "integer"
+        },
+        "endMs": {
+          "maximum": 43200000,
+          "minimum": 0,
+          "title": "Endms",
+          "type": "integer"
+        },
+        "text": {
+          "maxLength": 16000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "maxLength": 32,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "speaker": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Speaker"
+        }
+      },
+      "required": [
+        "startMs",
+        "endMs",
+        "text"
+      ],
+      "title": "Segment",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "title": "Schemaversion",
+      "type": "integer"
+    },
+    "jobId": {
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "title": "Jobid",
+      "type": "string"
+    },
+    "meetingId": {
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "title": "Meetingid",
+      "type": "string"
+    },
+    "runId": {
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "title": "Runid",
+      "type": "string"
+    },
+    "audioManifestDigest": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Audiomanifestdigest",
+      "type": "string"
+    },
+    "durationMs": {
+      "maximum": 43200000,
+      "minimum": 0,
+      "title": "Durationms",
+      "type": "integer"
+    },
+    "provenance": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Provenance",
+      "type": "object"
+    },
+    "segments": {
+      "items": {
+        "$ref": "#/$defs/Segment"
+      },
+      "maxItems": 100000,
+      "title": "Segments",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "jobId",
+    "meetingId",
+    "runId",
+    "audioManifestDigest",
+    "durationMs",
+    "provenance",
+    "segments"
+  ],
+  "title": "TranscriptResult",
+  "type": "object"
+}

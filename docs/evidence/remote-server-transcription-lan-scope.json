@@ -1,0 +1,298 @@
+{
+  "baseline": "LAN/UI iteration start, before section 9 implementation",
+  "files": [
+    {
+      "path": "android/app/src/androidTest/kotlin/com/loquiris/remote/RemoteConnectionInstrumentedTest.kt",
+      "sha256": "7de2a3b153f6cd511db3faa4c399452ef6103c926df877237f8e046480dba5ba",
+      "newThisTurn": true
+    },
+    {
+      "path": "android/app/src/main/kotlin/com/loquiris/remote/RemoteCredentials.kt",
+      "sha256": "5ebed9220db237e96d5ce2a03829d739810b027759e6c0cace988cfb291fa6a6",
+      "newThisTurn": false
+    },
+    {
+      "path": "android/app/src/main/kotlin/com/loquiris/remote/RemoteHttp.kt",
+      "sha256": "a11764a2ce690a76beedea3d5fcd569798d89422fc5976e4749bd63f59851cc9",
+      "newThisTurn": false
+    },
+    {
+      "path": "android/app/src/main/kotlin/com/loquiris/remote/RemoteRuntime.kt",
+      "sha256": "9df37032139795550d165815032d7c8759f1a05a959acc2c655a0a1353734174",
+      "newThisTurn": false
+    },
+    {
+      "path": "android/app/src/main/kotlin/com/loquiris/remote/RemoteWire.kt",
+      "sha256": "1d9e26974c1b2806755ce638a86afd0143988b30174f06932957693508ba6b06",
+      "newThisTurn": false
+    },
+    {
+      "path": "android/app/src/test/kotlin/com/loquiris/remote/RemoteEndpointContractTest.kt",
+      "sha256": "7cf16f64e9c6854f608fd75aceba398b7deb17bd875bb1a1ad3965a313267e8d",
+      "newThisTurn": true
+    },
+    {
+      "path": "android/app/src/test/kotlin/com/loquiris/remote/RemoteHttpLanTest.kt",
+      "sha256": "705d665b3a3540532f6d9ed4e86b620d6c12b6f515cc7e7d2692ed070b5992dd",
+      "newThisTurn": true
+    },
+    {
+      "path": "contracts/remote_transcription/v1/endpoints.tsv",
+      "sha256": "44dd18dc63ef599f0f95c010f70b2729174605c4541e9bfc3948bcd29020fdec",
+      "newThisTurn": true
+    },
+    {
+      "path": "docs/evidence/remote-server-transcription-lan-analyze.txt",
+      "sha256": "1e1e6b4be8f92acc5e7062c673fa46d8086850aedf9a0f8d6e3f5be1214dc0cc",
+      "newThisTurn": true
+    },
+    {
+      "path": "docs/evidence/remote-server-transcription-lan-device-tests.txt",
+      "sha256": "08cc07c90c4c4a16481ab67c0c0d37c8c682486d11308cf5175de8f5a1e8d9a1",
+      "newThisTurn": true
+    },
+    {
+      "path": "docs/evidence/remote-server-transcription-lan-flutter-tests.txt",
+      "sha256": "32af8e06df0c95b1ae0d7fcee3288a5daa0532e0d7e97545d382392942ef1c42",
+      "newThisTurn": true
+    },
+    {
+      "path": "docs/evidence/remote-server-transcription-lan-kotlin-checks.txt",
+      "sha256": "921c16625e1ea5a59acda4246811d72ab176f5a7dd815cf2b24e383d37670dba",
+      "newThisTurn": true
+    },
+    {
+      "path": "docs/evidence/remote-server-transcription-lan-smoke.json",
+      "sha256": "0006bc1ba4e2d107178b32850a09219cc82b625ec78a634a669c60ca73936ec7",
+      "newThisTurn": true
+    },
+    {
+      "path": "docs/evidence/remote-server-transcription-lan-ui.json",
+      "sha256": "df7ddaa97104b5903e851feb7e99e469fb62342174980d3dbe162b22af42cfb9",
+      "newThisTurn": true
+    },
+    {
+      "path": "docs/evidence/remote-server-transcription-lan-ui.md",
+      "sha256": "93c80e4e874159baae38f7f285d4279a36a58dee46159eae9dd40315ed3a3db5",
+      "newThisTurn": true
+    },
+    {
+      "path": "lib/data/repositories/drift_remote_transcription_repository.dart",
+      "sha256": "f6f0e8e3fc21bb27849c520a2d95bc6b3ff1d4c2a42695f6c7505525fef1e2b4",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/features/remote_transcription/application/remote_settings_controller.dart",
+      "sha256": "e2b52ac06abfe07beefab0f952dbf8d9e1c0819f14d5ae675913791c7fcd0218",
+      "newThisTurn": true
+    },
+    {
+      "path": "lib/features/remote_transcription/domain/remote_endpoint.dart",
+      "sha256": "c4e50d78dc3497c1a1d54e7b163e39159a1b0425ca93831024d23d8a2c6ec9f1",
+      "newThisTurn": true
+    },
+    {
+      "path": "lib/features/remote_transcription/presentation/remote_connection_form.dart",
+      "sha256": "305d625f5dd9232768b74e0b594d222c2e007eb6ee86416e609d28a7e429304c",
+      "newThisTurn": true
+    },
+    {
+      "path": "lib/features/remote_transcription/presentation/remote_settings_screen.dart",
+      "sha256": "88ab7b89a8c8fcb1e66edbf9de230ff152c0585bfbaea4a33ef02d49562c4a73",
+      "newThisTurn": true
+    },
+    {
+      "path": "lib/features/remote_transcription/presentation/remote_transcription_panel.dart",
+      "sha256": "176ca77ea2e26c9ff544ca9a0eafe77d19006e2657fad6e7728ffea4de9b9a00",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/native/method_channel_remote_transcription_service.dart",
+      "sha256": "8c670ae8efefa35b5dd63c670863ebc6bfc775a1970da122314a3113b2fe8b31",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/services/remote_transcription_repository.dart",
+      "sha256": "13dabc9eeb9040126031a1ad9186e5d87791c09571cf6ce26dd3a8721e8740f8",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/services/remote_transcription_service.dart",
+      "sha256": "675d2a0ad16b7bb49b21a1540056edafd3295c2ecb9d36026f8d63be0d8e718c",
+      "newThisTurn": false
+    },
+    {
+      "path": "openspec/changes/remote-server-transcription/design.md",
+      "sha256": "fca14b9933463a488fa98484492a30dd3ea734bcf5790e44dc29dcf72cde21af",
+      "newThisTurn": false
+    },
+    {
+      "path": "openspec/changes/remote-server-transcription/specs/remote-transcription/spec.md",
+      "sha256": "ce87415b1546f332fbd5046c8be30fe7040ca4db2824593003b0fea6fa5c6df2",
+      "newThisTurn": false
+    },
+    {
+      "path": "openspec/changes/remote-server-transcription/tasks.md",
+      "sha256": "d0096014ff8913fe61b2d3695795e4fb3e412163902ce57cd91e6309040dd86f",
+      "newThisTurn": false
+    },
+    {
+      "path": "server/README.md",
+      "sha256": "ae0ba91da52721378b2d2e49494da5e64c7159d1f74e08cc35aa8da26240a98f",
+      "newThisTurn": false
+    },
+    {
+      "path": "test/data/drift_remote_transcription_repository_test.dart",
+      "sha256": "e07753ee88785b67f3b726d6ca847fa4ee734f3c2541007c6dc96df444cc1a69",
+      "newThisTurn": false
+    },
+    {
+      "path": "test/data/remote_connection_defaults_test.dart",
+      "sha256": "62bc8e41b16a67c32cd64fdb65f992fddbb2efc1fca1f214320ce57d78aca27f",
+      "newThisTurn": true
+    },
+    {
+      "path": "test/data/remote_endpoint_contract_test.dart",
+      "sha256": "4ab73a87d80d616a9f467e8e119b5e7672418fe1701947a77d6e469809e72d85",
+      "newThisTurn": true
+    },
+    {
+      "path": "test/features/export_backup/remote_restore_importer_test.dart",
+      "sha256": "b5e654dc6cefb048f4578744250bc05e5b9de2bef23c0a9d8dc8ff9d20ffe2ff",
+      "newThisTurn": false
+    },
+    {
+      "path": "test/features/recording/presentation/new_recording_processing_test.dart",
+      "sha256": "434c0785fc564f798a92bdf2f356acd5123d40a7f13602154fcfa9386f61acec",
+      "newThisTurn": false
+    },
+    {
+      "path": "test/features/remote_transcription/capture_ui_simplification_test.dart",
+      "sha256": "44221b12f9c5531c3d6dc67b7b6a6c6ebe2755b5f499a23f53de0818eab9075b",
+      "newThisTurn": true
+    },
+    {
+      "path": "test/features/remote_transcription/remote_panel_actions_test.dart",
+      "sha256": "340b7d8ce41cd230e09af6239e2e944d8602f1446c7a966d0f791450a420777e",
+      "newThisTurn": true
+    },
+    {
+      "path": "test/features/remote_transcription/remote_panel_test.dart",
+      "sha256": "b89497f5c7963719e66d7aa7ef8f092b55c246682fa515f4ff5f8e74fd920fba",
+      "newThisTurn": false
+    },
+    {
+      "path": "test/features/remote_transcription/remote_settings_and_export_ui_test.dart",
+      "sha256": "7b17db76883bcfaeff0430e1fe7a417e641f9b43ab1998ba294a574c1913c485",
+      "newThisTurn": true
+    },
+    {
+      "path": "test/features/remote_transcription/remote_settings_controller_test.dart",
+      "sha256": "6ddc3e160615abcd727e054c0de887059e06960ab2b5370d060cd914160b82a6",
+      "newThisTurn": true
+    },
+    {
+      "path": "test/native/remote_connection_persistence_test.dart",
+      "sha256": "f07c3c78d68d2642b96d90f034db4e3611a199230da891cf73e856d1a29ce143",
+      "newThisTurn": true
+    },
+    {
+      "path": "test/policy/lan_privacy_policy_test.dart",
+      "sha256": "14b0bb48ec2d1bf17fbec4d0c6a8474641bdef8e847d59e567917ececfe365c6",
+      "newThisTurn": true
+    },
+    {
+      "path": "test/policy/remote_privacy_policy_test.dart",
+      "sha256": "b72d8504b46fe8ab226e1b2ac087778e7aa652a319d937dec2fa1f48e19706e9",
+      "newThisTurn": false
+    },
+    {
+      "path": "PRIVACY.md",
+      "sha256": "3bf11f13c8cc8c46fe95bbf9372db502d874ed3403062b3a34bd2aa404340d71",
+      "newThisTurn": false
+    },
+    {
+      "path": "README.md",
+      "sha256": "da4359070e2607e065e806c20ff2c931d3da434ce08e1e9471fb6eca4c2b6730",
+      "newThisTurn": false
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "9956728c5cf16c9c00844a9cc7fe08a31eac3f96572c1983802a2f7486904401",
+      "newThisTurn": false
+    },
+    {
+      "path": "android/app/src/main/AndroidManifest.xml",
+      "sha256": "c9adda6b123e66f4d9b4706d68ee1e51a8fc815f01e4d3d0c9f95d76069fe704",
+      "newThisTurn": false
+    },
+    {
+      "path": "android/app/src/release/AndroidManifest.xml",
+      "sha256": "cd65a0cbeca2b5d79a7ee3c0036dfecff553259b356a9709b097c9fea8c409f4",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/features/recording/presentation/active_recording_screen.dart",
+      "sha256": "590285b48323af2c881043d173bc882bdba85e4a2b50cf89c79c0977cfd4645c",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/features/recording/presentation/new_recording_screen.dart",
+      "sha256": "98364f2b527454d9dc7b9d8152d42f27b7df4ebb095ddadb59a5a375ecec020e",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/features/sessions/presentation/session_detail_screen.dart",
+      "sha256": "819bf6e7741b9ff7ffc2939f3059878ad9f1a44a8e440f96a8af8139f8648cd4",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/l10n/app_en.arb",
+      "sha256": "bf97029d68d7e5c9190c625b3f0429bc2344c2e630869ff3660fd31a300114ba",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/l10n/app_localizations.dart",
+      "sha256": "8087837ec37a804d2257a8ed8b6fa11b581f221db65472beb580920cec9b9552",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/l10n/app_localizations_en.dart",
+      "sha256": "082caad49b60a432688770f6ccfb3c176de5abad51d01b136d91bb4a3def8028",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/l10n/app_localizations_zh.dart",
+      "sha256": "0f6eef06b1b6c1ff28797229c13c24c34f465e726f3015ce6070fc00225e2024",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/l10n/app_zh.arb",
+      "sha256": "a8a65c0523feac8cb87389872455667b767ee4acf5d2fd3de0fc8197e42e89a9",
+      "newThisTurn": false
+    },
+    {
+      "path": "lib/routing/app_router.dart",
+      "sha256": "a5f178755b897422d36ec15d9f8366bad7dcfcf451e08d143f6c7bf7ee0825d8",
+      "newThisTurn": false
+    },
+    {
+      "path": "test/policy/android_recording_manifest_policy_test.dart",
+      "sha256": "b3a2b4075e3449c25300f7c4264a44049bb3624c59c301aa133faa4a148bddd6",
+      "newThisTurn": false
+    },
+    {
+      "path": "tool/release_privacy_policy.dart",
+      "sha256": "b1fe4553ddc7cc1df95e15095a836fc4793a2631a614943bd851aaee9727c414",
+      "newThisTurn": false
+    }
+  ],
+  "fileCount": 57,
+  "gitnexusMixedWorkspace": {
+    "risk": "critical",
+    "changedSymbols": 394,
+    "trackedFiles": 109,
+    "affectedFlows": 21
+  },
+  "committed": false
+}

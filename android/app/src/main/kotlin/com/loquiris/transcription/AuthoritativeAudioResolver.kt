@@ -11,11 +11,13 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.security.MessageDigest
 import java.util.zip.CRC32
 
 class AuthoritativeAudioResolver(
     private val recordingsRoot: File,
     private val sessionDirectoryFor: (String) -> File,
+    private val requireCompleteJournal: Boolean = false,
 ) : AuthoritativeAudioProvider {
     constructor(context: Context) : this(
         recordingsRoot = File(context.applicationContext.filesDir, "recordings"),
@@ -87,6 +89,7 @@ class AuthoritativeAudioResolver(
                             committedBytes = prefix.committedBytes,
                             startSample = totalSamples,
                             committedSamples = prefix.committedSamples,
+                            verifiedSha256 = prefix.verifiedSha256,
                         )
                     totalSamples = Math.addExact(totalSamples, prefix.committedSamples)
                     if (data.length() > prefix.committedBytes) {
@@ -137,11 +140,26 @@ class AuthoritativeAudioResolver(
         }
         val latest = records.lastOrNull()
             ?: return JournalPrefixResult.Failure("transcription_audio_journal_invalid")
+        if (requireCompleteJournal && offset != journalBytes.size) {
+            return JournalPrefixResult.Failure("transcription_audio_journal_invalid")
+        }
         if (latest.committedBytes > MAX_COMMITTED_SEGMENT_BYTES) {
             return JournalPrefixResult.Failure("transcription_audio_segment_too_large")
         }
         val candidateBytes = readPrefix(data, minOf(data.length(), latest.committedBytes))
+        if (requireCompleteJournal && candidateBytes.size.toLong() == latest.committedBytes &&
+            !isExactAdtsPrefix(candidateBytes, latest.frameEndExclusive)
+        ) {
+            return JournalPrefixResult.Failure("transcription_audio_segment_corrupt")
+        }
         val recovered = RecordingCommittedPrefixRecovery.recover(candidateBytes, journalBytes)
+        if (requireCompleteJournal &&
+            (recovered.committedBytes.toLong() != latest.committedBytes ||
+                recovered.committedSamples != latest.committedSamples ||
+                recovered.committedFrames.toLong() != latest.frameEndExclusive)
+        ) {
+            return JournalPrefixResult.Failure("transcription_audio_latest_commit_unavailable")
+        }
         if (recovered.committedBytes <= 0) {
             return JournalPrefixResult.Failure("transcription_audio_segment_corrupt")
         }
@@ -155,7 +173,28 @@ class AuthoritativeAudioResolver(
         return JournalPrefixResult.Ready(
             recovered.committedBytes.toLong(),
             recovered.committedSamples,
+            if (requireCompleteJournal) {
+                MessageDigest.getInstance("SHA-256").digest(candidateBytes).joinToString("") { "%02x".format(it) }
+            } else {
+                null
+            },
         )
+    }
+
+    private fun isExactAdtsPrefix(bytes: ByteArray, expectedFrames: Long): Boolean {
+        var offset = 0
+        var frames = 0L
+        while (offset < bytes.size) {
+            if (bytes.size - offset < 7) return false
+            fun unsigned(index: Int) = bytes[offset + index].toInt() and 0xff
+            if (unsigned(0) != 0xff || unsigned(1) and 0xf6 != 0xf0) return false
+            val headerBytes = if (unsigned(1) and 1 == 1) 7 else 9
+            val frameBytes = ((unsigned(3) and 3) shl 11) or (unsigned(4) shl 3) or (unsigned(5) ushr 5)
+            if (frameBytes < headerBytes || frameBytes > bytes.size - offset || unsigned(6) and 3 != 0) return false
+            offset += frameBytes
+            frames += 1
+        }
+        return frames == expectedFrames
     }
 
     private fun decodeRecord(
@@ -233,6 +272,7 @@ private sealed interface JournalPrefixResult {
     data class Ready(
         val committedBytes: Long,
         val committedSamples: Long,
+        val verifiedSha256: String?,
     ) : JournalPrefixResult
 
     data class Failure(

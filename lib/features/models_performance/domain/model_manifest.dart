@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:loquiris/core/domain/app_relative_path.dart';
 import 'package:loquiris/core/domain/value_object.dart';
 import 'package:loquiris/core/failure.dart';
@@ -6,6 +9,8 @@ import 'package:loquiris/features/models_performance/domain/processing_entities.
 import 'package:meta/meta.dart';
 
 part 'model_manifest_parser.dart';
+part 'model_artifact_manifest.dart';
+part 'model_bundle_manifest_parser.dart';
 
 /// Reasons an external bundled-model manifest cannot enter the domain.
 enum ModelManifestFailureReason {
@@ -76,8 +81,24 @@ final class BundledModelManifest extends ValueObject {
     required this.licenseSnapshotPath,
     required List<ModelCapability> capabilities,
     required List<PerformanceMode> enabledModes,
+    this.engineVersion,
+    List<ModelArtifactManifest>? artifacts,
   }) : capabilities = List<ModelCapability>.unmodifiable(capabilities),
-       enabledModes = List<PerformanceMode>.unmodifiable(enabledModes);
+       enabledModes = List<PerformanceMode>.unmodifiable(enabledModes),
+       artifacts = List<ModelArtifactManifest>.unmodifiable(
+         artifacts ??
+             <ModelArtifactManifest>[
+               ModelArtifactManifest._(
+                 path: artifactPath,
+                 role: ModelArtifactRole.model,
+                 bytes: bytes,
+                 sha256: sha256,
+                 source: source,
+                 licenseId: licenseId,
+                 licenseSnapshotPath: licenseSnapshotPath,
+               ),
+             ],
+       );
 
   /// Parses decoded JSON without throwing for malformed input.
   static Result<BundledModelManifest, InvalidModelManifest> tryParse(
@@ -111,6 +132,17 @@ final class BundledModelManifest extends ValueObject {
   /// Model container or tensor format understood by [engineId].
   final String modelFormat;
 
+  /// Exact runtime release required by a v2 bundle; absent for legacy v1 files.
+  final String? engineVersion;
+
+  /// Every required file, sorted by safe destination path for v2 bundles.
+  final List<ModelArtifactManifest> artifacts;
+
+  /// Canonical inventory encoding used for the v2 bundle digest.
+  String get canonicalInventoryJson => jsonEncode(
+    artifacts.map((artifact) => artifact.inventoryJson).toList(),
+  );
+
   /// SPDX identifier or fixed reviewed license key.
   final String licenseId;
 
@@ -122,6 +154,30 @@ final class BundledModelManifest extends ValueObject {
 
   /// User-selectable modes for which this exact artifact passed release gates.
   final List<PerformanceMode> enabledModes;
+
+  /// Copies the complete schema-specific provenance for durable role snapshots.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'schemaVersion': schemaVersion,
+    'id': id,
+    'version': version,
+    'source': source,
+    if (schemaVersion == 1) 'artifactPath': artifactPath.value,
+    'sha256': sha256,
+    'bytes': bytes,
+    'runtime': <String, Object?>{
+      'engineId': engineId,
+      if (schemaVersion == 2) 'engineVersion': engineVersion,
+      'modelFormat': modelFormat,
+    },
+    'license': <String, Object?>{
+      'id': licenseId,
+      'snapshotPath': licenseSnapshotPath.value,
+    },
+    if (schemaVersion == 2)
+      'artifacts': artifacts.map((artifact) => artifact.toJson()).toList(),
+    'capabilities': capabilities.map((capability) => capability.name).toList(),
+    'enabledModes': enabledModes.map((mode) => mode.name).toList(),
+  };
 
   /// Returns the durable provenance representation used by analysis records.
   InstalledModel toInstalledModel() => InstalledModel(
@@ -154,5 +210,8 @@ final class BundledModelManifest extends ValueObject {
     ...capabilities,
     enabledModes.length,
     ...enabledModes,
+    engineVersion,
+    artifacts.length,
+    ...artifacts,
   ];
 }

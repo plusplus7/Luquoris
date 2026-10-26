@@ -509,6 +509,36 @@ final class DriftSessionRepository implements SessionRepository {
   }
 
   @override
+  Stream<Result<List<SessionSearchHit>, SessionRepositoryFailure>> watchSearch(
+    String query,
+  ) async* {
+    final normalized = query.trim();
+    if (normalized.isEmpty) {
+      yield const Ok(<SessionSearchHit>[]);
+      return;
+    }
+    try {
+      final changes = database.customSelect(
+        'SELECT 1',
+        readsFrom: {
+          database.meetings,
+          database.audioSegments,
+          database.meetingTranscriptSelections,
+          database.transcriptRuns,
+          database.transcriptSegments,
+        },
+      );
+      await for (final _ in changes.watch()) {
+        yield await search(normalized);
+      }
+    } on SqliteException catch (error, stackTrace) {
+      yield Err(
+        _storeFailure('session_search_watch_failed', error, stackTrace),
+      );
+    }
+  }
+
+  @override
   Future<Result<List<SessionSearchHit>, SessionRepositoryFailure>> search(
     String query,
   ) async {

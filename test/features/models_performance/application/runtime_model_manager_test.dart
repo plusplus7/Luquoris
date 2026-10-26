@@ -7,9 +7,12 @@ import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/models_performance/application/runtime_model_manager.dart';
 import 'package:loquiris/features/models_performance/domain/model_manifest.dart';
 import 'package:loquiris/features/recording/presentation/new_recording_controller.dart';
+import 'package:loquiris/features/transcript/domain/meeting_processing_selection.dart';
+import 'package:loquiris/services/meeting_processing_selection_repository.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
 
+import '../../../support/fakes/fake_meeting_processing_selection_repository.dart';
 import '../../../support/fakes/fake_services.dart';
 
 void main() {
@@ -204,7 +207,7 @@ void main() {
     );
   });
 
-  test('a corrupt AI model never blocks canonical recording startup', () async {
+  test('recording-only starts even when the AI model is corrupt', () async {
     final source = _MemoryModelArtifactSource()
       ..artifacts['models/test-model/model.bin'] = () =>
           Stream.value(const <int>[1, 2, 4]);
@@ -225,6 +228,9 @@ void main() {
     final container = ProviderContainer.test(
       overrides: [
         modelManagerProvider.overrideWithValue(manager),
+        meetingProcessingSelectionRepositoryProvider.overrideWithValue(
+          FakeMeetingProcessingSelectionRepository(),
+        ),
         sessionRepositoryProvider.overrideWithValue(FakeSessionRepository()),
         audioCaptureServiceProvider.overrideWithValue(capture),
         meetingIdFactoryProvider.overrideWithValue(
@@ -240,9 +246,9 @@ void main() {
     await container.read(newRecordingControllerProvider.future);
 
     final modelResult = await manager.verify('test-model');
-    container
-        .read(newRecordingControllerProvider.notifier)
-        .start(title: 'Recording survives');
+    container.read(newRecordingControllerProvider.notifier)
+      ..selectProcessingMode(MeetingProcessingMode.recordingOnly)
+      ..start(title: 'Recording survives');
     await pumpEventQueue();
 
     _expectFailure(modelResult, 'model_sha256_mismatch');

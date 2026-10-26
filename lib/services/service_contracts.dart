@@ -1406,6 +1406,11 @@ abstract interface class SessionRepository {
     String query,
   );
 
+  /// Watches local hits as selected versions, corrections, and meetings commit.
+  Stream<Result<List<SessionSearchHit>, SessionRepositoryFailure>> watchSearch(
+    String query,
+  );
+
   /// Moves a meeting to local trash without deleting owned records.
   @useResult
   Future<Result<Meeting, SessionRepositoryFailure>> moveToTrash(

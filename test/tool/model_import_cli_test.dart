@@ -36,6 +36,32 @@ void main() {
     expect(errors, isEmpty);
   });
 
+  test(
+    'experimental import requires explicit opt-in and uses its own catalog',
+    () async {
+      await _writeModel(projectRoot, experimental: true);
+      final defaultCode = await cli.runModelImportCommand(
+        const <String>[],
+        projectRoot: projectRoot,
+        writeOutput: output.add,
+        writeError: errors.add,
+      );
+      expect(defaultCode, 1);
+      expect(output, isEmpty);
+      errors.clear();
+
+      final experimentalCode = await cli.runModelImportCommand(
+        const <String>['--experimental-small'],
+        projectRoot: projectRoot,
+        writeOutput: output.add,
+        writeError: errors.add,
+      );
+      expect(experimentalCode, 0);
+      expect(output, <String>['Imported 1 model (3 bytes).']);
+      expect(errors, isEmpty);
+    },
+  );
+
   test('reports a stable failure code without exposing paths', () async {
     final code = await cli.runModelImportCommand(
       const <String>[],
@@ -64,15 +90,23 @@ void main() {
 
     expect(code, 64);
     expect(output, isEmpty);
-    expect(errors, <String>['Usage: dart run tool/import_models.dart']);
+    expect(errors, <String>[
+      'Usage: dart run tool/import_models.dart [--experimental-small]',
+    ]);
   });
 }
 
-Future<void> _writeModel(Directory projectRoot) async {
+Future<void> _writeModel(
+  Directory projectRoot, {
+  bool experimental = false,
+}) async {
   const id = 'test-model';
   const bytes = <int>[1, 2, 3];
+  final manifestDirectory = experimental
+      ? '${projectRoot.path}/models/manifests/experimental-small'
+      : '${projectRoot.path}/models/manifests';
   await Directory(
-    '${projectRoot.path}/models/manifests',
+    manifestDirectory,
   ).create(recursive: true);
   await Directory(
     '${projectRoot.path}/models/licenses',
@@ -86,7 +120,7 @@ Future<void> _writeModel(Directory projectRoot) async {
     '${projectRoot.path}/models/licenses/$id.txt',
   ).writeAsString('MIT license\n');
   await File(
-    '${projectRoot.path}/models/manifests/$id.json',
+    '$manifestDirectory/$id.json',
   ).writeAsString(
     '${jsonEncode(<String, Object?>{
       'schemaVersion': 1,

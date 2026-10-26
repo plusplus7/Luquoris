@@ -3794,10 +3794,3227 @@ final class Schema4 extends i0.VersionedSchema {
   );
 }
 
+final class Schema5 extends i0.VersionedSchema {
+  Schema5({required super.database}) : super(version: 5);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    meetings,
+    recordingPreferences,
+    audioSegments,
+    recoveryFindings,
+    sessionEvents,
+    bookmarks,
+    modelManifests,
+    transcriptRuns,
+    transcriptProcessingMetadata,
+    meetingTranscriptSelections,
+    diarizationRuns,
+    speakers,
+    transcriptSegments,
+    languageDecisions,
+    transcriptLanguageSelections,
+    speakerAssignments,
+    revisions,
+    processingJobs,
+    modelCapabilityEntries,
+    modelModeEntries,
+    exportRecords,
+    backupRecords,
+    idxMeetingsCreated,
+    uxAudioSegmentsMeetingSequence,
+    idxRecoveryFindingsMeetingSequence,
+    uxSessionEventsMeetingSequence,
+    idxBookmarksMeetingMedia,
+    idxTranscriptRunsMeetingCreated,
+    uxTranscriptRunOwner,
+    uxTranscriptProcessingRun,
+    uxMeetingTranscriptSelection,
+    idxTranscriptSegmentsRunStart,
+    uxTranscriptSegmentOwner,
+    idxLanguageDecisionsSegmentCreated,
+    uxLanguageDecisionOwner,
+    uxTranscriptLanguageSelection,
+    idxDiarizationRunsMeetingCreated,
+    uxDiarizationRunOwner,
+    uxSpeakersRunLabel,
+    uxSpeakerRunOwner,
+    uxSpeakerMeetingOwner,
+    idxSpeakerAssignmentsRunStart,
+    uxSpeakerAssignmentOwner,
+    idxRevisionsMeetingCreated,
+    idxRevisionsTranscriptTarget,
+    idxRevisionsAssignmentTarget,
+    idxRevisionsSpeakerTarget,
+    idxProcessingJobsMeetingCreated,
+    uxModelManifestsHash,
+    uxModelManifestProvenance,
+    uxModelCapability,
+    uxModelMode,
+    idxExportRecordsMeetingCreated,
+    idxBackupRecordsCreated,
+  ];
+  late final Shape19 meetings = Shape19(
+    source: i0.VersionedTable(
+      entityName: 'meetings',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(media_duration_us >= 0)',
+        'CHECK(lifecycle IN (\'draft\', \'preparing\', \'recording\', \'pausedByUser\', \'pausedByInterruption\', \'stopping\', \'finalized\', \'recoverable\', \'failedFinalization\', \'trashed\', \'deleting\'))',
+        'CHECK(language_mode IN (\'chinese\', \'english\', \'mixed\'))',
+        'CHECK((lifecycle IN (\'trashed\', \'deleting\'))=(trashed_at_utc_ms IS NOT NULL))',
+        'CHECK(lifecycle_before_trash IS NULL OR lifecycle_before_trash IN (\'draft\', \'preparing\', \'recording\', \'pausedByUser\', \'pausedByInterruption\', \'stopping\', \'finalized\', \'recoverable\', \'failedFinalization\'))',
+        'CHECK((lifecycle IN (\'trashed\', \'deleting\'))=(lifecycle_before_trash IS NOT NULL))',
+        'CHECK((lifecycle IN (\'trashed\', \'deleting\'))= is_deleted)',
+        'CHECK((trashed_at_utc_ms IS NULL AND deleted_at IS NULL)OR trashed_at_utc_ms = deleted_at)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_82,
+        _column_83,
+        _column_10,
+        _column_11,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape20 recordingPreferences = Shape20(
+    source: i0.VersionedTable(
+      entityName: 'recording_preferences',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(id = \'recording-defaults\')',
+        'CHECK(transcription_mode IN (\'nearRealTime\', \'postSession\'))',
+        'CHECK(language_mode IN (\'chinese\', \'english\', \'mixed\'))',
+        'CHECK(expected_speaker_count IS NULL OR expected_speaker_count BETWEEN 2 AND 6)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_84,
+        _column_9,
+        _column_85,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 audioSegments = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'audio_segments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(sequence >= 0)',
+        'CHECK(media_start_us >= 0)',
+        'CHECK(media_duration_us >= 0)',
+        'CHECK(committed_bytes >= 0)',
+        'CHECK(state IN (\'open\', \'committed\', \'corrupt\', \'missing\'))',
+        'CHECK(length(relative_path) > 0)',
+        'CHECK(relative_path NOT LIKE \'/%\')',
+        'CHECK(instr(relative_path, char(92)) = 0)',
+        'CHECK(instr(relative_path, char(0)) = 0)',
+        'CHECK(relative_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK((\'/\' || relative_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK((\'/\' || relative_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK((\'/\' || relative_path || \'/\')NOT LIKE \'%/./%\')',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_13,
+        _column_14,
+        _column_15,
+        _column_16,
+        _column_17,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 recoveryFindings = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'recovery_findings',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(segment_sequence IS NULL OR segment_sequence >= 0)',
+        'CHECK(code IN (\'recording_recovery_timeline_gap\', \'recording_recovery_segment_missing\', \'recording_recovery_segment_corrupt\', \'recording_recovery_tail_discarded\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_19,
+        _column_20,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 sessionEvents = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'session_events',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(sequence >= 0)',
+        'CHECK(wall_clock_utc_ms >= 0)',
+        'CHECK(monotonic_elapsed_us >= 0)',
+        'CHECK(media_offset_us >= 0)',
+        'CHECK(type IN (\'started\', \'pausedByUser\', \'resumedByUser\', \'interrupted\', \'stopped\', \'recovered\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_13,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 bookmarks = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'bookmarks',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(media_offset_us >= 0)',
+        'CHECK(kind IN (\'bookmark\', \'highlight\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_24,
+        _column_25,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 modelManifests = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'model_manifests',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(bytes >= 0)',
+        'CHECK(length(sha256) > 0)',
+        'CHECK(length(license_snapshot_path) > 0)',
+        'CHECK(license_snapshot_path NOT LIKE \'/%\')',
+        'CHECK(instr(license_snapshot_path, char(92)) = 0)',
+        'CHECK(instr(license_snapshot_path, char(0)) = 0)',
+        'CHECK(license_snapshot_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK((\'/\' || license_snapshot_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK((\'/\' || license_snapshot_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK((\'/\' || license_snapshot_path || \'/\')NOT LIKE \'%/./%\')',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 transcriptRuns = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'transcript_runs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(model_id, model_version, model_sha256, engine_id)REFERENCES model_manifests(id, version, sha256, expected_engine_id)ON DELETE RESTRICT',
+        'CHECK(run_state IN (\'queued\', \'running\', \'completed\', \'failed\'))',
+        'CHECK(progress BETWEEN 0 AND 1)',
+        'CHECK(json_valid(parameters_json))',
+        'CHECK(started_at_utc_ms IS NULL OR started_at_utc_ms >= 0)',
+        'CHECK(ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms)',
+        'CHECK((run_state = \'queued\' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'running\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'completed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL)OR(run_state = \'failed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape21 transcriptProcessingMetadata = Shape21(
+    source: i0.VersionedTable(
+      entityName: 'transcript_processing_metadata',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(source_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE NO ACTION',
+        'CHECK(processing_role IN (\'liveDraft\', \'refinement\'))',
+        'CHECK(completeness IN (\'complete\', \'incomplete\'))',
+        'CHECK(source_run_id IS NULL OR source_run_id <> transcript_run_id)',
+        'CHECK(source_run_id IS NULL OR processing_role = \'refinement\')',
+        'CHECK(json_valid(bundle_manifest_json))',
+        'CHECK(json_type(bundle_manifest_json) = \'object\')',
+        'CHECK(json_type(bundle_manifest_json, \'\$.schemaVersion\') IS \'integer\' AND json_extract(bundle_manifest_json, \'\$.schemaVersion\') IN (1, 2))',
+        'CHECK(audio_inventory_sha256 IS NULL OR(length(audio_inventory_sha256) = 64 AND audio_inventory_sha256 NOT GLOB \'*[^0-9a-f]*\'))',
+        'CHECK(processing_role <> \'refinement\' OR audio_inventory_sha256 IS NOT NULL)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_44,
+        _column_12,
+        _column_86,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_90,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 meetingTranscriptSelections = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'meeting_transcript_selections',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_44,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 diarizationRuns = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'diarization_runs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(model_id, model_version, model_sha256, engine_id)REFERENCES model_manifests(id, version, sha256, expected_engine_id)ON DELETE RESTRICT',
+        'CHECK(run_state IN (\'queued\', \'running\', \'completed\', \'failed\'))',
+        'CHECK(progress BETWEEN 0 AND 1)',
+        'CHECK(json_valid(parameters_json))',
+        'CHECK(started_at_utc_ms IS NULL OR started_at_utc_ms >= 0)',
+        'CHECK(ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms)',
+        'CHECK((run_state = \'queued\' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'running\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'completed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL)OR(run_state = \'failed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 speakers = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'speakers',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(analysis_run_id, meeting_id)REFERENCES diarization_runs(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_45,
+        _column_46,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape9 transcriptSegments = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'transcript_segments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(start_us >= 0)',
+        'CHECK(end_us > start_us)',
+        'CHECK(revision_state IN (\'machine\', \'corrected\'))',
+        'CHECK((speaker_id IS NULL)=(speaker_meeting_id IS NULL))',
+        'CHECK(speaker_meeting_id IS NULL OR speaker_meeting_id = meeting_id)',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_id, speaker_meeting_id)REFERENCES speakers(id, meeting_id)ON DELETE SET NULL',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_44,
+        _column_47,
+        _column_48,
+        _column_49,
+        _column_50,
+        _column_51,
+        _column_52,
+        _column_53,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape10 languageDecisions = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'language_decisions',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(tag IN (\'chinese\', \'english\', \'mixed\', \'uncertain\'))',
+        'CHECK(source IN (\'automatic\', \'manual\'))',
+        'CHECK(confidence IS NULL OR confidence BETWEEN 0 AND 1)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_54,
+        _column_55,
+        _column_27,
+        _column_56,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape11 transcriptLanguageSelections = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'transcript_language_selections',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(language_decision_id, transcript_segment_id)REFERENCES language_decisions(id, transcript_segment_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_54,
+        _column_57,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape12 speakerAssignments = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'speaker_assignments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(start_us >= 0)',
+        'CHECK(end_us > start_us)',
+        'CHECK(confidence IS NULL OR confidence BETWEEN 0 AND 1)',
+        'CHECK(is_overlap = 0 OR needs_confirmation = 1)',
+        'CHECK((speaker_id IS NULL)=(speaker_analysis_run_id IS NULL))',
+        'CHECK(speaker_analysis_run_id IS NULL OR speaker_analysis_run_id = analysis_run_id)',
+        'FOREIGN KEY(analysis_run_id, meeting_id)REFERENCES diarization_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_id, speaker_analysis_run_id)REFERENCES speakers(id, analysis_run_id)ON DELETE SET NULL',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_45,
+        _column_52,
+        _column_58,
+        _column_47,
+        _column_48,
+        _column_56,
+        _column_59,
+        _column_60,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape13 revisions = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'revisions',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(revision_kind IN (\'transcriptText\', \'languageLabel\', \'speakerAssignment\', \'speakerLabel\'))',
+        'CHECK((revision_kind IN (\'transcriptText\', \'languageLabel\') AND transcript_segment_id IS NOT NULL AND speaker_assignment_id IS NULL AND speaker_id IS NULL)OR(revision_kind = \'speakerAssignment\' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NOT NULL AND speaker_id IS NULL)OR(revision_kind = \'speakerLabel\' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NULL AND speaker_id IS NOT NULL))',
+        'CHECK(json_valid(payload_json))',
+        'CHECK((revision_kind = \'transcriptText\' AND COALESCE(json_type(payload_json, \'\$.previousText\') = \'text\', 0) AND COALESCE(json_type(payload_json, \'\$.revisedText\') = \'text\', 0))OR(revision_kind = \'languageLabel\' AND COALESCE(json_extract(payload_json, \'\$.previous\') IN (\'chinese\', \'english\', \'mixed\', \'uncertain\'), 0) AND COALESCE(json_extract(payload_json, \'\$.revised\') IN (\'chinese\', \'english\', \'mixed\', \'uncertain\'), 0))OR(revision_kind = \'speakerAssignment\' AND COALESCE(json_type(payload_json, \'\$.startUs\') = \'integer\', 0) AND COALESCE(json_type(payload_json, \'\$.endUs\') = \'integer\', 0) AND json_extract(payload_json, \'\$.startUs\') >= 0 AND json_extract(payload_json, \'\$.endUs\') > json_extract(payload_json, \'\$.startUs\') AND COALESCE(json_type(payload_json, \'\$.previousSpeakerId\') IN (\'text\', \'null\'), 0) AND COALESCE(json_type(payload_json, \'\$.revisedSpeakerId\') IN (\'text\', \'null\'), 0) AND COALESCE(json_type(payload_json, \'\$.needsConfirmation\') IN (\'true\', \'false\'), 0))OR(revision_kind = \'speakerLabel\' AND COALESCE(json_type(payload_json, \'\$.previous\') = \'text\', 0) AND COALESCE(json_type(payload_json, \'\$.revised\') = \'text\', 0)))',
+        'FOREIGN KEY(transcript_segment_id, meeting_id)REFERENCES transcript_segments(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_assignment_id, meeting_id)REFERENCES speaker_assignments(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_id, meeting_id)REFERENCES speakers(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_61,
+        _column_62,
+        _column_52,
+        _column_63,
+        _column_64,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape14 processingJobs = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'processing_jobs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(job_kind IN (\'transcription\', \'languageIdentification\', \'speakerDiarization\', \'audioMerge\', \'waveform\'))',
+        'CHECK(job_state IN (\'queued\', \'running\', \'paused\', \'succeeded\', \'failed\'))',
+        'CHECK(progress IS NULL OR progress BETWEEN 0 AND 1)',
+        'CHECK((job_kind IN (\'transcription\', \'languageIdentification\') AND transcript_run_id IS NOT NULL AND diarization_run_id IS NULL AND model_id IS NOT NULL)OR(job_kind = \'speakerDiarization\' AND transcript_run_id IS NULL AND diarization_run_id IS NOT NULL AND model_id IS NOT NULL)OR(job_kind IN (\'audioMerge\', \'waveform\') AND transcript_run_id IS NULL AND diarization_run_id IS NULL AND model_id IS NULL))',
+        'CHECK((job_state = \'queued\' AND progress IS NULL AND reason_code IS NULL AND failure_code IS NULL)OR(job_state = \'running\' AND progress IS NOT NULL AND reason_code IS NULL AND failure_code IS NULL)OR(job_state = \'paused\' AND length(reason_code) > 0 AND failure_code IS NULL)OR(job_state = \'succeeded\' AND reason_code IS NULL AND failure_code IS NULL)OR(job_state = \'failed\' AND reason_code IS NULL AND length(failure_code) > 0))',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(diarization_run_id, meeting_id)REFERENCES diarization_runs(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_65,
+        _column_66,
+        _column_67,
+        _column_68,
+        _column_43,
+        _column_69,
+        _column_70,
+        _column_71,
+        _column_72,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape15 modelCapabilityEntries = Shape15(
+    source: i0.VersionedTable(
+      entityName: 'model_capability_entries',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(capability IN (\'transcription\', \'languageIdentification\', \'speakerDiarization\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_73,
+        _column_74,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape16 modelModeEntries = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'model_mode_entries',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(mode IN (\'highQuality\', \'balanced\', \'powerSaving\', \'recordingOnly\', \'postSession\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_73,
+        _column_75,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape17 exportRecords = Shape17(
+    source: i0.VersionedTable(
+      entityName: 'export_records',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(format IN (\'audioM4a\', \'audioSegments\', \'text\', \'subtitles\', \'json\', \'archive\'))',
+        'CHECK(export_state IN (\'pending\', \'completed\', \'failed\'))',
+        'CHECK(bytes IS NULL OR bytes >= 0)',
+        'CHECK(relative_path IS NULL OR length(relative_path) > 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT LIKE \'/%\')',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(92)) = 0)',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(0)) = 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/./%\')',
+        'CHECK((export_state = \'pending\' AND relative_path IS NULL AND bytes IS NULL AND failure_code IS NULL)OR(export_state = \'completed\' AND bytes IS NOT NULL AND failure_code IS NULL)OR(export_state = \'failed\' AND relative_path IS NULL AND bytes IS NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_76,
+        _column_77,
+        _column_78,
+        _column_79,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape18 backupRecords = Shape18(
+    source: i0.VersionedTable(
+      entityName: 'backup_records',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(backup_state IN (\'pending\', \'completed\', \'failed\'))',
+        'CHECK(bytes IS NULL OR bytes >= 0)',
+        'CHECK(relative_path IS NULL OR length(relative_path) > 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT LIKE \'/%\')',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(92)) = 0)',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(0)) = 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/./%\')',
+        'CHECK((backup_state = \'pending\' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND failure_code IS NULL)OR(backup_state = \'completed\' AND relative_path IS NOT NULL AND length(sha256) > 0 AND bytes IS NOT NULL AND failure_code IS NULL)OR(backup_state = \'failed\' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_80,
+        _column_78,
+        _column_81,
+        _column_79,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxMeetingsCreated = i1.Index(
+    'idx_meetings_created',
+    'CREATE INDEX idx_meetings_created ON meetings (is_deleted, created_at DESC, id DESC)',
+  );
+  final i1.Index uxAudioSegmentsMeetingSequence = i1.Index(
+    'ux_audio_segments_meeting_sequence',
+    'CREATE UNIQUE INDEX ux_audio_segments_meeting_sequence ON audio_segments (meeting_id, sequence)',
+  );
+  final i1.Index idxRecoveryFindingsMeetingSequence = i1.Index(
+    'idx_recovery_findings_meeting_sequence',
+    'CREATE INDEX idx_recovery_findings_meeting_sequence ON recovery_findings (meeting_id, segment_sequence)',
+  );
+  final i1.Index uxSessionEventsMeetingSequence = i1.Index(
+    'ux_session_events_meeting_sequence',
+    'CREATE UNIQUE INDEX ux_session_events_meeting_sequence ON session_events (meeting_id, sequence)',
+  );
+  final i1.Index idxBookmarksMeetingMedia = i1.Index(
+    'idx_bookmarks_meeting_media',
+    'CREATE INDEX idx_bookmarks_meeting_media ON bookmarks (meeting_id, media_offset_us)',
+  );
+  final i1.Index idxTranscriptRunsMeetingCreated = i1.Index(
+    'idx_transcript_runs_meeting_created',
+    'CREATE INDEX idx_transcript_runs_meeting_created ON transcript_runs (meeting_id, created_at DESC)',
+  );
+  final i1.Index uxTranscriptRunOwner = i1.Index(
+    'ux_transcript_run_owner',
+    'CREATE UNIQUE INDEX ux_transcript_run_owner ON transcript_runs (id, meeting_id)',
+  );
+  final i1.Index uxTranscriptProcessingRun = i1.Index(
+    'ux_transcript_processing_run',
+    'CREATE UNIQUE INDEX ux_transcript_processing_run ON transcript_processing_metadata (transcript_run_id)',
+  );
+  final i1.Index uxMeetingTranscriptSelection = i1.Index(
+    'ux_meeting_transcript_selection',
+    'CREATE UNIQUE INDEX ux_meeting_transcript_selection ON meeting_transcript_selections (meeting_id)',
+  );
+  final i1.Index idxTranscriptSegmentsRunStart = i1.Index(
+    'idx_transcript_segments_run_start',
+    'CREATE INDEX idx_transcript_segments_run_start ON transcript_segments (transcript_run_id, start_us)',
+  );
+  final i1.Index uxTranscriptSegmentOwner = i1.Index(
+    'ux_transcript_segment_owner',
+    'CREATE UNIQUE INDEX ux_transcript_segment_owner ON transcript_segments (id, meeting_id)',
+  );
+  final i1.Index idxLanguageDecisionsSegmentCreated = i1.Index(
+    'idx_language_decisions_segment_created',
+    'CREATE INDEX idx_language_decisions_segment_created ON language_decisions (transcript_segment_id, created_at DESC)',
+  );
+  final i1.Index uxLanguageDecisionOwner = i1.Index(
+    'ux_language_decision_owner',
+    'CREATE UNIQUE INDEX ux_language_decision_owner ON language_decisions (id, transcript_segment_id)',
+  );
+  final i1.Index uxTranscriptLanguageSelection = i1.Index(
+    'ux_transcript_language_selection',
+    'CREATE UNIQUE INDEX ux_transcript_language_selection ON transcript_language_selections (transcript_segment_id)',
+  );
+  final i1.Index idxDiarizationRunsMeetingCreated = i1.Index(
+    'idx_diarization_runs_meeting_created',
+    'CREATE INDEX idx_diarization_runs_meeting_created ON diarization_runs (meeting_id, created_at DESC)',
+  );
+  final i1.Index uxDiarizationRunOwner = i1.Index(
+    'ux_diarization_run_owner',
+    'CREATE UNIQUE INDEX ux_diarization_run_owner ON diarization_runs (id, meeting_id)',
+  );
+  final i1.Index uxSpeakersRunLabel = i1.Index(
+    'ux_speakers_run_label',
+    'CREATE UNIQUE INDEX ux_speakers_run_label ON speakers (analysis_run_id, label)',
+  );
+  final i1.Index uxSpeakerRunOwner = i1.Index(
+    'ux_speaker_run_owner',
+    'CREATE UNIQUE INDEX ux_speaker_run_owner ON speakers (id, analysis_run_id)',
+  );
+  final i1.Index uxSpeakerMeetingOwner = i1.Index(
+    'ux_speaker_meeting_owner',
+    'CREATE UNIQUE INDEX ux_speaker_meeting_owner ON speakers (id, meeting_id)',
+  );
+  final i1.Index idxSpeakerAssignmentsRunStart = i1.Index(
+    'idx_speaker_assignments_run_start',
+    'CREATE INDEX idx_speaker_assignments_run_start ON speaker_assignments (analysis_run_id, start_us)',
+  );
+  final i1.Index uxSpeakerAssignmentOwner = i1.Index(
+    'ux_speaker_assignment_owner',
+    'CREATE UNIQUE INDEX ux_speaker_assignment_owner ON speaker_assignments (id, meeting_id)',
+  );
+  final i1.Index idxRevisionsMeetingCreated = i1.Index(
+    'idx_revisions_meeting_created',
+    'CREATE INDEX idx_revisions_meeting_created ON revisions (meeting_id, created_at)',
+  );
+  final i1.Index idxRevisionsTranscriptTarget = i1.Index(
+    'idx_revisions_transcript_target',
+    'CREATE INDEX idx_revisions_transcript_target ON revisions (transcript_segment_id, created_at)',
+  );
+  final i1.Index idxRevisionsAssignmentTarget = i1.Index(
+    'idx_revisions_assignment_target',
+    'CREATE INDEX idx_revisions_assignment_target ON revisions (speaker_assignment_id, created_at)',
+  );
+  final i1.Index idxRevisionsSpeakerTarget = i1.Index(
+    'idx_revisions_speaker_target',
+    'CREATE INDEX idx_revisions_speaker_target ON revisions (speaker_id, created_at)',
+  );
+  final i1.Index idxProcessingJobsMeetingCreated = i1.Index(
+    'idx_processing_jobs_meeting_created',
+    'CREATE INDEX idx_processing_jobs_meeting_created ON processing_jobs (meeting_id, created_at DESC)',
+  );
+  final i1.Index uxModelManifestsHash = i1.Index(
+    'ux_model_manifests_hash',
+    'CREATE UNIQUE INDEX ux_model_manifests_hash ON model_manifests (sha256)',
+  );
+  final i1.Index uxModelManifestProvenance = i1.Index(
+    'ux_model_manifest_provenance',
+    'CREATE UNIQUE INDEX ux_model_manifest_provenance ON model_manifests (id, version, sha256, expected_engine_id)',
+  );
+  final i1.Index uxModelCapability = i1.Index(
+    'ux_model_capability',
+    'CREATE UNIQUE INDEX ux_model_capability ON model_capability_entries (model_id, capability)',
+  );
+  final i1.Index uxModelMode = i1.Index(
+    'ux_model_mode',
+    'CREATE UNIQUE INDEX ux_model_mode ON model_mode_entries (model_id, mode)',
+  );
+  final i1.Index idxExportRecordsMeetingCreated = i1.Index(
+    'idx_export_records_meeting_created',
+    'CREATE INDEX idx_export_records_meeting_created ON export_records (meeting_id, created_at DESC)',
+  );
+  final i1.Index idxBackupRecordsCreated = i1.Index(
+    'idx_backup_records_created',
+    'CREATE INDEX idx_backup_records_created ON backup_records (created_at DESC)',
+  );
+}
+
+class Shape21 extends i0.VersionedTable {
+  Shape21({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get rowRevision =>
+      columnsByName['row_revision']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isDeleted =>
+      columnsByName['is_deleted']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get deletedAt =>
+      columnsByName['deleted_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get transcriptRunId =>
+      columnsByName['transcript_run_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get meetingId =>
+      columnsByName['meeting_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get processingRole =>
+      columnsByName['processing_role']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get sourceRunId =>
+      columnsByName['source_run_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get completeness =>
+      columnsByName['completeness']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get bundleManifestJson =>
+      columnsByName['bundle_manifest_json']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get audioInventorySha256 =>
+      columnsByName['audio_inventory_sha256']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_86(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'processing_role',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_87(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'source_run_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_88(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'completeness',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_89(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'bundle_manifest_json',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_90(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'audio_inventory_sha256',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+
+final class Schema6 extends i0.VersionedSchema {
+  Schema6({required super.database}) : super(version: 6);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    meetings,
+    recordingPreferences,
+    meetingProcessingSelections,
+    audioSegments,
+    recoveryFindings,
+    sessionEvents,
+    bookmarks,
+    modelManifests,
+    transcriptRuns,
+    transcriptProcessingMetadata,
+    meetingTranscriptSelections,
+    diarizationRuns,
+    speakers,
+    transcriptSegments,
+    languageDecisions,
+    transcriptLanguageSelections,
+    speakerAssignments,
+    revisions,
+    processingJobs,
+    modelCapabilityEntries,
+    modelModeEntries,
+    exportRecords,
+    backupRecords,
+    idxMeetingsCreated,
+    uxMeetingProcessingSelection,
+    uxAudioSegmentsMeetingSequence,
+    idxRecoveryFindingsMeetingSequence,
+    uxSessionEventsMeetingSequence,
+    idxBookmarksMeetingMedia,
+    idxTranscriptRunsMeetingCreated,
+    uxTranscriptRunOwner,
+    uxTranscriptProcessingRun,
+    uxMeetingTranscriptSelection,
+    idxTranscriptSegmentsRunStart,
+    uxTranscriptSegmentOwner,
+    idxLanguageDecisionsSegmentCreated,
+    uxLanguageDecisionOwner,
+    uxTranscriptLanguageSelection,
+    idxDiarizationRunsMeetingCreated,
+    uxDiarizationRunOwner,
+    uxSpeakersRunLabel,
+    uxSpeakerRunOwner,
+    uxSpeakerMeetingOwner,
+    idxSpeakerAssignmentsRunStart,
+    uxSpeakerAssignmentOwner,
+    idxRevisionsMeetingCreated,
+    idxRevisionsTranscriptTarget,
+    idxRevisionsAssignmentTarget,
+    idxRevisionsSpeakerTarget,
+    idxProcessingJobsMeetingCreated,
+    uxModelManifestsHash,
+    uxModelManifestProvenance,
+    uxModelCapability,
+    uxModelMode,
+    idxExportRecordsMeetingCreated,
+    idxBackupRecordsCreated,
+  ];
+  late final Shape19 meetings = Shape19(
+    source: i0.VersionedTable(
+      entityName: 'meetings',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(media_duration_us >= 0)',
+        'CHECK(lifecycle IN (\'draft\', \'preparing\', \'recording\', \'pausedByUser\', \'pausedByInterruption\', \'stopping\', \'finalized\', \'recoverable\', \'failedFinalization\', \'trashed\', \'deleting\'))',
+        'CHECK(language_mode IN (\'chinese\', \'english\', \'mixed\'))',
+        'CHECK((lifecycle IN (\'trashed\', \'deleting\'))=(trashed_at_utc_ms IS NOT NULL))',
+        'CHECK(lifecycle_before_trash IS NULL OR lifecycle_before_trash IN (\'draft\', \'preparing\', \'recording\', \'pausedByUser\', \'pausedByInterruption\', \'stopping\', \'finalized\', \'recoverable\', \'failedFinalization\'))',
+        'CHECK((lifecycle IN (\'trashed\', \'deleting\'))=(lifecycle_before_trash IS NOT NULL))',
+        'CHECK((lifecycle IN (\'trashed\', \'deleting\'))= is_deleted)',
+        'CHECK((trashed_at_utc_ms IS NULL AND deleted_at IS NULL)OR trashed_at_utc_ms = deleted_at)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_82,
+        _column_83,
+        _column_10,
+        _column_11,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape20 recordingPreferences = Shape20(
+    source: i0.VersionedTable(
+      entityName: 'recording_preferences',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(id = \'recording-defaults\')',
+        'CHECK(transcription_mode IN (\'nearRealTime\', \'postSession\'))',
+        'CHECK(language_mode IN (\'chinese\', \'english\', \'mixed\'))',
+        'CHECK(expected_speaker_count IS NULL OR expected_speaker_count BETWEEN 2 AND 6)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_84,
+        _column_9,
+        _column_85,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape22 meetingProcessingSelections = Shape22(
+    source: i0.VersionedTable(
+      entityName: 'meeting_processing_selections',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(processing_mode IN (\'recordingOnly\', \'postSession\', \'twoPass\'))',
+        'CHECK((processing_mode = \'twoPass\' AND live_bundle_manifest_json IS NOT NULL AND live_engine_version IS NOT NULL AND live_parameters_json IS NOT NULL)OR(processing_mode <> \'twoPass\' AND live_bundle_manifest_json IS NULL AND live_engine_version IS NULL AND live_parameters_json IS NULL))',
+        'CHECK((processing_mode IN (\'twoPass\', \'postSession\') AND refinement_bundle_manifest_json IS NOT NULL AND refinement_engine_version IS NOT NULL AND refinement_parameters_json IS NOT NULL)OR(processing_mode = \'recordingOnly\' AND refinement_bundle_manifest_json IS NULL AND refinement_engine_version IS NULL AND refinement_parameters_json IS NULL))',
+        'CHECK(live_engine_version IS NULL OR length(trim(live_engine_version)) > 0)',
+        'CHECK(refinement_engine_version IS NULL OR length(trim(refinement_engine_version)) > 0)',
+        'CHECK(live_bundle_manifest_json IS NULL OR(json_valid(live_bundle_manifest_json) AND json_type(live_bundle_manifest_json) = \'object\'))',
+        'CHECK(refinement_bundle_manifest_json IS NULL OR(json_valid(refinement_bundle_manifest_json) AND json_type(refinement_bundle_manifest_json) = \'object\'))',
+        'CHECK(live_bundle_manifest_json IS NULL OR(json_type(live_bundle_manifest_json, \'\$.schemaVersion\') IS \'integer\' AND json_extract(live_bundle_manifest_json, \'\$.schemaVersion\') IN (1, 2)))',
+        'CHECK(refinement_bundle_manifest_json IS NULL OR(json_type(refinement_bundle_manifest_json, \'\$.schemaVersion\') IS \'integer\' AND json_extract(refinement_bundle_manifest_json, \'\$.schemaVersion\') IN (1, 2)))',
+        'CHECK(live_parameters_json IS NULL OR(json_valid(live_parameters_json) AND json_type(live_parameters_json) = \'object\'))',
+        'CHECK(refinement_parameters_json IS NULL OR(json_valid(refinement_parameters_json) AND json_type(refinement_parameters_json) = \'object\'))',
+        'CHECK(live_parameters_json IS NULL OR(json_type(live_parameters_json, \'\$.parameterVersion\') IS \'integer\' AND json_extract(live_parameters_json, \'\$.parameterVersion\') > 0))',
+        'CHECK(refinement_parameters_json IS NULL OR(json_type(refinement_parameters_json, \'\$.parameterVersion\') IS \'integer\' AND json_extract(refinement_parameters_json, \'\$.parameterVersion\') > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_91,
+        _column_92,
+        _column_93,
+        _column_94,
+        _column_95,
+        _column_96,
+        _column_97,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 audioSegments = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'audio_segments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(sequence >= 0)',
+        'CHECK(media_start_us >= 0)',
+        'CHECK(media_duration_us >= 0)',
+        'CHECK(committed_bytes >= 0)',
+        'CHECK(state IN (\'open\', \'committed\', \'corrupt\', \'missing\'))',
+        'CHECK(length(relative_path) > 0)',
+        'CHECK(relative_path NOT LIKE \'/%\')',
+        'CHECK(instr(relative_path, char(92)) = 0)',
+        'CHECK(instr(relative_path, char(0)) = 0)',
+        'CHECK(relative_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK((\'/\' || relative_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK((\'/\' || relative_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK((\'/\' || relative_path || \'/\')NOT LIKE \'%/./%\')',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_13,
+        _column_14,
+        _column_15,
+        _column_16,
+        _column_17,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 recoveryFindings = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'recovery_findings',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(segment_sequence IS NULL OR segment_sequence >= 0)',
+        'CHECK(code IN (\'recording_recovery_timeline_gap\', \'recording_recovery_segment_missing\', \'recording_recovery_segment_corrupt\', \'recording_recovery_tail_discarded\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_19,
+        _column_20,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 sessionEvents = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'session_events',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(sequence >= 0)',
+        'CHECK(wall_clock_utc_ms >= 0)',
+        'CHECK(monotonic_elapsed_us >= 0)',
+        'CHECK(media_offset_us >= 0)',
+        'CHECK(type IN (\'started\', \'pausedByUser\', \'resumedByUser\', \'interrupted\', \'stopped\', \'recovered\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_13,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 bookmarks = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'bookmarks',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(media_offset_us >= 0)',
+        'CHECK(kind IN (\'bookmark\', \'highlight\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_24,
+        _column_25,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 modelManifests = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'model_manifests',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(bytes >= 0)',
+        'CHECK(length(sha256) > 0)',
+        'CHECK(length(license_snapshot_path) > 0)',
+        'CHECK(license_snapshot_path NOT LIKE \'/%\')',
+        'CHECK(instr(license_snapshot_path, char(92)) = 0)',
+        'CHECK(instr(license_snapshot_path, char(0)) = 0)',
+        'CHECK(license_snapshot_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK((\'/\' || license_snapshot_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK((\'/\' || license_snapshot_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK((\'/\' || license_snapshot_path || \'/\')NOT LIKE \'%/./%\')',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 transcriptRuns = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'transcript_runs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(model_id, model_version, model_sha256, engine_id)REFERENCES model_manifests(id, version, sha256, expected_engine_id)ON DELETE RESTRICT',
+        'CHECK(run_state IN (\'queued\', \'running\', \'completed\', \'failed\'))',
+        'CHECK(progress BETWEEN 0 AND 1)',
+        'CHECK(json_valid(parameters_json))',
+        'CHECK(started_at_utc_ms IS NULL OR started_at_utc_ms >= 0)',
+        'CHECK(ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms)',
+        'CHECK((run_state = \'queued\' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'running\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'completed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL)OR(run_state = \'failed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape21 transcriptProcessingMetadata = Shape21(
+    source: i0.VersionedTable(
+      entityName: 'transcript_processing_metadata',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(source_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE NO ACTION',
+        'CHECK(processing_role IN (\'liveDraft\', \'refinement\'))',
+        'CHECK(completeness IN (\'complete\', \'incomplete\'))',
+        'CHECK(source_run_id IS NULL OR source_run_id <> transcript_run_id)',
+        'CHECK(source_run_id IS NULL OR processing_role = \'refinement\')',
+        'CHECK(json_valid(bundle_manifest_json))',
+        'CHECK(json_type(bundle_manifest_json) = \'object\')',
+        'CHECK(json_type(bundle_manifest_json, \'\$.schemaVersion\') IS \'integer\' AND json_extract(bundle_manifest_json, \'\$.schemaVersion\') IN (1, 2))',
+        'CHECK(audio_inventory_sha256 IS NULL OR(length(audio_inventory_sha256) = 64 AND audio_inventory_sha256 NOT GLOB \'*[^0-9a-f]*\'))',
+        'CHECK(processing_role <> \'refinement\' OR audio_inventory_sha256 IS NOT NULL)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_44,
+        _column_12,
+        _column_86,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_90,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 meetingTranscriptSelections = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'meeting_transcript_selections',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_44,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 diarizationRuns = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'diarization_runs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(model_id, model_version, model_sha256, engine_id)REFERENCES model_manifests(id, version, sha256, expected_engine_id)ON DELETE RESTRICT',
+        'CHECK(run_state IN (\'queued\', \'running\', \'completed\', \'failed\'))',
+        'CHECK(progress BETWEEN 0 AND 1)',
+        'CHECK(json_valid(parameters_json))',
+        'CHECK(started_at_utc_ms IS NULL OR started_at_utc_ms >= 0)',
+        'CHECK(ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms)',
+        'CHECK((run_state = \'queued\' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'running\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'completed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL)OR(run_state = \'failed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 speakers = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'speakers',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(analysis_run_id, meeting_id)REFERENCES diarization_runs(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_45,
+        _column_46,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape9 transcriptSegments = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'transcript_segments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(start_us >= 0)',
+        'CHECK(end_us > start_us)',
+        'CHECK(revision_state IN (\'machine\', \'corrected\'))',
+        'CHECK((speaker_id IS NULL)=(speaker_meeting_id IS NULL))',
+        'CHECK(speaker_meeting_id IS NULL OR speaker_meeting_id = meeting_id)',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_id, speaker_meeting_id)REFERENCES speakers(id, meeting_id)ON DELETE SET NULL',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_44,
+        _column_47,
+        _column_48,
+        _column_49,
+        _column_50,
+        _column_51,
+        _column_52,
+        _column_53,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape10 languageDecisions = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'language_decisions',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(tag IN (\'chinese\', \'english\', \'mixed\', \'uncertain\'))',
+        'CHECK(source IN (\'automatic\', \'manual\'))',
+        'CHECK(confidence IS NULL OR confidence BETWEEN 0 AND 1)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_54,
+        _column_55,
+        _column_27,
+        _column_56,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape11 transcriptLanguageSelections = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'transcript_language_selections',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(language_decision_id, transcript_segment_id)REFERENCES language_decisions(id, transcript_segment_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_54,
+        _column_57,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape12 speakerAssignments = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'speaker_assignments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(start_us >= 0)',
+        'CHECK(end_us > start_us)',
+        'CHECK(confidence IS NULL OR confidence BETWEEN 0 AND 1)',
+        'CHECK(is_overlap = 0 OR needs_confirmation = 1)',
+        'CHECK((speaker_id IS NULL)=(speaker_analysis_run_id IS NULL))',
+        'CHECK(speaker_analysis_run_id IS NULL OR speaker_analysis_run_id = analysis_run_id)',
+        'FOREIGN KEY(analysis_run_id, meeting_id)REFERENCES diarization_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_id, speaker_analysis_run_id)REFERENCES speakers(id, analysis_run_id)ON DELETE SET NULL',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_45,
+        _column_52,
+        _column_58,
+        _column_47,
+        _column_48,
+        _column_56,
+        _column_59,
+        _column_60,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape13 revisions = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'revisions',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(revision_kind IN (\'transcriptText\', \'languageLabel\', \'speakerAssignment\', \'speakerLabel\'))',
+        'CHECK((revision_kind IN (\'transcriptText\', \'languageLabel\') AND transcript_segment_id IS NOT NULL AND speaker_assignment_id IS NULL AND speaker_id IS NULL)OR(revision_kind = \'speakerAssignment\' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NOT NULL AND speaker_id IS NULL)OR(revision_kind = \'speakerLabel\' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NULL AND speaker_id IS NOT NULL))',
+        'CHECK(json_valid(payload_json))',
+        'CHECK((revision_kind = \'transcriptText\' AND COALESCE(json_type(payload_json, \'\$.previousText\') = \'text\', 0) AND COALESCE(json_type(payload_json, \'\$.revisedText\') = \'text\', 0))OR(revision_kind = \'languageLabel\' AND COALESCE(json_extract(payload_json, \'\$.previous\') IN (\'chinese\', \'english\', \'mixed\', \'uncertain\'), 0) AND COALESCE(json_extract(payload_json, \'\$.revised\') IN (\'chinese\', \'english\', \'mixed\', \'uncertain\'), 0))OR(revision_kind = \'speakerAssignment\' AND COALESCE(json_type(payload_json, \'\$.startUs\') = \'integer\', 0) AND COALESCE(json_type(payload_json, \'\$.endUs\') = \'integer\', 0) AND json_extract(payload_json, \'\$.startUs\') >= 0 AND json_extract(payload_json, \'\$.endUs\') > json_extract(payload_json, \'\$.startUs\') AND COALESCE(json_type(payload_json, \'\$.previousSpeakerId\') IN (\'text\', \'null\'), 0) AND COALESCE(json_type(payload_json, \'\$.revisedSpeakerId\') IN (\'text\', \'null\'), 0) AND COALESCE(json_type(payload_json, \'\$.needsConfirmation\') IN (\'true\', \'false\'), 0))OR(revision_kind = \'speakerLabel\' AND COALESCE(json_type(payload_json, \'\$.previous\') = \'text\', 0) AND COALESCE(json_type(payload_json, \'\$.revised\') = \'text\', 0)))',
+        'FOREIGN KEY(transcript_segment_id, meeting_id)REFERENCES transcript_segments(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_assignment_id, meeting_id)REFERENCES speaker_assignments(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_id, meeting_id)REFERENCES speakers(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_61,
+        _column_62,
+        _column_52,
+        _column_63,
+        _column_64,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape14 processingJobs = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'processing_jobs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(job_kind IN (\'transcription\', \'languageIdentification\', \'speakerDiarization\', \'audioMerge\', \'waveform\'))',
+        'CHECK(job_state IN (\'queued\', \'running\', \'paused\', \'succeeded\', \'failed\'))',
+        'CHECK(progress IS NULL OR progress BETWEEN 0 AND 1)',
+        'CHECK((job_kind IN (\'transcription\', \'languageIdentification\') AND transcript_run_id IS NOT NULL AND diarization_run_id IS NULL AND model_id IS NOT NULL)OR(job_kind = \'speakerDiarization\' AND transcript_run_id IS NULL AND diarization_run_id IS NOT NULL AND model_id IS NOT NULL)OR(job_kind IN (\'audioMerge\', \'waveform\') AND transcript_run_id IS NULL AND diarization_run_id IS NULL AND model_id IS NULL))',
+        'CHECK((job_state = \'queued\' AND progress IS NULL AND reason_code IS NULL AND failure_code IS NULL)OR(job_state = \'running\' AND progress IS NOT NULL AND reason_code IS NULL AND failure_code IS NULL)OR(job_state = \'paused\' AND length(reason_code) > 0 AND failure_code IS NULL)OR(job_state = \'succeeded\' AND reason_code IS NULL AND failure_code IS NULL)OR(job_state = \'failed\' AND reason_code IS NULL AND length(failure_code) > 0))',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(diarization_run_id, meeting_id)REFERENCES diarization_runs(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_65,
+        _column_66,
+        _column_67,
+        _column_68,
+        _column_43,
+        _column_69,
+        _column_70,
+        _column_71,
+        _column_72,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape15 modelCapabilityEntries = Shape15(
+    source: i0.VersionedTable(
+      entityName: 'model_capability_entries',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(capability IN (\'transcription\', \'languageIdentification\', \'speakerDiarization\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_73,
+        _column_74,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape16 modelModeEntries = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'model_mode_entries',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(mode IN (\'highQuality\', \'balanced\', \'powerSaving\', \'recordingOnly\', \'postSession\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_73,
+        _column_75,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape17 exportRecords = Shape17(
+    source: i0.VersionedTable(
+      entityName: 'export_records',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(format IN (\'audioM4a\', \'audioSegments\', \'text\', \'subtitles\', \'json\', \'archive\'))',
+        'CHECK(export_state IN (\'pending\', \'completed\', \'failed\'))',
+        'CHECK(bytes IS NULL OR bytes >= 0)',
+        'CHECK(relative_path IS NULL OR length(relative_path) > 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT LIKE \'/%\')',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(92)) = 0)',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(0)) = 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/./%\')',
+        'CHECK((export_state = \'pending\' AND relative_path IS NULL AND bytes IS NULL AND failure_code IS NULL)OR(export_state = \'completed\' AND bytes IS NOT NULL AND failure_code IS NULL)OR(export_state = \'failed\' AND relative_path IS NULL AND bytes IS NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_76,
+        _column_77,
+        _column_78,
+        _column_79,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape18 backupRecords = Shape18(
+    source: i0.VersionedTable(
+      entityName: 'backup_records',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(backup_state IN (\'pending\', \'completed\', \'failed\'))',
+        'CHECK(bytes IS NULL OR bytes >= 0)',
+        'CHECK(relative_path IS NULL OR length(relative_path) > 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT LIKE \'/%\')',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(92)) = 0)',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(0)) = 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/./%\')',
+        'CHECK((backup_state = \'pending\' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND failure_code IS NULL)OR(backup_state = \'completed\' AND relative_path IS NOT NULL AND length(sha256) > 0 AND bytes IS NOT NULL AND failure_code IS NULL)OR(backup_state = \'failed\' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_80,
+        _column_78,
+        _column_81,
+        _column_79,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxMeetingsCreated = i1.Index(
+    'idx_meetings_created',
+    'CREATE INDEX idx_meetings_created ON meetings (is_deleted, created_at DESC, id DESC)',
+  );
+  final i1.Index uxMeetingProcessingSelection = i1.Index(
+    'ux_meeting_processing_selection',
+    'CREATE UNIQUE INDEX ux_meeting_processing_selection ON meeting_processing_selections (meeting_id)',
+  );
+  final i1.Index uxAudioSegmentsMeetingSequence = i1.Index(
+    'ux_audio_segments_meeting_sequence',
+    'CREATE UNIQUE INDEX ux_audio_segments_meeting_sequence ON audio_segments (meeting_id, sequence)',
+  );
+  final i1.Index idxRecoveryFindingsMeetingSequence = i1.Index(
+    'idx_recovery_findings_meeting_sequence',
+    'CREATE INDEX idx_recovery_findings_meeting_sequence ON recovery_findings (meeting_id, segment_sequence)',
+  );
+  final i1.Index uxSessionEventsMeetingSequence = i1.Index(
+    'ux_session_events_meeting_sequence',
+    'CREATE UNIQUE INDEX ux_session_events_meeting_sequence ON session_events (meeting_id, sequence)',
+  );
+  final i1.Index idxBookmarksMeetingMedia = i1.Index(
+    'idx_bookmarks_meeting_media',
+    'CREATE INDEX idx_bookmarks_meeting_media ON bookmarks (meeting_id, media_offset_us)',
+  );
+  final i1.Index idxTranscriptRunsMeetingCreated = i1.Index(
+    'idx_transcript_runs_meeting_created',
+    'CREATE INDEX idx_transcript_runs_meeting_created ON transcript_runs (meeting_id, created_at DESC)',
+  );
+  final i1.Index uxTranscriptRunOwner = i1.Index(
+    'ux_transcript_run_owner',
+    'CREATE UNIQUE INDEX ux_transcript_run_owner ON transcript_runs (id, meeting_id)',
+  );
+  final i1.Index uxTranscriptProcessingRun = i1.Index(
+    'ux_transcript_processing_run',
+    'CREATE UNIQUE INDEX ux_transcript_processing_run ON transcript_processing_metadata (transcript_run_id)',
+  );
+  final i1.Index uxMeetingTranscriptSelection = i1.Index(
+    'ux_meeting_transcript_selection',
+    'CREATE UNIQUE INDEX ux_meeting_transcript_selection ON meeting_transcript_selections (meeting_id)',
+  );
+  final i1.Index idxTranscriptSegmentsRunStart = i1.Index(
+    'idx_transcript_segments_run_start',
+    'CREATE INDEX idx_transcript_segments_run_start ON transcript_segments (transcript_run_id, start_us)',
+  );
+  final i1.Index uxTranscriptSegmentOwner = i1.Index(
+    'ux_transcript_segment_owner',
+    'CREATE UNIQUE INDEX ux_transcript_segment_owner ON transcript_segments (id, meeting_id)',
+  );
+  final i1.Index idxLanguageDecisionsSegmentCreated = i1.Index(
+    'idx_language_decisions_segment_created',
+    'CREATE INDEX idx_language_decisions_segment_created ON language_decisions (transcript_segment_id, created_at DESC)',
+  );
+  final i1.Index uxLanguageDecisionOwner = i1.Index(
+    'ux_language_decision_owner',
+    'CREATE UNIQUE INDEX ux_language_decision_owner ON language_decisions (id, transcript_segment_id)',
+  );
+  final i1.Index uxTranscriptLanguageSelection = i1.Index(
+    'ux_transcript_language_selection',
+    'CREATE UNIQUE INDEX ux_transcript_language_selection ON transcript_language_selections (transcript_segment_id)',
+  );
+  final i1.Index idxDiarizationRunsMeetingCreated = i1.Index(
+    'idx_diarization_runs_meeting_created',
+    'CREATE INDEX idx_diarization_runs_meeting_created ON diarization_runs (meeting_id, created_at DESC)',
+  );
+  final i1.Index uxDiarizationRunOwner = i1.Index(
+    'ux_diarization_run_owner',
+    'CREATE UNIQUE INDEX ux_diarization_run_owner ON diarization_runs (id, meeting_id)',
+  );
+  final i1.Index uxSpeakersRunLabel = i1.Index(
+    'ux_speakers_run_label',
+    'CREATE UNIQUE INDEX ux_speakers_run_label ON speakers (analysis_run_id, label)',
+  );
+  final i1.Index uxSpeakerRunOwner = i1.Index(
+    'ux_speaker_run_owner',
+    'CREATE UNIQUE INDEX ux_speaker_run_owner ON speakers (id, analysis_run_id)',
+  );
+  final i1.Index uxSpeakerMeetingOwner = i1.Index(
+    'ux_speaker_meeting_owner',
+    'CREATE UNIQUE INDEX ux_speaker_meeting_owner ON speakers (id, meeting_id)',
+  );
+  final i1.Index idxSpeakerAssignmentsRunStart = i1.Index(
+    'idx_speaker_assignments_run_start',
+    'CREATE INDEX idx_speaker_assignments_run_start ON speaker_assignments (analysis_run_id, start_us)',
+  );
+  final i1.Index uxSpeakerAssignmentOwner = i1.Index(
+    'ux_speaker_assignment_owner',
+    'CREATE UNIQUE INDEX ux_speaker_assignment_owner ON speaker_assignments (id, meeting_id)',
+  );
+  final i1.Index idxRevisionsMeetingCreated = i1.Index(
+    'idx_revisions_meeting_created',
+    'CREATE INDEX idx_revisions_meeting_created ON revisions (meeting_id, created_at)',
+  );
+  final i1.Index idxRevisionsTranscriptTarget = i1.Index(
+    'idx_revisions_transcript_target',
+    'CREATE INDEX idx_revisions_transcript_target ON revisions (transcript_segment_id, created_at)',
+  );
+  final i1.Index idxRevisionsAssignmentTarget = i1.Index(
+    'idx_revisions_assignment_target',
+    'CREATE INDEX idx_revisions_assignment_target ON revisions (speaker_assignment_id, created_at)',
+  );
+  final i1.Index idxRevisionsSpeakerTarget = i1.Index(
+    'idx_revisions_speaker_target',
+    'CREATE INDEX idx_revisions_speaker_target ON revisions (speaker_id, created_at)',
+  );
+  final i1.Index idxProcessingJobsMeetingCreated = i1.Index(
+    'idx_processing_jobs_meeting_created',
+    'CREATE INDEX idx_processing_jobs_meeting_created ON processing_jobs (meeting_id, created_at DESC)',
+  );
+  final i1.Index uxModelManifestsHash = i1.Index(
+    'ux_model_manifests_hash',
+    'CREATE UNIQUE INDEX ux_model_manifests_hash ON model_manifests (sha256)',
+  );
+  final i1.Index uxModelManifestProvenance = i1.Index(
+    'ux_model_manifest_provenance',
+    'CREATE UNIQUE INDEX ux_model_manifest_provenance ON model_manifests (id, version, sha256, expected_engine_id)',
+  );
+  final i1.Index uxModelCapability = i1.Index(
+    'ux_model_capability',
+    'CREATE UNIQUE INDEX ux_model_capability ON model_capability_entries (model_id, capability)',
+  );
+  final i1.Index uxModelMode = i1.Index(
+    'ux_model_mode',
+    'CREATE UNIQUE INDEX ux_model_mode ON model_mode_entries (model_id, mode)',
+  );
+  final i1.Index idxExportRecordsMeetingCreated = i1.Index(
+    'idx_export_records_meeting_created',
+    'CREATE INDEX idx_export_records_meeting_created ON export_records (meeting_id, created_at DESC)',
+  );
+  final i1.Index idxBackupRecordsCreated = i1.Index(
+    'idx_backup_records_created',
+    'CREATE INDEX idx_backup_records_created ON backup_records (created_at DESC)',
+  );
+}
+
+class Shape22 extends i0.VersionedTable {
+  Shape22({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get rowRevision =>
+      columnsByName['row_revision']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isDeleted =>
+      columnsByName['is_deleted']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get deletedAt =>
+      columnsByName['deleted_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get meetingId =>
+      columnsByName['meeting_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get processingMode =>
+      columnsByName['processing_mode']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get liveBundleManifestJson =>
+      columnsByName['live_bundle_manifest_json']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get liveEngineVersion =>
+      columnsByName['live_engine_version']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get liveParametersJson =>
+      columnsByName['live_parameters_json']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get refinementBundleManifestJson =>
+      columnsByName['refinement_bundle_manifest_json']!
+          as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get refinementEngineVersion =>
+      columnsByName['refinement_engine_version']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get refinementParametersJson =>
+      columnsByName['refinement_parameters_json']!
+          as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_91(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'processing_mode',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_92(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'live_bundle_manifest_json',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_93(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'live_engine_version',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_94(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'live_parameters_json',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_95(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'refinement_bundle_manifest_json',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_96(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'refinement_engine_version',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_97(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'refinement_parameters_json',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+
+final class Schema7 extends i0.VersionedSchema {
+  Schema7({required super.database}) : super(version: 7);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    meetings,
+    recordingPreferences,
+    meetingProcessingSelections,
+    remoteTranscriptionTasks,
+    remoteTranscriptVersions,
+    audioSegments,
+    recoveryFindings,
+    sessionEvents,
+    bookmarks,
+    modelManifests,
+    transcriptRuns,
+    transcriptProcessingMetadata,
+    meetingTranscriptSelections,
+    diarizationRuns,
+    speakers,
+    transcriptSegments,
+    languageDecisions,
+    transcriptLanguageSelections,
+    speakerAssignments,
+    revisions,
+    processingJobs,
+    modelCapabilityEntries,
+    modelModeEntries,
+    exportRecords,
+    backupRecords,
+    idxMeetingsCreated,
+    uxMeetingProcessingSelection,
+    uxAudioSegmentsMeetingSequence,
+    idxRecoveryFindingsMeetingSequence,
+    uxSessionEventsMeetingSequence,
+    idxBookmarksMeetingMedia,
+    idxTranscriptRunsMeetingCreated,
+    uxTranscriptRunOwner,
+    uxTranscriptProcessingRun,
+    uxMeetingTranscriptSelection,
+    idxTranscriptSegmentsRunStart,
+    uxTranscriptSegmentOwner,
+    idxLanguageDecisionsSegmentCreated,
+    uxLanguageDecisionOwner,
+    uxTranscriptLanguageSelection,
+    idxDiarizationRunsMeetingCreated,
+    uxDiarizationRunOwner,
+    uxSpeakersRunLabel,
+    uxSpeakerRunOwner,
+    uxSpeakerMeetingOwner,
+    idxSpeakerAssignmentsRunStart,
+    uxSpeakerAssignmentOwner,
+    idxRevisionsMeetingCreated,
+    idxRevisionsTranscriptTarget,
+    idxRevisionsAssignmentTarget,
+    idxRevisionsSpeakerTarget,
+    idxProcessingJobsMeetingCreated,
+    uxModelManifestsHash,
+    uxModelManifestProvenance,
+    uxModelCapability,
+    uxModelMode,
+    idxExportRecordsMeetingCreated,
+    idxBackupRecordsCreated,
+  ];
+  late final Shape19 meetings = Shape19(
+    source: i0.VersionedTable(
+      entityName: 'meetings',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(media_duration_us >= 0)',
+        'CHECK(lifecycle IN (\'draft\', \'preparing\', \'recording\', \'pausedByUser\', \'pausedByInterruption\', \'stopping\', \'finalized\', \'recoverable\', \'failedFinalization\', \'trashed\', \'deleting\'))',
+        'CHECK(language_mode IN (\'chinese\', \'english\', \'mixed\'))',
+        'CHECK((lifecycle IN (\'trashed\', \'deleting\'))=(trashed_at_utc_ms IS NOT NULL))',
+        'CHECK(lifecycle_before_trash IS NULL OR lifecycle_before_trash IN (\'draft\', \'preparing\', \'recording\', \'pausedByUser\', \'pausedByInterruption\', \'stopping\', \'finalized\', \'recoverable\', \'failedFinalization\'))',
+        'CHECK((lifecycle IN (\'trashed\', \'deleting\'))=(lifecycle_before_trash IS NOT NULL))',
+        'CHECK((lifecycle IN (\'trashed\', \'deleting\'))= is_deleted)',
+        'CHECK((trashed_at_utc_ms IS NULL AND deleted_at IS NULL)OR trashed_at_utc_ms = deleted_at)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_82,
+        _column_83,
+        _column_10,
+        _column_11,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape20 recordingPreferences = Shape20(
+    source: i0.VersionedTable(
+      entityName: 'recording_preferences',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(id = \'recording-defaults\')',
+        'CHECK(transcription_mode IN (\'nearRealTime\', \'postSession\'))',
+        'CHECK(language_mode IN (\'chinese\', \'english\', \'mixed\'))',
+        'CHECK(expected_speaker_count IS NULL OR expected_speaker_count BETWEEN 2 AND 6)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_84,
+        _column_9,
+        _column_85,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape22 meetingProcessingSelections = Shape22(
+    source: i0.VersionedTable(
+      entityName: 'meeting_processing_selections',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(processing_mode IN (\'recordingOnly\', \'postSession\', \'twoPass\'))',
+        'CHECK((processing_mode = \'twoPass\' AND live_bundle_manifest_json IS NOT NULL AND live_engine_version IS NOT NULL AND live_parameters_json IS NOT NULL)OR(processing_mode <> \'twoPass\' AND live_bundle_manifest_json IS NULL AND live_engine_version IS NULL AND live_parameters_json IS NULL))',
+        'CHECK((processing_mode IN (\'twoPass\', \'postSession\') AND refinement_bundle_manifest_json IS NOT NULL AND refinement_engine_version IS NOT NULL AND refinement_parameters_json IS NOT NULL)OR(processing_mode = \'recordingOnly\' AND refinement_bundle_manifest_json IS NULL AND refinement_engine_version IS NULL AND refinement_parameters_json IS NULL))',
+        'CHECK(live_engine_version IS NULL OR length(trim(live_engine_version)) > 0)',
+        'CHECK(refinement_engine_version IS NULL OR length(trim(refinement_engine_version)) > 0)',
+        'CHECK(live_bundle_manifest_json IS NULL OR(json_valid(live_bundle_manifest_json) AND json_type(live_bundle_manifest_json) = \'object\'))',
+        'CHECK(refinement_bundle_manifest_json IS NULL OR(json_valid(refinement_bundle_manifest_json) AND json_type(refinement_bundle_manifest_json) = \'object\'))',
+        'CHECK(live_bundle_manifest_json IS NULL OR(json_type(live_bundle_manifest_json, \'\$.schemaVersion\') IS \'integer\' AND json_extract(live_bundle_manifest_json, \'\$.schemaVersion\') IN (1, 2)))',
+        'CHECK(refinement_bundle_manifest_json IS NULL OR(json_type(refinement_bundle_manifest_json, \'\$.schemaVersion\') IS \'integer\' AND json_extract(refinement_bundle_manifest_json, \'\$.schemaVersion\') IN (1, 2)))',
+        'CHECK(live_parameters_json IS NULL OR(json_valid(live_parameters_json) AND json_type(live_parameters_json) = \'object\'))',
+        'CHECK(refinement_parameters_json IS NULL OR(json_valid(refinement_parameters_json) AND json_type(refinement_parameters_json) = \'object\'))',
+        'CHECK(live_parameters_json IS NULL OR(json_type(live_parameters_json, \'\$.parameterVersion\') IS \'integer\' AND json_extract(live_parameters_json, \'\$.parameterVersion\') > 0))',
+        'CHECK(refinement_parameters_json IS NULL OR(json_type(refinement_parameters_json, \'\$.parameterVersion\') IS \'integer\' AND json_extract(refinement_parameters_json, \'\$.parameterVersion\') > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_91,
+        _column_92,
+        _column_93,
+        _column_94,
+        _column_95,
+        _column_96,
+        _column_97,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape23 remoteTranscriptionTasks = Shape23(
+    source: i0.VersionedTable(
+      entityName: 'remote_transcription_tasks',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_98,
+        _column_99,
+        _column_100,
+        _column_101,
+        _column_102,
+        _column_103,
+        _column_104,
+        _column_105,
+        _column_43,
+        _column_106,
+        _column_107,
+        _column_108,
+        _column_109,
+        _column_110,
+        _column_111,
+        _column_112,
+        _column_113,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape24 remoteTranscriptVersions = Shape24(
+    source: i0.VersionedTable(
+      entityName: 'remote_transcript_versions',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_114,
+        _column_87,
+        _column_115,
+        _column_116,
+        _column_110,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 audioSegments = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'audio_segments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(sequence >= 0)',
+        'CHECK(media_start_us >= 0)',
+        'CHECK(media_duration_us >= 0)',
+        'CHECK(committed_bytes >= 0)',
+        'CHECK(state IN (\'open\', \'committed\', \'corrupt\', \'missing\'))',
+        'CHECK(length(relative_path) > 0)',
+        'CHECK(relative_path NOT LIKE \'/%\')',
+        'CHECK(instr(relative_path, char(92)) = 0)',
+        'CHECK(instr(relative_path, char(0)) = 0)',
+        'CHECK(relative_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK((\'/\' || relative_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK((\'/\' || relative_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK((\'/\' || relative_path || \'/\')NOT LIKE \'%/./%\')',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_13,
+        _column_14,
+        _column_15,
+        _column_16,
+        _column_17,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 recoveryFindings = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'recovery_findings',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(segment_sequence IS NULL OR segment_sequence >= 0)',
+        'CHECK(code IN (\'recording_recovery_timeline_gap\', \'recording_recovery_segment_missing\', \'recording_recovery_segment_corrupt\', \'recording_recovery_tail_discarded\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_19,
+        _column_20,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 sessionEvents = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'session_events',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(sequence >= 0)',
+        'CHECK(wall_clock_utc_ms >= 0)',
+        'CHECK(monotonic_elapsed_us >= 0)',
+        'CHECK(media_offset_us >= 0)',
+        'CHECK(type IN (\'started\', \'pausedByUser\', \'resumedByUser\', \'interrupted\', \'stopped\', \'recovered\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_13,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 bookmarks = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'bookmarks',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(media_offset_us >= 0)',
+        'CHECK(kind IN (\'bookmark\', \'highlight\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_24,
+        _column_25,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 modelManifests = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'model_manifests',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(bytes >= 0)',
+        'CHECK(length(sha256) > 0)',
+        'CHECK(length(license_snapshot_path) > 0)',
+        'CHECK(license_snapshot_path NOT LIKE \'/%\')',
+        'CHECK(instr(license_snapshot_path, char(92)) = 0)',
+        'CHECK(instr(license_snapshot_path, char(0)) = 0)',
+        'CHECK(license_snapshot_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK((\'/\' || license_snapshot_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK((\'/\' || license_snapshot_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK((\'/\' || license_snapshot_path || \'/\')NOT LIKE \'%/./%\')',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 transcriptRuns = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'transcript_runs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(model_id, model_version, model_sha256, engine_id)REFERENCES model_manifests(id, version, sha256, expected_engine_id)ON DELETE RESTRICT',
+        'CHECK(run_state IN (\'queued\', \'running\', \'completed\', \'failed\'))',
+        'CHECK(progress BETWEEN 0 AND 1)',
+        'CHECK(json_valid(parameters_json))',
+        'CHECK(started_at_utc_ms IS NULL OR started_at_utc_ms >= 0)',
+        'CHECK(ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms)',
+        'CHECK((run_state = \'queued\' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'running\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'completed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL)OR(run_state = \'failed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape21 transcriptProcessingMetadata = Shape21(
+    source: i0.VersionedTable(
+      entityName: 'transcript_processing_metadata',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(source_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE NO ACTION',
+        'CHECK(processing_role IN (\'liveDraft\', \'refinement\'))',
+        'CHECK(completeness IN (\'complete\', \'incomplete\'))',
+        'CHECK(source_run_id IS NULL OR source_run_id <> transcript_run_id)',
+        'CHECK(source_run_id IS NULL OR processing_role = \'refinement\')',
+        'CHECK(json_valid(bundle_manifest_json))',
+        'CHECK(json_type(bundle_manifest_json) = \'object\')',
+        'CHECK(json_type(bundle_manifest_json, \'\$.schemaVersion\') IS \'integer\' AND json_extract(bundle_manifest_json, \'\$.schemaVersion\') IN (1, 2))',
+        'CHECK(audio_inventory_sha256 IS NULL OR(length(audio_inventory_sha256) = 64 AND audio_inventory_sha256 NOT GLOB \'*[^0-9a-f]*\'))',
+        'CHECK(processing_role <> \'refinement\' OR audio_inventory_sha256 IS NOT NULL)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_44,
+        _column_12,
+        _column_86,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_90,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 meetingTranscriptSelections = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'meeting_transcript_selections',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_44,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 diarizationRuns = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'diarization_runs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(model_id, model_version, model_sha256, engine_id)REFERENCES model_manifests(id, version, sha256, expected_engine_id)ON DELETE RESTRICT',
+        'CHECK(run_state IN (\'queued\', \'running\', \'completed\', \'failed\'))',
+        'CHECK(progress BETWEEN 0 AND 1)',
+        'CHECK(json_valid(parameters_json))',
+        'CHECK(started_at_utc_ms IS NULL OR started_at_utc_ms >= 0)',
+        'CHECK(ended_at_utc_ms IS NULL OR ended_at_utc_ms >= started_at_utc_ms)',
+        'CHECK((run_state = \'queued\' AND started_at_utc_ms IS NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'running\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NULL AND failure_code IS NULL)OR(run_state = \'completed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND progress = 1 AND failure_code IS NULL)OR(run_state = \'failed\' AND started_at_utc_ms IS NOT NULL AND ended_at_utc_ms IS NOT NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 speakers = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'speakers',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(analysis_run_id, meeting_id)REFERENCES diarization_runs(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_45,
+        _column_46,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape9 transcriptSegments = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'transcript_segments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(start_us >= 0)',
+        'CHECK(end_us > start_us)',
+        'CHECK(revision_state IN (\'machine\', \'corrected\'))',
+        'CHECK((speaker_id IS NULL)=(speaker_meeting_id IS NULL))',
+        'CHECK(speaker_meeting_id IS NULL OR speaker_meeting_id = meeting_id)',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_id, speaker_meeting_id)REFERENCES speakers(id, meeting_id)ON DELETE SET NULL',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_44,
+        _column_47,
+        _column_48,
+        _column_49,
+        _column_50,
+        _column_51,
+        _column_52,
+        _column_53,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape10 languageDecisions = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'language_decisions',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(tag IN (\'chinese\', \'english\', \'mixed\', \'uncertain\'))',
+        'CHECK(source IN (\'automatic\', \'manual\'))',
+        'CHECK(confidence IS NULL OR confidence BETWEEN 0 AND 1)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_54,
+        _column_55,
+        _column_27,
+        _column_56,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape11 transcriptLanguageSelections = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'transcript_language_selections',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'FOREIGN KEY(language_decision_id, transcript_segment_id)REFERENCES language_decisions(id, transcript_segment_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_54,
+        _column_57,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape12 speakerAssignments = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'speaker_assignments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(start_us >= 0)',
+        'CHECK(end_us > start_us)',
+        'CHECK(confidence IS NULL OR confidence BETWEEN 0 AND 1)',
+        'CHECK(is_overlap = 0 OR needs_confirmation = 1)',
+        'CHECK((speaker_id IS NULL)=(speaker_analysis_run_id IS NULL))',
+        'CHECK(speaker_analysis_run_id IS NULL OR speaker_analysis_run_id = analysis_run_id)',
+        'FOREIGN KEY(analysis_run_id, meeting_id)REFERENCES diarization_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_id, speaker_analysis_run_id)REFERENCES speakers(id, analysis_run_id)ON DELETE SET NULL',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_45,
+        _column_52,
+        _column_58,
+        _column_47,
+        _column_48,
+        _column_56,
+        _column_59,
+        _column_60,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape13 revisions = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'revisions',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(revision_kind IN (\'transcriptText\', \'languageLabel\', \'speakerAssignment\', \'speakerLabel\'))',
+        'CHECK((revision_kind IN (\'transcriptText\', \'languageLabel\') AND transcript_segment_id IS NOT NULL AND speaker_assignment_id IS NULL AND speaker_id IS NULL)OR(revision_kind = \'speakerAssignment\' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NOT NULL AND speaker_id IS NULL)OR(revision_kind = \'speakerLabel\' AND transcript_segment_id IS NULL AND speaker_assignment_id IS NULL AND speaker_id IS NOT NULL))',
+        'CHECK(json_valid(payload_json))',
+        'CHECK((revision_kind = \'transcriptText\' AND COALESCE(json_type(payload_json, \'\$.previousText\') = \'text\', 0) AND COALESCE(json_type(payload_json, \'\$.revisedText\') = \'text\', 0))OR(revision_kind = \'languageLabel\' AND COALESCE(json_extract(payload_json, \'\$.previous\') IN (\'chinese\', \'english\', \'mixed\', \'uncertain\'), 0) AND COALESCE(json_extract(payload_json, \'\$.revised\') IN (\'chinese\', \'english\', \'mixed\', \'uncertain\'), 0))OR(revision_kind = \'speakerAssignment\' AND COALESCE(json_type(payload_json, \'\$.startUs\') = \'integer\', 0) AND COALESCE(json_type(payload_json, \'\$.endUs\') = \'integer\', 0) AND json_extract(payload_json, \'\$.startUs\') >= 0 AND json_extract(payload_json, \'\$.endUs\') > json_extract(payload_json, \'\$.startUs\') AND COALESCE(json_type(payload_json, \'\$.previousSpeakerId\') IN (\'text\', \'null\'), 0) AND COALESCE(json_type(payload_json, \'\$.revisedSpeakerId\') IN (\'text\', \'null\'), 0) AND COALESCE(json_type(payload_json, \'\$.needsConfirmation\') IN (\'true\', \'false\'), 0))OR(revision_kind = \'speakerLabel\' AND COALESCE(json_type(payload_json, \'\$.previous\') = \'text\', 0) AND COALESCE(json_type(payload_json, \'\$.revised\') = \'text\', 0)))',
+        'FOREIGN KEY(transcript_segment_id, meeting_id)REFERENCES transcript_segments(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_assignment_id, meeting_id)REFERENCES speaker_assignments(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(speaker_id, meeting_id)REFERENCES speakers(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_61,
+        _column_62,
+        _column_52,
+        _column_63,
+        _column_64,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape14 processingJobs = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'processing_jobs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(job_kind IN (\'transcription\', \'languageIdentification\', \'speakerDiarization\', \'audioMerge\', \'waveform\'))',
+        'CHECK(job_state IN (\'queued\', \'running\', \'paused\', \'succeeded\', \'failed\'))',
+        'CHECK(progress IS NULL OR progress BETWEEN 0 AND 1)',
+        'CHECK((job_kind IN (\'transcription\', \'languageIdentification\') AND transcript_run_id IS NOT NULL AND diarization_run_id IS NULL AND model_id IS NOT NULL)OR(job_kind = \'speakerDiarization\' AND transcript_run_id IS NULL AND diarization_run_id IS NOT NULL AND model_id IS NOT NULL)OR(job_kind IN (\'audioMerge\', \'waveform\') AND transcript_run_id IS NULL AND diarization_run_id IS NULL AND model_id IS NULL))',
+        'CHECK((job_state = \'queued\' AND progress IS NULL AND reason_code IS NULL AND failure_code IS NULL)OR(job_state = \'running\' AND progress IS NOT NULL AND reason_code IS NULL AND failure_code IS NULL)OR(job_state = \'paused\' AND length(reason_code) > 0 AND failure_code IS NULL)OR(job_state = \'succeeded\' AND reason_code IS NULL AND failure_code IS NULL)OR(job_state = \'failed\' AND reason_code IS NULL AND length(failure_code) > 0))',
+        'FOREIGN KEY(transcript_run_id, meeting_id)REFERENCES transcript_runs(id, meeting_id)ON DELETE CASCADE',
+        'FOREIGN KEY(diarization_run_id, meeting_id)REFERENCES diarization_runs(id, meeting_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_65,
+        _column_66,
+        _column_67,
+        _column_68,
+        _column_43,
+        _column_69,
+        _column_70,
+        _column_71,
+        _column_72,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape15 modelCapabilityEntries = Shape15(
+    source: i0.VersionedTable(
+      entityName: 'model_capability_entries',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(capability IN (\'transcription\', \'languageIdentification\', \'speakerDiarization\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_73,
+        _column_74,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape16 modelModeEntries = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'model_mode_entries',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(mode IN (\'highQuality\', \'balanced\', \'powerSaving\', \'recordingOnly\', \'postSession\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_73,
+        _column_75,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape17 exportRecords = Shape17(
+    source: i0.VersionedTable(
+      entityName: 'export_records',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(format IN (\'audioM4a\', \'audioSegments\', \'text\', \'subtitles\', \'json\', \'archive\'))',
+        'CHECK(export_state IN (\'pending\', \'completed\', \'failed\'))',
+        'CHECK(bytes IS NULL OR bytes >= 0)',
+        'CHECK(relative_path IS NULL OR length(relative_path) > 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT LIKE \'/%\')',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(92)) = 0)',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(0)) = 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/./%\')',
+        'CHECK((export_state = \'pending\' AND relative_path IS NULL AND bytes IS NULL AND failure_code IS NULL)OR(export_state = \'completed\' AND bytes IS NOT NULL AND failure_code IS NULL)OR(export_state = \'failed\' AND relative_path IS NULL AND bytes IS NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_12,
+        _column_76,
+        _column_77,
+        _column_78,
+        _column_79,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape18 backupRecords = Shape18(
+    source: i0.VersionedTable(
+      entityName: 'backup_records',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'PRIMARY KEY(id)',
+        'CHECK(backup_state IN (\'pending\', \'completed\', \'failed\'))',
+        'CHECK(bytes IS NULL OR bytes >= 0)',
+        'CHECK(relative_path IS NULL OR length(relative_path) > 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT LIKE \'/%\')',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(92)) = 0)',
+        'CHECK(relative_path IS NULL OR instr(relative_path, char(0)) = 0)',
+        'CHECK(relative_path IS NULL OR relative_path NOT GLOB \'[A-Za-z]:*\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%//%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/../%\')',
+        'CHECK(relative_path IS NULL OR(\'/\' || relative_path || \'/\')NOT LIKE \'%/./%\')',
+        'CHECK((backup_state = \'pending\' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND failure_code IS NULL)OR(backup_state = \'completed\' AND relative_path IS NOT NULL AND length(sha256) > 0 AND bytes IS NOT NULL AND failure_code IS NULL)OR(backup_state = \'failed\' AND relative_path IS NULL AND sha256 IS NULL AND bytes IS NULL AND length(failure_code) > 0))',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_80,
+        _column_78,
+        _column_81,
+        _column_79,
+        _column_43,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxMeetingsCreated = i1.Index(
+    'idx_meetings_created',
+    'CREATE INDEX idx_meetings_created ON meetings (is_deleted, created_at DESC, id DESC)',
+  );
+  final i1.Index uxMeetingProcessingSelection = i1.Index(
+    'ux_meeting_processing_selection',
+    'CREATE UNIQUE INDEX ux_meeting_processing_selection ON meeting_processing_selections (meeting_id)',
+  );
+  final i1.Index uxAudioSegmentsMeetingSequence = i1.Index(
+    'ux_audio_segments_meeting_sequence',
+    'CREATE UNIQUE INDEX ux_audio_segments_meeting_sequence ON audio_segments (meeting_id, sequence)',
+  );
+  final i1.Index idxRecoveryFindingsMeetingSequence = i1.Index(
+    'idx_recovery_findings_meeting_sequence',
+    'CREATE INDEX idx_recovery_findings_meeting_sequence ON recovery_findings (meeting_id, segment_sequence)',
+  );
+  final i1.Index uxSessionEventsMeetingSequence = i1.Index(
+    'ux_session_events_meeting_sequence',
+    'CREATE UNIQUE INDEX ux_session_events_meeting_sequence ON session_events (meeting_id, sequence)',
+  );
+  final i1.Index idxBookmarksMeetingMedia = i1.Index(
+    'idx_bookmarks_meeting_media',
+    'CREATE INDEX idx_bookmarks_meeting_media ON bookmarks (meeting_id, media_offset_us)',
+  );
+  final i1.Index idxTranscriptRunsMeetingCreated = i1.Index(
+    'idx_transcript_runs_meeting_created',
+    'CREATE INDEX idx_transcript_runs_meeting_created ON transcript_runs (meeting_id, created_at DESC)',
+  );
+  final i1.Index uxTranscriptRunOwner = i1.Index(
+    'ux_transcript_run_owner',
+    'CREATE UNIQUE INDEX ux_transcript_run_owner ON transcript_runs (id, meeting_id)',
+  );
+  final i1.Index uxTranscriptProcessingRun = i1.Index(
+    'ux_transcript_processing_run',
+    'CREATE UNIQUE INDEX ux_transcript_processing_run ON transcript_processing_metadata (transcript_run_id)',
+  );
+  final i1.Index uxMeetingTranscriptSelection = i1.Index(
+    'ux_meeting_transcript_selection',
+    'CREATE UNIQUE INDEX ux_meeting_transcript_selection ON meeting_transcript_selections (meeting_id)',
+  );
+  final i1.Index idxTranscriptSegmentsRunStart = i1.Index(
+    'idx_transcript_segments_run_start',
+    'CREATE INDEX idx_transcript_segments_run_start ON transcript_segments (transcript_run_id, start_us)',
+  );
+  final i1.Index uxTranscriptSegmentOwner = i1.Index(
+    'ux_transcript_segment_owner',
+    'CREATE UNIQUE INDEX ux_transcript_segment_owner ON transcript_segments (id, meeting_id)',
+  );
+  final i1.Index idxLanguageDecisionsSegmentCreated = i1.Index(
+    'idx_language_decisions_segment_created',
+    'CREATE INDEX idx_language_decisions_segment_created ON language_decisions (transcript_segment_id, created_at DESC)',
+  );
+  final i1.Index uxLanguageDecisionOwner = i1.Index(
+    'ux_language_decision_owner',
+    'CREATE UNIQUE INDEX ux_language_decision_owner ON language_decisions (id, transcript_segment_id)',
+  );
+  final i1.Index uxTranscriptLanguageSelection = i1.Index(
+    'ux_transcript_language_selection',
+    'CREATE UNIQUE INDEX ux_transcript_language_selection ON transcript_language_selections (transcript_segment_id)',
+  );
+  final i1.Index idxDiarizationRunsMeetingCreated = i1.Index(
+    'idx_diarization_runs_meeting_created',
+    'CREATE INDEX idx_diarization_runs_meeting_created ON diarization_runs (meeting_id, created_at DESC)',
+  );
+  final i1.Index uxDiarizationRunOwner = i1.Index(
+    'ux_diarization_run_owner',
+    'CREATE UNIQUE INDEX ux_diarization_run_owner ON diarization_runs (id, meeting_id)',
+  );
+  final i1.Index uxSpeakersRunLabel = i1.Index(
+    'ux_speakers_run_label',
+    'CREATE UNIQUE INDEX ux_speakers_run_label ON speakers (analysis_run_id, label)',
+  );
+  final i1.Index uxSpeakerRunOwner = i1.Index(
+    'ux_speaker_run_owner',
+    'CREATE UNIQUE INDEX ux_speaker_run_owner ON speakers (id, analysis_run_id)',
+  );
+  final i1.Index uxSpeakerMeetingOwner = i1.Index(
+    'ux_speaker_meeting_owner',
+    'CREATE UNIQUE INDEX ux_speaker_meeting_owner ON speakers (id, meeting_id)',
+  );
+  final i1.Index idxSpeakerAssignmentsRunStart = i1.Index(
+    'idx_speaker_assignments_run_start',
+    'CREATE INDEX idx_speaker_assignments_run_start ON speaker_assignments (analysis_run_id, start_us)',
+  );
+  final i1.Index uxSpeakerAssignmentOwner = i1.Index(
+    'ux_speaker_assignment_owner',
+    'CREATE UNIQUE INDEX ux_speaker_assignment_owner ON speaker_assignments (id, meeting_id)',
+  );
+  final i1.Index idxRevisionsMeetingCreated = i1.Index(
+    'idx_revisions_meeting_created',
+    'CREATE INDEX idx_revisions_meeting_created ON revisions (meeting_id, created_at)',
+  );
+  final i1.Index idxRevisionsTranscriptTarget = i1.Index(
+    'idx_revisions_transcript_target',
+    'CREATE INDEX idx_revisions_transcript_target ON revisions (transcript_segment_id, created_at)',
+  );
+  final i1.Index idxRevisionsAssignmentTarget = i1.Index(
+    'idx_revisions_assignment_target',
+    'CREATE INDEX idx_revisions_assignment_target ON revisions (speaker_assignment_id, created_at)',
+  );
+  final i1.Index idxRevisionsSpeakerTarget = i1.Index(
+    'idx_revisions_speaker_target',
+    'CREATE INDEX idx_revisions_speaker_target ON revisions (speaker_id, created_at)',
+  );
+  final i1.Index idxProcessingJobsMeetingCreated = i1.Index(
+    'idx_processing_jobs_meeting_created',
+    'CREATE INDEX idx_processing_jobs_meeting_created ON processing_jobs (meeting_id, created_at DESC)',
+  );
+  final i1.Index uxModelManifestsHash = i1.Index(
+    'ux_model_manifests_hash',
+    'CREATE UNIQUE INDEX ux_model_manifests_hash ON model_manifests (sha256)',
+  );
+  final i1.Index uxModelManifestProvenance = i1.Index(
+    'ux_model_manifest_provenance',
+    'CREATE UNIQUE INDEX ux_model_manifest_provenance ON model_manifests (id, version, sha256, expected_engine_id)',
+  );
+  final i1.Index uxModelCapability = i1.Index(
+    'ux_model_capability',
+    'CREATE UNIQUE INDEX ux_model_capability ON model_capability_entries (model_id, capability)',
+  );
+  final i1.Index uxModelMode = i1.Index(
+    'ux_model_mode',
+    'CREATE UNIQUE INDEX ux_model_mode ON model_mode_entries (model_id, mode)',
+  );
+  final i1.Index idxExportRecordsMeetingCreated = i1.Index(
+    'idx_export_records_meeting_created',
+    'CREATE INDEX idx_export_records_meeting_created ON export_records (meeting_id, created_at DESC)',
+  );
+  final i1.Index idxBackupRecordsCreated = i1.Index(
+    'idx_backup_records_created',
+    'CREATE INDEX idx_backup_records_created ON backup_records (created_at DESC)',
+  );
+}
+
+class Shape23 extends i0.VersionedTable {
+  Shape23({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get rowRevision =>
+      columnsByName['row_revision']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isDeleted =>
+      columnsByName['is_deleted']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get deletedAt =>
+      columnsByName['deleted_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get meetingId =>
+      columnsByName['meeting_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get endpoint =>
+      columnsByName['endpoint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get credentialRef =>
+      columnsByName['credential_ref']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get profileId =>
+      columnsByName['profile_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get requestJson =>
+      columnsByName['request_json']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get uploadId =>
+      columnsByName['upload_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get jobId =>
+      columnsByName['job_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get manifestDigest =>
+      columnsByName['manifest_digest']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get state =>
+      columnsByName['state']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get failureCode =>
+      columnsByName['failure_code']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get confirmedBytes =>
+      columnsByName['confirmed_bytes']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get totalBytes =>
+      columnsByName['total_bytes']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get attempts =>
+      columnsByName['attempts']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get retryAtUtcMs =>
+      columnsByName['retry_at_utc_ms']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get createdAtUtcMs =>
+      columnsByName['created_at_utc_ms']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAtUtcMs =>
+      columnsByName['updated_at_utc_ms']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get retentionSeconds =>
+      columnsByName['retention_seconds']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get expiresAtUtcMs =>
+      columnsByName['expires_at_utc_ms']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_98(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'endpoint',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_99(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'credential_ref',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_100(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'profile_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_101(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'request_json',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_102(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'upload_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_103(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'job_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_104(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'manifest_digest',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_105(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'state',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL DEFAULT \'waitingAudio\'',
+      defaultValue: const i1.CustomExpression('\'waitingAudio\''),
+    );
+i1.GeneratedColumn<int> _column_106(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'confirmed_bytes',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_107(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'total_bytes',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_108(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'attempts',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_109(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'retry_at_utc_ms',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_110(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'created_at_utc_ms',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_111(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'updated_at_utc_ms',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_112(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'retention_seconds',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_113(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'expires_at_utc_ms',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+
+class Shape24 extends i0.VersionedTable {
+  Shape24({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get rowRevision =>
+      columnsByName['row_revision']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isDeleted =>
+      columnsByName['is_deleted']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get deletedAt =>
+      columnsByName['deleted_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get meetingId =>
+      columnsByName['meeting_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get sourceMeetingId =>
+      columnsByName['source_meeting_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get sourceRunId =>
+      columnsByName['source_run_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get resultJson =>
+      columnsByName['result_json']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get editedText =>
+      columnsByName['edited_text']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAtUtcMs =>
+      columnsByName['created_at_utc_ms']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_114(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'source_meeting_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_115(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'result_json',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_116(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'edited_text',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
   required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
+  required Future<void> Function(i1.Migrator m, Schema5 schema) from4To5,
+  required Future<void> Function(i1.Migrator m, Schema6 schema) from5To6,
+  required Future<void> Function(i1.Migrator m, Schema7 schema) from6To7,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -3816,6 +7033,21 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from3To4(migrator, schema);
         return 4;
+      case 4:
+        final schema = Schema5(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from4To5(migrator, schema);
+        return 5;
+      case 5:
+        final schema = Schema6(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from5To6(migrator, schema);
+        return 6;
+      case 6:
+        final schema = Schema7(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from6To7(migrator, schema);
+        return 7;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -3826,10 +7058,16 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
   required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
+  required Future<void> Function(i1.Migrator m, Schema5 schema) from4To5,
+  required Future<void> Function(i1.Migrator m, Schema6 schema) from5To6,
+  required Future<void> Function(i1.Migrator m, Schema7 schema) from6To7,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
     from2To3: from2To3,
     from3To4: from3To4,
+    from4To5: from4To5,
+    from5To6: from5To6,
+    from6To7: from6To7,
   ),
 );

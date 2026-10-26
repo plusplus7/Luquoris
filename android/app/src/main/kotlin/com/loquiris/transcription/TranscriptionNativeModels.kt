@@ -10,6 +10,8 @@ data class AuthoritativeAudioSegment(
     val committedBytes: Long,
     val startSample: Long,
     val committedSamples: Long,
+    /** Digest of the exact journal-validated bytes, populated only by strict resolution. */
+    val verifiedSha256: String? = null,
 )
 
 sealed interface AuthoritativeAudioResolution {

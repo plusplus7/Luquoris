@@ -17,6 +17,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
+import com.loquiris.BuildConfig
 import com.loquiris.MainActivity
 import com.loquiris.R
 import java.io.File
@@ -52,7 +53,8 @@ class RecordingForegroundService : Service() {
     private var storageFailureJournal: RecordingStorageFailureJournal? = null
     private var storageWarningActive = false
     private var thermalStatusListener: PowerManager.OnThermalStatusChangedListener? = null
-    private lateinit var commandReceipts: RecordingCommandReceiptStore
+    private val commandReceipts by lazy { RecordingCommandReceiptStore(this) }
+    private val rejectedCommandReceipts = RecordingRejectedCommandDispatcher()
     private val progressTick =
         object : Runnable {
             override fun run() {
@@ -99,11 +101,6 @@ class RecordingForegroundService : Service() {
         super.onCreate()
         createNotificationChannel()
         wakeLockLease = WakeLockLease(AndroidWakeLockController(this))
-        commandReceipts = RecordingCommandReceiptStore(this)
-        stateInitialization =
-            PersistedRecordingStateMachine.create(
-                SharedPreferencesRecordingStateStore(this),
-            )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val listener =
                 PowerManager.OnThermalStatusChangedListener { status ->
@@ -148,6 +145,27 @@ class RecordingForegroundService : Service() {
             return START_NOT_STICKY
         }
         if (!ownership.shouldStopAfterRejectedStart()) return rejectCommand(commandId, "recording_session_conflict", startId)
+
+        // Satisfy Android's foreground-start deadline before any state load,
+        // recovery commit or start commit can wait on storage. This notification
+        // is transient and does not claim or overwrite the persisted recording.
+        val promoted = RecordingForegroundPromotion.beforePreparation(
+            ForegroundPromoter {
+                startForeground(
+                    NOTIFICATION_ID,
+                    buildNotification(
+                        sessionId,
+                        NativeRecordingSnapshot(sessionId, NativeRecordingState.preparing, 0, 0, 0),
+                    ),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,
+                )
+            },
+        ) {
+            stateInitialization = PersistedRecordingStateMachine.create(
+                SharedPreferencesRecordingStateStore(this),
+            )
+        }
+        if (!promoted) return rejectCommand(commandId, "recording_foreground_promotion_failed", startId)
 
         val authoritativeStorage =
             RecordingStoragePolicy.preflight(AndroidRecordingStorageSpace.availableBytes(this))
@@ -202,20 +220,6 @@ class RecordingForegroundService : Service() {
             return rejectCommand(commandId, "recording_foreground_state_invalid", startId)
         }
 
-        val promoted =
-            RecordingForegroundPromotion.attempt(
-                ForegroundPromoter {
-                    startForeground(
-                        NOTIFICATION_ID,
-                        buildNotification(sessionId, snapshot),
-                        ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,
-                    )
-                },
-            )
-        if (!promoted) {
-            commandReceipts.failed(commandId, "recording_foreground_promotion_failed")
-            return failUnownedStart(machine, sessionId, startId)
-        }
         if (!wakeLockLease.acquire()) {
             commandReceipts.failed(commandId, "recording_wake_lock_failed")
             return failUnownedStart(machine, sessionId, startId)
@@ -268,7 +272,7 @@ class RecordingForegroundService : Service() {
         ) {
             liveInference.severeThermal(sessionId)
         }
-        liveInference.attach(sessionId, pipeline::replaceInferenceConsumer)
+        liveInference.attach(sessionId, pipeline)
         interruptionMonitor =
             AndroidRecordingInterruptionMonitor(this, progressHandler, ::handleInterruptionSignal)
         if (interruptionMonitor?.start() != true) {
@@ -377,7 +381,7 @@ class RecordingForegroundService : Service() {
 
         progressHandler.removeCallbacks(progressTick)
         closeInterruptionMonitor()
-        liveInference.recordingEnded(sessionId)
+        liveInference.recordingStopping(sessionId)
         if (machine.stop() is RecordingCommandResult.Failure) {
             commandReceipts.failed(commandId, "recording_stop_transition_failed")
             handleCaptureFailure()
@@ -406,10 +410,12 @@ class RecordingForegroundService : Service() {
                 val stateFinalized =
                     finalProgressPersisted && machine.markFinalized() is RecordingCommandResult.Success
                 if (!stateFinalized) {
+                    liveInference.recordingEnded(sessionId)
                     runCatching { pipeline.close() }
                     runCatching { machine.markRecoverable() }
                 }
                 if (stateFinalized) {
+                    liveInference.recordingFinalized(sessionId)
                     commandReceipts.succeeded(commandId, machine.snapshot())
                     RecordingM4aRebuilder().rebuild(
                         AppPrivateRecordingStorage.sessionDirectory(this, sessionId),
@@ -498,6 +504,7 @@ class RecordingForegroundService : Service() {
         }
         thermalStatusListener = null
         serviceDestroyed = true
+        rejectedCommandReceipts.close()
         if (!stopFinalizationInFlight && activeSessionId != null) {
             scheduleRecoverableCleanup(stopService = false)
         } else if (!stopFinalizationInFlight) {
@@ -509,13 +516,20 @@ class RecordingForegroundService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun rejectStart(startId: Int): Int {
-        if (ownership.shouldStopAfterRejectedStart()) stopSelfResult(startId)
+        if (ownership.shouldStopAfterRejectedStart()) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelfResult(startId)
+        }
         return START_NOT_STICKY
     }
 
     private fun rejectCommand(commandId: String, code: String, startId: Int): Int {
-        commandReceipts.failed(commandId, code)
-        return rejectStart(startId)
+        // stopSelfResult can leave a newer start queued. Never let receipt I/O
+        // delay that start's promotion; active ownership still prevents stopping.
+        return rejectedCommandReceipts.reject(
+            stopRejectedStart = { rejectStart(startId) },
+            persistReceipt = { commandReceipts.failed(commandId, code) },
+        )
     }
 
     private fun completeOwnedCommand(commandId: String) {
@@ -741,6 +755,11 @@ class RecordingForegroundService : Service() {
         return RecordingCapturePipeline(
             source = source,
             encoder = AndroidCanonicalPcmEncoder(encoder),
+            inferenceQueueCapacity =
+                RecordingInferenceQueuePolicy.capacityFrames(
+                    isDebugBuild = BuildConfig.DEBUG,
+                    streamingNativeSpike = BuildConfig.LOQUIRIS_STREAMING_NATIVE_SPIKE,
+                ),
             elapsedRealtimeNanos = SystemClock::elapsedRealtimeNanos,
         )
     }
@@ -765,7 +784,7 @@ class RecordingForegroundService : Service() {
         val pipeline = capturePipeline ?: return
         val sessionRuntime = runtime ?: return
         if (decision.shouldPause) {
-            if (pipeline.pause() !is RecordingCaptureCommandResult.Success) {
+            if (pipeline.pause(decision.inferenceBoundary() ?: PcmCaptureBoundary.DISCONTINUITY) !is RecordingCaptureCommandResult.Success) {
                 handleCaptureFailure()
                 return
             }

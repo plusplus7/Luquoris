@@ -1,0 +1,29 @@
+{
+  "origin": "http://192.168.1.20:18000",
+  "unauthenticatedStatus": 401,
+  "readyStatus": 200,
+  "inputSha256": "83440d4ccbd82dafd1a88346ab448e1dd309e408c598d665413b910cc92c40a7",
+  "durationMs": 45000,
+  "uploadResumeAndRepeatChunk": true,
+  "jobState": "succeeded",
+  "jobId": "5ae85c2bfaac4059a7ddf80cc5d32b3c",
+  "segments": 221,
+  "provenance": {
+    "model": "Qwen/Qwen3-ASR-1.7B",
+    "modelRevision": "7278e1e70fe206f11671096ffdd38061171dd6e5",
+    "runtime": "0.0.6",
+    "precision": "bfloat16",
+    "alignerRevision": "c7cbfc2048c462b0d63a45797104fc9db3ad62b7",
+    "chunkPolicy": "silence-boundary-30000ms-v1",
+    "timestampPolicy": "coalesced-zero-duration-v1",
+    "overlapPolicy": "complete-context-alternatives-v2",
+    "boundaryPolicy": "whole-group-max-min-context-v1",
+    "boundaryConflictGroups": "0",
+    "batchSize": "1",
+    "measurementScope": "cold-job-wall-time; max-stage-RSS; torch-allocator-VRAM-excludes-driver",
+    "peakRssBytes": "5216481280",
+    "elapsedSeconds": "33.906408935999934",
+    "peakVramBytes": "4698449408"
+  },
+  "resultSha256": "5c9e30e8863873b1d1ba61e3723eba45575dacae00562ba3043eaa4bff743650"
+}

@@ -1,19 +1,77 @@
+import 'dart:ui' show Tristate;
+
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loquiris/app.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/recording/presentation/new_recording_controller.dart';
-import 'package:loquiris/features/recording/presentation/new_recording_screen.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
+import 'package:loquiris/features/transcript/domain/meeting_processing_selection.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
 
 import '../../../support/fakes/fake_services.dart';
 import '../../../support/harness.dart';
+import '../../../support/recording_processing_fixture.dart';
 
 void main() {
+  for (final locale in ['en', 'zh']) {
+    for (final scale in [1.0, 2.0, 3.0]) {
+      testWidgets('explicit choices remain usable in $locale at $scale', (
+        tester,
+      ) async {
+        tester.useDevice(TestDevice.compact);
+        tester.binding.platformDispatcher.localesTestValue = [Locale(locale)];
+        addTearDown(tester.binding.platformDispatcher.clearLocalesTestValue);
+        await tester.pumpLoquirisApp(textScaler: TextScaler.linear(scale));
+        await tester.tap(find.text(locale == 'zh' ? '录音' : 'Record').last);
+        await tester.pumpAndSettle();
+
+        final unavailable = find.byKey(
+          const Key('new-recording-mode-two-pass'),
+        );
+        await tester.ensureVisible(unavailable);
+        await tester.pumpAndSettle();
+        final disabled = tester.getSemantics(unavailable);
+        expect(disabled.flagsCollection.isEnabled, Tristate.isFalse);
+        expect(
+          disabled.getSemanticsData().hasAction(SemanticsAction.tap),
+          isFalse,
+        );
+        expect(
+          (disabled.sortKey! as OrdinalSortKey).order,
+          1,
+        );
+        final recordOnly = find.byKey(
+          const Key('new-recording-mode-recording-only'),
+        );
+        await tester.ensureVisible(recordOnly);
+        await tester.pumpAndSettle();
+        expect(tester.getSize(recordOnly).height, greaterThanOrEqualTo(48));
+        await tester.tapAt(
+          tester.getTopLeft(recordOnly) + const Offset(32, 32),
+        );
+        await tester.pump();
+        expect(
+          tester.getSemantics(recordOnly).flagsCollection.isSelected,
+          Tristate.isTrue,
+        );
+        final container = ProviderScope.containerOf(tester.element(recordOnly));
+        expect(
+          container
+              .read(newRecordingControllerProvider)
+              .requireValue
+              .processingMode,
+          MeetingProcessingMode.recordingOnly,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets('selects setup and starts immediately after native preflight', (
     tester,
   ) async {
@@ -24,6 +82,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...recordingProcessingOverrides(),
           sessionRepositoryProvider.overrideWithValue(repository),
           audioCaptureServiceProvider.overrideWithValue(capture),
           clockProvider.overrideWithValue(
@@ -40,7 +99,7 @@ void main() {
 
     expect(find.text('New recording'), findsWidgets);
     expect(
-      find.byKey(const Key('new-recording-mode-near-real-time')),
+      find.byKey(const Key('new-recording-mode-recording-only')),
       findsOneWidget,
     );
     expect(
@@ -49,23 +108,22 @@ void main() {
     );
     expect(find.byKey(const Key('new-recording-speakers-4')), findsOneWidget);
 
-    await tester.tap(
-      find.byKey(const Key('new-recording-mode-near-real-time')),
+    final captureOnly = find.byKey(
+      const Key('new-recording-mode-recording-only'),
     );
-    final setupScroll = find.descendant(
-      of: find.byType(NewRecordingScreen),
-      matching: find.byType(CustomScrollView),
-    );
+    await tester.ensureVisible(captureOnly);
+    await tester.pumpAndSettle();
+    await tester.tap(captureOnly);
     final english = find.byKey(const Key('new-recording-language-english'));
-    await tester.drag(setupScroll, const Offset(0, -500));
+    await tester.ensureVisible(english);
     await tester.pumpAndSettle();
     await tester.tap(english);
     final fourSpeakers = find.byKey(const Key('new-recording-speakers-4'));
-    await tester.drag(setupScroll, const Offset(0, -250));
+    await tester.ensureVisible(fourSpeakers);
     await tester.pumpAndSettle();
     await tester.tap(fourSpeakers);
     final start = find.byKey(const Key('new-recording-start'));
-    await tester.drag(setupScroll, const Offset(0, -150));
+    await tester.ensureVisible(start);
     await tester.pumpAndSettle();
     await tester.tap(start);
     await tester.pumpAndSettle();
@@ -77,7 +135,6 @@ void main() {
     expect(
       repository.recordingDefaults,
       const RecordingDefaults(
-        transcriptionMode: MeetingTranscriptionMode.nearRealTime,
         languageMode: MeetingLanguageMode.english,
         expectedSpeakerCount: 4,
       ),
@@ -107,19 +164,22 @@ void main() {
     await tester.pump();
 
     final mode = find.byKey(
-      const Key('new-recording-mode-near-real-time'),
+      const Key('new-recording-mode-two-pass'),
     );
     expect(mode, findsOneWidget);
     expect(
       tester.getSemantics(mode),
       isSemantics(
-        label:
-            'Near-real-time draft. Experimental. It may pause or fall back '
-            'to post-session processing to protect the recording.',
+        label: 'Live draft + refinement',
+        hint:
+            'Unavailable until a streaming model pair passes the required checks. '
+            'Choose post-session transcription or recording only.',
         isButton: true,
+        hasEnabledState: true,
+        isEnabled: false,
         hasSelectedState: true,
         isSelected: false,
-        hasTapAction: true,
+        hasTapAction: false,
       ),
     );
   });
@@ -140,6 +200,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...recordingProcessingOverrides(),
           sessionRepositoryProvider.overrideWithValue(
             FakeSessionRepository(),
           ),
@@ -154,11 +215,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final start = find.byKey(const Key('new-recording-start'));
-    final setupScroll = find.descendant(
-      of: find.byType(NewRecordingScreen),
-      matching: find.byType(CustomScrollView),
-    );
-    await tester.drag(setupScroll, const Offset(0, -900));
+    await tester.ensureVisible(start);
     await tester.pumpAndSettle();
     await tester.tap(start);
     await tester.pumpAndSettle();

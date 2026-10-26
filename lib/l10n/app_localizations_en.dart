@@ -377,7 +377,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recordingMetadataSaveWarning =>
-      'Recording continues, but local meeting details could not be updated yet.';
+      'Local meeting details could not be updated yet.';
 
   @override
   String get recordingControlFailed =>
@@ -753,6 +753,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Export could not be completed. The original meeting is unchanged.';
 
   @override
+  String get exportTranscriptSelectionRequired =>
+      'Choose a transcript version before exporting text or subtitles.';
+
+  @override
+  String get exportTranscriptChanged =>
+      'The selected transcript changed while preparing export. Try again.';
+
+  @override
   String get exportIncompleteOutputWarning =>
       'Export stopped, but Android could not remove the incomplete file. Check the destination you selected.';
 
@@ -1124,6 +1132,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get liveTranscriptIncomplete => 'This live draft may be incomplete.';
 
   @override
+  String get liveTranscriptDiscontinuity =>
+      'An audio interval is missing from this draft. Later live text can continue.';
+
+  @override
   String get liveTranscriptThermalFallback =>
       'Live transcription paused because this device is too warm.';
 
@@ -1138,4 +1150,316 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get liveTranscriptPostSessionFallback =>
       'A complete transcript will run after recording.';
+
+  @override
+  String get transcriptVersionsTitle => 'Transcript versions';
+
+  @override
+  String get transcriptVersionsHelp =>
+      'Choose which version to read, search, play back, or export. Other versions and their human corrections are kept separately.';
+
+  @override
+  String get transcriptVersionsLoading => 'Loading transcript versions…';
+
+  @override
+  String get transcriptVersionsLoadFailed =>
+      'Transcript versions could not be read. Try again.';
+
+  @override
+  String get transcriptVersionsEmpty =>
+      'No transcript versions have been saved yet.';
+
+  @override
+  String get transcriptVersionSelectionFailed =>
+      'The version could not be changed. Your current transcript is unchanged. Try again.';
+
+  @override
+  String get transcriptRefinementReady =>
+      'A refined version is available. It will not replace your current transcript automatically.';
+
+  @override
+  String transcriptVersionRole(String role) {
+    String _temp0 = intl.Intl.selectLogic(
+      role,
+      {
+        'liveDraft': 'Live draft',
+        'refinement': 'Refined transcript',
+        'unverified': 'Unverified version',
+        'other': 'Saved transcript',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String transcriptVersionIdentity(String role, DateTime date, DateTime time) {
+    final intl.DateFormat dateDateFormat = intl.DateFormat.yMMMd(localeName);
+    final String dateString = dateDateFormat.format(date);
+    final intl.DateFormat timeDateFormat = intl.DateFormat.Hms(localeName);
+    final String timeString = timeDateFormat.format(time);
+
+    return '$role · $dateString $timeString';
+  }
+
+  @override
+  String transcriptVersionCoverage(String coverage) {
+    String _temp0 = intl.Intl.selectLogic(
+      coverage,
+      {
+        'complete': 'Complete coverage',
+        'incomplete': 'Incomplete coverage',
+        'other': 'Coverage not recorded',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String transcriptVersionProvenance(
+    String model,
+    String version,
+    String engine,
+    String engineVersion,
+    String hash,
+  ) {
+    return 'Model: $model ($version)\nRuntime: $engine $engineVersion\nBundle SHA-256: $hash';
+  }
+
+  @override
+  String get transcriptVersionUnverified =>
+      'Version provenance could not be verified. Selection is unavailable.';
+
+  @override
+  String get transcriptVersionNotReady =>
+      'This version is not ready to select.';
+
+  @override
+  String get transcriptVersionCurrent => 'Current version';
+
+  @override
+  String get transcriptVersionUse => 'Use this version';
+
+  @override
+  String transcriptVersionUseSemantic(String version) {
+    return 'Use $version';
+  }
+
+  @override
+  String get transcriptVersionSelecting => 'Switching version…';
+
+  @override
+  String get recordingOnlyChoice => 'Recording only';
+
+  @override
+  String get recordingOnlyChoiceDescription =>
+      'Save the original audio without running transcription for this meeting.';
+
+  @override
+  String get twoPassChoice => 'Live draft + refinement';
+
+  @override
+  String get twoPassUnavailable =>
+      'Unavailable until a streaming model pair passes the required checks. Choose post-session transcription or recording only.';
+
+  @override
+  String get recordingProcessingUnavailable =>
+      'The transcription configuration could not be saved. Try again, or choose recording only. Recording has not started.';
+
+  @override
+  String get refinementResumeAction => 'Resume refinement';
+
+  @override
+  String get refinementResuming => 'Resuming refinement…';
+
+  @override
+  String refinementPausedMessage(String reasonCode) {
+    String _temp0 = intl.Intl.selectLogic(
+      reasonCode,
+      {
+        'refinement_thermal_severe':
+            'Refinement is paused while this device cools down. Your recording is safe.',
+        'refinement_battery_low':
+            'Refinement is paused because the battery is low. Charge this device before resuming.',
+        'refinement_memory_pressure':
+            'Refinement is paused because memory is low. Close other apps before resuming.',
+        'refinement_power_save':
+            'Refinement is paused while battery saver is on. Turn it off before resuming.',
+        'refinement_recording_active':
+            'Refinement is paused to prioritize recording. Resume after recording stops.',
+        'refinement_resources_unavailable':
+            'Refinement is paused because device resources could not be checked. Try resuming later.',
+        'other':
+            'Refinement is paused. Your recording is safe. You can try resuming later.',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remoteTitle => 'Remote transcription';
+
+  @override
+  String get remoteExplanation =>
+      'Audio stays on this phone. Choosing remote transcription uploads a copy to your configured server. The server reports its retention policy and expiry; local transcripts and edits remain.';
+
+  @override
+  String get remoteEndpoint => 'Server address';
+
+  @override
+  String get remoteToken => 'Server access token';
+
+  @override
+  String get remoteConfigure => 'Save connection';
+
+  @override
+  String get remoteStart => 'Start transcription';
+
+  @override
+  String get remoteCancel => 'Cancel remote task';
+
+  @override
+  String get remoteEdit => 'Edit this version';
+
+  @override
+  String get remoteSave => 'Save correction';
+
+  @override
+  String get remoteExportText => 'Export text';
+
+  @override
+  String get remoteExportJson => 'Export JSON';
+
+  @override
+  String get remoteExportSubtitles => 'Export original subtitles';
+
+  @override
+  String get remoteEmpty =>
+      'Remote results will appear here after recording finishes.';
+
+  @override
+  String get remoteInputInvalid =>
+      'Enter a valid HTTPS origin or private LAN HTTP IP, and an access token of at least 32 characters.';
+
+  @override
+  String remoteVersionSource(String model, String revision) {
+    return 'Model: $model · Revision: $revision';
+  }
+
+  @override
+  String remoteFailure(String code) {
+    String _temp0 = intl.Intl.selectLogic(
+      code,
+      {
+        'remote_authentication':
+            'Server credentials were rejected. Configure the connection again.',
+        'remote_credentials_missing':
+            'Local credentials are unavailable. Configure the connection again.',
+        'remote_transport':
+            'Network unavailable. Check the connection and retry.',
+        'remote_quota': 'Server storage quota exceeded.',
+        'remote_expired':
+            'The server copy expired. Start a new transcription from local audio.',
+        'remote_model_failed':
+            'Server inference failed. Check the server before starting a new run.',
+        'remote_submission_pending': 'Recovering the submitted job identity.',
+        'remote_restore_requires_action':
+            'Restored work requires an explicit new request and connection setup.',
+        'remote_audio_unavailable': 'Recording audio is unavailable.',
+        'remote_audio_changed':
+            'Recording audio differs from the queued request.',
+        'other': 'Remote task needs attention: $code',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String remoteTaskProgress(int done, int total) {
+    return '$done / $total bytes uploaded';
+  }
+
+  @override
+  String remoteState(String state) {
+    String _temp0 = intl.Intl.selectLogic(
+      state,
+      {
+        'waitingSetup': 'Configure a server',
+        'waitingAudio': 'Waiting for recording to finish',
+        'uploading': 'Uploading',
+        'submitting': 'Submitting',
+        'waitingNetwork': 'Waiting to retry network',
+        'queued': 'Queued on server',
+        'running': 'Transcribing',
+        'completed': 'Saved on phone',
+        'failed': 'Failed — create a new run to retry',
+        'cancelled': 'Cancelled',
+        'restored': 'Restored — new authorization required',
+        'expired': 'Remote result expired',
+        'other': 'Waiting',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remotePostSessionDescription =>
+      'Record reliably on this phone, then upload for server transcription. Works without a local model.';
+
+  @override
+  String get remoteRecordingNote =>
+      'Recording works offline. Remote transcription waits for a configured server and network access.';
+
+  @override
+  String remoteRetention(int seconds) {
+    return 'Server retention: $seconds seconds';
+  }
+
+  @override
+  String remoteExpires(String deadline) {
+    return 'Server copy expires: $deadline';
+  }
+
+  @override
+  String get remoteModelPageNote =>
+      'Remote transcription runs on your server and requires no phone model installation. This page tests local phone inference only; existing local transcripts remain readable.';
+
+  @override
+  String get remoteRestart => 'Transcribe again';
+
+  @override
+  String get remoteServerSettings => 'Transcription server';
+
+  @override
+  String get remoteAutomaticRecognition =>
+      'Language is detected automatically. Transcription starts after recording ends.';
+
+  @override
+  String get remoteLanExplanation =>
+      'Use a private LAN address such as http://192.168.1.20:18000. HTTP sends audio and the access token without encryption; use it only on your trusted network.';
+
+  @override
+  String get remoteConnectionSaved => 'Server connection saved';
+
+  @override
+  String get remoteChangeConnection => 'Change connection';
+
+  @override
+  String get remoteOpenSettings => 'Configure server';
+
+  @override
+  String get remoteResultTitle => 'Transcript';
+
+  @override
+  String get remoteExport => 'Export';
+
+  @override
+  String get remoteRecordingDetails => 'Recording details';
+
+  @override
+  String remoteVersionNumber(int number) {
+    return 'Transcript $number';
+  }
+
+  @override
+  String get remoteNoSpeech => 'No speech detected.';
 }

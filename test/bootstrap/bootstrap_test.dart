@@ -15,7 +15,9 @@ import 'package:loquiris/core/result.dart';
 import 'package:loquiris/data/database/app_database.dart' hide Meeting;
 import 'package:loquiris/data/files/private_meeting_audio_store.dart';
 import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
+import 'package:loquiris/data/repositories/drift_meeting_processing_selection_repository.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
+import 'package:loquiris/data/repositories/drift_transcript_processing_repository.dart';
 import 'package:loquiris/features/export_backup/application/backup_service_provider.dart';
 import 'package:loquiris/features/export_backup/application/drift_backup_snapshot_planner.dart';
 import 'package:loquiris/features/export_backup/application/local_backup_service.dart';
@@ -31,12 +33,18 @@ import 'package:loquiris/features/recording/application/recording_inventory_sync
 import 'package:loquiris/features/recording/presentation/recording_controller.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/transcript/application/transcription_coordinator.dart';
+import 'package:loquiris/native/method_channel_refinement_audio_service.dart';
+import 'package:loquiris/native/method_channel_refinement_execution_service.dart';
 import 'package:loquiris/native/method_channel_thermal_and_performance_monitor.dart';
 import 'package:loquiris/native/method_channel_transcription_engine.dart';
 import 'package:loquiris/native/native_audio_capture_service.dart';
 import 'package:loquiris/native/recording_recovery_gateway.dart';
+import 'package:loquiris/services/meeting_processing_selection_repository.dart';
+import 'package:loquiris/services/refinement_audio_inventory_service.dart';
+import 'package:loquiris/services/refinement_execution_service.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
+import 'package:loquiris/services/transcript_processing_repository.dart';
 
 import '../support/fakes/fake_services.dart';
 
@@ -72,6 +80,14 @@ void main() {
                     is DriftTranscriptRepository &&
                 ref.read(transcriptionJobRepositoryProvider)
                     is DriftTranscriptionJobRepository &&
+                ref.read(meetingProcessingSelectionRepositoryProvider)
+                    is DriftMeetingProcessingSelectionRepository &&
+                ref.read(transcriptProcessingRepositoryProvider)
+                    is DriftTranscriptProcessingRepository &&
+                ref.read(refinementAudioInventoryServiceProvider)
+                    is MethodChannelRefinementAudioService &&
+                ref.read(refinementExecutionServiceProvider)
+                    is MethodChannelRefinementExecutionService &&
                 ref.read(modelRepositoryProvider) is DriftModelRepository &&
                 ref.read(modelManagerProvider) is RuntimeModelManager &&
                 ref.read(transcriptionEngineProvider)
@@ -378,29 +394,38 @@ void main() {
         diagnosticSink: const DisabledDiagnosticLogSink(),
       );
       final capture = FakeAudioCaptureService();
-      final gateway = _FakeRecordingRecoveryGateway(
-        RecordingRecoveryInventory(
-          sessions: [
-            RecordingRecoverySessionEvidence(
-              meetingId: 'meeting-1',
-              storageKey: storageKey,
-              segments: [
-                SessionRecoverySegmentEvidence(
-                  sequence: 0,
-                  relativePath: _recoveryPath(
-                    'recordings/$storageKey/segment-00000.adts',
-                  ),
-                  mediaStart: Duration.zero,
-                  mediaDuration: const Duration(minutes: 5),
-                  committedBytes: 2400,
-                  state: AudioSegmentState.committed,
+      final committedInventory = RecordingRecoveryInventory(
+        sessions: [
+          RecordingRecoverySessionEvidence(
+            meetingId: 'meeting-1',
+            storageKey: storageKey,
+            segments: [
+              SessionRecoverySegmentEvidence(
+                sequence: 0,
+                relativePath: _recoveryPath(
+                  'recordings/$storageKey/segment-00000.adts',
                 ),
-              ],
-            ),
-          ],
-          deletedIncompleteDerivedFiles: 0,
-          issueCodes: const [],
-        ),
+                mediaStart: Duration.zero,
+                mediaDuration: const Duration(minutes: 5),
+                committedBytes: 2400,
+                state: AudioSegmentState.committed,
+              ),
+            ],
+          ),
+        ],
+        deletedIncompleteDerivedFiles: 0,
+        issueCodes: const [],
+      );
+      final gateway = _SequencedRecordingRecoveryGateway(
+        <RecordingRecoveryInventory>[
+          RecordingRecoveryInventory(
+            sessions: const [],
+            deletedIncompleteDerivedFiles: 0,
+            issueCodes: const [],
+            liveMeetingIds: const {'meeting-1'},
+          ),
+          committedInventory,
+        ],
       );
       final synchronizer = NativeRecordingInventorySynchronizer(
         recoveryGateway: gateway,
@@ -456,6 +481,7 @@ void main() {
         ),
       );
       await ready.future.timeout(const Duration(seconds: 5));
+      final detail = await repository.loadDetail('meeting-1');
       final backup = await DriftBackupSnapshotPlanner(
         database,
         () async => directory,
@@ -466,6 +492,16 @@ void main() {
         isA<RecordingViewState>()
             .having((state) => state.persistencePending, 'pending', isFalse)
             .having((state) => state.persistenceFailure, 'failure', isNull),
+      );
+      expect(gateway.calls, 2);
+      expect(
+        (detail as Ok<SessionDetail, SessionRepositoryFailure>)
+            .value
+            .segments
+            .single
+            .relativePath
+            .value,
+        'recordings/$storageKey/segment-00000.adts',
       );
       expect(
         (backup as Ok<BackupSnapshotPlan, BackupFailure>)
@@ -537,6 +573,22 @@ final class _FakeRecordingRecoveryGateway implements RecordingRecoveryGateway {
   scan() async => Ok(inventory);
 }
 
+final class _SequencedRecordingRecoveryGateway
+    implements RecordingRecoveryGateway {
+  _SequencedRecordingRecoveryGateway(this._inventories);
+
+  final List<RecordingRecoveryInventory> _inventories;
+  int calls = 0;
+
+  @override
+  Future<Result<RecordingRecoveryInventory, RecordingRecoveryFailure>>
+  scan() async {
+    final index = calls.clamp(0, _inventories.length - 1);
+    calls += 1;
+    return Ok(_inventories[index]);
+  }
+}
+
 final class _ControlledRecordingInventorySynchronizer
     implements RecordingInventorySynchronizer {
   final Completer<Result<void, SessionRepositoryFailure>> _completion =
@@ -544,7 +596,9 @@ final class _ControlledRecordingInventorySynchronizer
   int calls = 0;
 
   @override
-  Future<Result<void, SessionRepositoryFailure>> synchronize() {
+  Future<Result<void, SessionRepositoryFailure>> synchronize({
+    String? finalizedMeetingId,
+  }) {
     calls += 1;
     return _completion.future;
   }

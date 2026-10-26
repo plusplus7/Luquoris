@@ -1,6 +1,7 @@
 package com.loquiris.recording
 
 import java.io.Closeable
+import java.util.concurrent.CompletionStage
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -72,7 +73,7 @@ class RecordingCapturePipeline(
     canonicalWorkerJoinTimeoutMillis: Long = DEFAULT_CANONICAL_WORKER_JOIN_TIMEOUT_MILLISECONDS,
     canonicalWorkerInterruptJoinTimeoutMillis: Long = DEFAULT_CANONICAL_WORKER_INTERRUPT_TIMEOUT_MILLISECONDS,
     private val elapsedRealtimeNanos: () -> Long = System::nanoTime,
-) : Closeable {
+) : Closeable, CaptureInferenceEndpoint {
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     private val lifecycle = java.lang.Object()
     private val health = AudioInputHealthTracker(elapsedRealtimeNanos)
@@ -95,6 +96,9 @@ class RecordingCapturePipeline(
     @Volatile
     private var captureBoundaryNanos: Long? = null
     private var nextSequence = 0L
+    private var nextCanonicalSample = 0L
+    @Volatile
+    private var captureEpoch = 0L
     private var captureThread: Thread? = null
     private var readInProgress = false
 
@@ -118,7 +122,7 @@ class RecordingCapturePipeline(
             }
         }
 
-    fun pause(): RecordingCaptureCommandResult =
+    fun pause(boundary: PcmCaptureBoundary = PcmCaptureBoundary.PAUSE): RecordingCaptureCommandResult =
         synchronized(lifecycle) {
             when (state) {
                 RecordingCapturePipelineState.paused -> RecordingCaptureCommandResult.Success
@@ -135,6 +139,7 @@ class RecordingCapturePipeline(
                             (remaining % NANOS_PER_MILLISECOND).toInt(),
                         )
                     }
+                    fanOut.notifyCaptureBoundary(boundary)
                     RecordingCaptureCommandResult.Success
                 }
                 else -> RecordingCaptureCommandResult.Failure("recording_capture_pause_invalid_state")
@@ -147,6 +152,7 @@ class RecordingCapturePipeline(
                 RecordingCapturePipelineState.recording -> RecordingCaptureCommandResult.Success
                 RecordingCapturePipelineState.paused -> {
                     if (!source.start()) return@synchronized failLocked("recording_input_resume_failed")
+                    captureEpoch = Math.addExact(captureEpoch, 1L)
                     state = RecordingCapturePipelineState.recording
                     captureBoundaryNanos = elapsedRealtimeNanos()
                     lifecycle.notifyAll()
@@ -187,7 +193,8 @@ class RecordingCapturePipeline(
             val quiesced = fanOut.shutdown()
             return failAndAbort("recording_capture_stop_timed_out", quiesced)
         }
-        val quiesced = fanOut.shutdown()
+        fanOut.notifyCaptureBoundary(PcmCaptureBoundary.STOP)
+        val quiesced = fanOut.shutdown(preserveInferenceBoundary = true)
         if (!quiesced) return failAndAbort("recording_canonical_shutdown_timed_out", false)
         val metrics = fanOut.metrics
         if (
@@ -212,7 +219,15 @@ class RecordingCapturePipeline(
             failureCode = failure.get(),
         )
 
-    fun replaceInferenceConsumer(consumer: PcmInferenceConsumer?) {
+    override val acceptsInference: Boolean
+        get() = state == RecordingCapturePipelineState.recording || state == RecordingCapturePipelineState.paused
+
+    override fun finishInference(consumer: PcmInferenceConsumer, action: () -> Unit): CompletionStage<PcmInferenceBoundaryResult> =
+        fanOut.finishInference(consumer, action)
+
+    override fun inferenceBacklog(): PcmInferenceBacklog = fanOut.inferenceBacklog()
+
+    override fun replaceInferenceConsumer(consumer: PcmInferenceConsumer?) {
         fanOut.replaceInferenceConsumer(consumer)
     }
 
@@ -254,9 +269,10 @@ class RecordingCapturePipeline(
                     return
                 }
             }
-            synchronized(lifecycle) {
+            val readEpoch = synchronized(lifecycle) {
                 if (state != RecordingCapturePipelineState.recording) continue
                 readInProgress = true
+                captureEpoch
             }
             val read =
                 try {
@@ -274,6 +290,9 @@ class RecordingCapturePipeline(
             val stateAfterRead = state
             if (stateAfterRead == RecordingCapturePipelineState.paused) continue
             if (stateAfterRead == RecordingCapturePipelineState.finishing) return
+            // A settled old read may return just as pause/resume completes.
+            // Never relabel its data (or stopped sentinel) as the new epoch.
+            if (readEpoch != captureEpoch) continue
             if (read == PcmCaptureSource.READ_STOPPED && stateAfterRead != RecordingCapturePipelineState.recording) {
                 continue
             }
@@ -283,21 +302,34 @@ class RecordingCapturePipeline(
                 return
             }
             if (read == 0) continue
+            if (read % 2 != 0) {
+                failFromCapture("recording_input_pcm_alignment_invalid")
+                return
+            }
             source.timestampFramePosition()?.let(health::recordTimestamp)
-            val frame = PcmCaptureFrame(nextSequence, buffer.copyOf(read))
-            when (fanOut.publish(frame)) {
-                PcmFanOutPublishResult.accepted -> nextSequence = Math.addExact(nextSequence, 1L)
-                PcmFanOutPublishResult.canonicalQueueFull -> {
-                    failFromCapture("recording_canonical_queue_full")
-                    return
-                }
-                PcmFanOutPublishResult.canonicalSinkFailed -> {
-                    failFromCapture("recording_canonical_encoder_failed")
-                    return
-                }
-                PcmFanOutPublishResult.closed -> {
-                    failFromCapture("recording_canonical_pipeline_closed")
-                    return
+            val frame = PcmCaptureFrame(nextSequence, buffer.copyOf(read), nextCanonicalSample, readEpoch)
+            synchronized(lifecycle) {
+                // Publication and its position commit must precede a pause
+                // boundary, or be discarded. No native timestamp/decoding I/O
+                // is performed under this lock; fan-out publication is bounded.
+                if (state != RecordingCapturePipelineState.recording || readEpoch != captureEpoch) continue
+                when (fanOut.publish(frame)) {
+                    PcmFanOutPublishResult.accepted -> {
+                        nextSequence = Math.addExact(nextSequence, 1L)
+                        nextCanonicalSample = Math.addExact(nextCanonicalSample, read.toLong() / 2)
+                    }
+                    PcmFanOutPublishResult.canonicalQueueFull -> {
+                        failFromCapture("recording_canonical_queue_full")
+                        return
+                    }
+                    PcmFanOutPublishResult.canonicalSinkFailed -> {
+                        failFromCapture("recording_canonical_encoder_failed")
+                        return
+                    }
+                    PcmFanOutPublishResult.closed -> {
+                        failFromCapture("recording_canonical_pipeline_closed")
+                        return
+                    }
                 }
             }
         }
@@ -310,11 +342,13 @@ class RecordingCapturePipeline(
             source.stop()
             lifecycle.notifyAll()
         }
+        fanOut.abortInference(failed = true)
     }
 
     private fun failLocked(code: String): RecordingCaptureCommandResult.Failure {
         failure.compareAndSet(null, code)
         state = RecordingCapturePipelineState.failed
+        fanOut.abortInference(failed = true)
         releaseSource()
         return RecordingCaptureCommandResult.Failure(code)
     }
@@ -325,6 +359,7 @@ class RecordingCapturePipeline(
     ): RecordingCaptureCommandResult.Failure {
         failure.compareAndSet(null, code)
         synchronized(lifecycle) { state = RecordingCapturePipelineState.failed }
+        fanOut.abortInference(failed = true)
         if (fanOutQuiesced) abortEncoderOnce() else deferEncoderAbortUntilFanOutStops()
         releaseSource()
         return RecordingCaptureCommandResult.Failure(failure.get() ?: code)

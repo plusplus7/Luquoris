@@ -5,16 +5,20 @@ import 'package:loquiris/features/export_backup/presentation/export_screen.dart'
 import 'package:loquiris/features/models_performance/presentation/models_performance_screen.dart';
 import 'package:loquiris/features/recording/presentation/active_recording_screen.dart';
 import 'package:loquiris/features/recording/presentation/new_recording_screen.dart';
+import 'package:loquiris/features/remote_transcription/application/remote_feature.dart';
+import 'package:loquiris/features/remote_transcription/presentation/remote_settings_screen.dart';
 import 'package:loquiris/features/sessions/presentation/session_detail_screen.dart';
 import 'package:loquiris/features/sessions/presentation/session_library_screen.dart';
 import 'package:loquiris/features/storage_privacy/presentation/storage_privacy_screen.dart';
 import 'package:loquiris/features/transcript/presentation/transcript_editor_screen.dart';
+import 'package:loquiris/features/transcript/presentation/transcript_versions_screen.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
 import 'package:loquiris/routing/app_navigation_shell.dart';
 import 'package:loquiris/routing/routes.dart';
 
 /// Provides the single application router.
 final appRouterProvider = Provider<GoRouter>((ref) {
+  final remoteEnabled = ref.watch(remoteTranscriptionEnabledProvider);
   final router = GoRouter(
     initialLocation: AppRoutes.sessions,
     errorBuilder: (context, state) => const AppRouteScreen(
@@ -47,6 +51,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         ),
                       ),
                       GoRoute(
+                        path: 'versions',
+                        builder: (context, state) => TranscriptVersionsScreen(
+                          meetingId: state.pathParameters['meetingId']!,
+                        ),
+                      ),
+                      GoRoute(
                         path: 'export',
                         builder: (context, state) => ExportScreen(
                           meetingId: state.pathParameters['meetingId']!,
@@ -70,7 +80,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutes.modelsPerformance,
-                builder: (context, state) => const ModelsPerformanceScreen(),
+                builder: (context, state) => remoteEnabled
+                    ? const RemoteSettingsScreen()
+                    : const ModelsPerformanceScreen(),
               ),
               GoRoute(
                 path: AppRoutes.storagePrivacy,

@@ -4,6 +4,33 @@ import 'package:loquiris/features/models_performance/domain/model_manifest.dart'
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 
 void main() {
+  test('serializes a lossless v1 snapshot without v2-only fields', () {
+    final input = _validManifest();
+    final manifest =
+        (BundledModelManifest.tryParse(input)
+                as Ok<BundledModelManifest, InvalidModelManifest>)
+            .value;
+
+    final snapshot = manifest.toJson();
+
+    expect(snapshot, _validManifest());
+    expect(snapshot.containsKey('artifacts'), isFalse);
+    expect(
+      (snapshot['runtime']! as Map<String, Object?>).containsKey(
+        'engineVersion',
+      ),
+      isFalse,
+    );
+    final reparsed = BundledModelManifest.tryParse(snapshot);
+    expect(reparsed, isA<Ok<BundledModelManifest, InvalidModelManifest>>());
+    expect(
+      (reparsed as Ok<BundledModelManifest, InvalidModelManifest>).value,
+      manifest,
+    );
+    (snapshot['license']! as Map<String, Object?>)['id'] = 'changed';
+    expect(manifest.toJson(), _validManifest());
+  });
+
   test('parses a complete version-one bundled-model manifest', () {
     final result = BundledModelManifest.tryParse(_validManifest());
 
@@ -69,7 +96,7 @@ void main() {
 
   test('rejects unsupported schema revisions', () {
     final futureManifest = _validManifest()
-      ..['schemaVersion'] = 2
+      ..['schemaVersion'] = 3
       ..['futureField'] = true;
 
     _expectFailure(

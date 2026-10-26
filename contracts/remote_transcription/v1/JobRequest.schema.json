@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "title": "Schemaversion",
+      "type": "integer"
+    },
+    "uploadId": {
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "title": "Uploadid",
+      "type": "string"
+    },
+    "profileId": {
+      "enum": [
+        "qwen-1.7b",
+        "whisper-large-v3"
+      ],
+      "title": "Profileid",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "uploadId",
+    "profileId"
+  ],
+  "title": "JobRequest",
+  "type": "object"
+}

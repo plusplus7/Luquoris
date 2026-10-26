@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:loquiris/core/result.dart';
+import 'package:loquiris/features/transcript/application/live_transcript_session_starter.dart';
 import 'package:loquiris/features/transcript/application/transcription_coordinator.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:meta/meta.dart';
@@ -90,25 +91,30 @@ final class LiveTranscriptController
   final String meetingId;
 
   StreamSubscription<TranscriptionEvent>? _subscription;
-  late TranscriptionCoordinator _coordinator;
   LiveTranscriptionSession? _session;
+  LiveTranscriptionSession? _finishingSession;
+  Future<void>? _finishingTask;
+  Future<void>? _startingFinish;
+  Object _generation = Object();
+  Completer<void>? _drained;
   var _acceptEvents = false;
   var _stopping = false;
+  var _stopRequested = false;
 
   @override
   Future<LiveTranscriptState> build() async {
-    ref.onDispose(_dispose);
-    _coordinator = ref.watch(transcriptionCoordinatorProvider.notifier);
-    final result = await _coordinator.startLiveDraft(meetingId);
-    if (!ref.mounted) {
-      if (result case Ok(value: final session?)) {
-        final _ = await _coordinator.stopLiveDraft(session);
-      }
-      return LiveTranscriptState(
-        status: LiveTranscriptStatus.stopped,
-        meetingId: meetingId,
-        chunks: const [],
-      );
+    _generation = Object();
+    _startingFinish = null;
+    var disposed = false;
+    ref.onDispose(() {
+      disposed = true;
+      _dispose();
+    });
+    _stopRequested = false;
+    final start = ref.watch(liveTranscriptSessionStarterProvider);
+    final result = await start(meetingId);
+    if (disposed || !ref.mounted || _stopRequested) {
+      return _finishLateStart(result, retainSession: !disposed && ref.mounted);
     }
     return switch (result) {
       Err(:final failure) => LiveTranscriptState(
@@ -130,9 +136,14 @@ final class LiveTranscriptController
   LiveTranscriptState _start(LiveTranscriptionSession session) {
     _session = session;
     _acceptEvents = true;
+    final drained = Completer<void>();
+    _drained = drained;
     _subscription = session.events.listen(
       _onEvent,
       onError: _onStreamError,
+      onDone: () {
+        if (!drained.isCompleted) drained.complete();
+      },
     );
     return LiveTranscriptState(
       status: LiveTranscriptStatus.running,
@@ -187,40 +198,194 @@ final class LiveTranscriptController
     );
   }
 
+  /// Flushes normal STOP without delaying recorder navigation or losing finals.
+  Future<void> finish() {
+    final session = _session;
+    if (session == null && state.isLoading) return _finishStarting();
+    if (session == null || session.finish == null) return stop();
+    if (identical(_finishingSession, session) && _finishingTask != null) {
+      return _finishingTask!;
+    }
+    _stopRequested = true;
+    final keepAlive = ref.keepAlive();
+    _finishingSession = session;
+    final pending = _finishLive(session, _drained);
+    _finishingTask = pending;
+    unawaited(
+      pending.whenComplete(() {
+        if (identical(_finishingTask, pending)) {
+          _finishingTask = null;
+          _finishingSession = null;
+        }
+        keepAlive.close();
+      }),
+    );
+    return pending;
+  }
+
+  Future<void> _finishStarting() {
+    final existing = _startingFinish;
+    if (existing != null) return existing;
+    final keepAlive = ref.keepAlive();
+    final pending = _finishAfterStartup(_generation);
+    _startingFinish = pending;
+    unawaited(
+      pending.whenComplete(() {
+        if (identical(_startingFinish, pending)) _startingFinish = null;
+        keepAlive.close();
+      }),
+    );
+    return pending;
+  }
+
+  Future<void> _finishAfterStartup(Object generation) async {
+    try {
+      await future;
+    } on Object {
+      return;
+    }
+    if (!ref.mounted || !identical(_generation, generation) || _stopRequested) {
+      return;
+    }
+    await finish();
+  }
+
+  Future<void> _finishLive(
+    LiveTranscriptionSession session,
+    Completer<void>? drained,
+  ) async {
+    Result<void, TranscriptionFailure> result;
+    try {
+      result = await session.finish!();
+      if (result.isOk) await drained?.future;
+    } on Object {
+      result = const Err(
+        TranscriptionUnavailable('transcription_live_cleanup_unconfirmed'),
+      );
+    }
+    if (!identical(_session, session)) return;
+    if (result.isOk) {
+      _acceptEvents = false;
+      _subscription = null;
+    }
+    _settleStop(session, result);
+  }
+
   /// Releases native live work while preserving the last visible draft.
   Future<void> stop() async {
+    _stopRequested = true;
     if (_stopping) return;
     _stopping = true;
     _acceptEvents = false;
+    _drainCompleted();
     final subscription = _subscription;
     _subscription = null;
-    await subscription?.cancel();
     final session = _session;
-    _session = null;
-    if (session != null) {
-      final _ = await _coordinator.stopLiveDraft(session);
+    final pending = session == null
+        ? Future<Result<void, TranscriptionFailure>>.value(const Ok(null))
+        : _releaseLive(session);
+    var detached = true;
+    try {
+      await subscription?.cancel();
+    } on Object {
+      detached = false;
     }
-    if (ref.mounted) {
-      final current = state.value;
-      if (current != null) {
-        state = AsyncData(
-          current._copyWith(
-            status: LiveTranscriptStatus.stopped,
-            backlog: Duration.zero,
-          ),
-        );
-      }
+    final result = await pending;
+    _settleStop(
+      session,
+      detached
+          ? result
+          : const Err(
+              TranscriptionUnavailable(
+                'transcription_live_cleanup_unconfirmed',
+              ),
+            ),
+    );
+    _stopping = false;
+  }
+
+  void _settleStop(
+    LiveTranscriptionSession? session,
+    Result<void, TranscriptionFailure> result,
+  ) {
+    if (!identical(_session, session)) return;
+    if (result.isOk) _session = null;
+    if (!ref.mounted) return;
+    final current = state.value;
+    if (current != null) {
+      state = AsyncData(
+        LiveTranscriptState(
+          meetingId: current.meetingId,
+          runId: current.runId,
+          chunks: current.chunks,
+          status: result.isOk
+              ? LiveTranscriptStatus.stopped
+              : LiveTranscriptStatus.degraded,
+          backlog: result.isOk ? Duration.zero : current.backlog,
+          incomplete: current.incomplete || !result.isOk,
+          degradationReason: result.isOk
+              ? null
+              : 'transcription_live_cleanup_unconfirmed',
+        ),
+      );
     }
+  }
+
+  Future<LiveTranscriptState> _finishLateStart(
+    Result<LiveTranscriptionSession?, TranscriptionFailure> result, {
+    required bool retainSession,
+  }) async {
+    Result<void, TranscriptionFailure> released = const Ok(null);
+    if (result case Ok(value: final session?)) {
+      if (retainSession) _session = session;
+      released = await _releaseLive(session);
+      if (released.isOk && identical(_session, session)) _session = null;
+    }
+    return LiveTranscriptState(
+      status: released.isOk
+          ? LiveTranscriptStatus.stopped
+          : LiveTranscriptStatus.degraded,
+      meetingId: meetingId,
+      chunks: const [],
+      incomplete: !released.isOk,
+      degradationReason: released.isOk
+          ? null
+          : 'transcription_live_cleanup_unconfirmed',
+    );
   }
 
   void _dispose() {
     _acceptEvents = false;
-    unawaited(_subscription?.cancel());
-    _subscription = null;
+    _drainCompleted();
+    _stopRequested = true;
     final session = _session;
     _session = null;
     if (session != null) {
-      unawaited(_coordinator.stopLiveDraft(session));
+      unawaited(_releaseLive(session));
+    }
+    try {
+      unawaited(_subscription?.cancel().onError((_, _) {}));
+    } on Object {
+      // View detachment cannot prevent the independent native release.
+    } finally {
+      _subscription = null;
+    }
+  }
+
+  void _drainCompleted() {
+    final drained = _drained;
+    if (drained != null && !drained.isCompleted) drained.complete();
+  }
+
+  Future<Result<void, TranscriptionFailure>> _releaseLive(
+    LiveTranscriptionSession session,
+  ) async {
+    try {
+      return await session.release();
+    } on Object {
+      return const Err(
+        TranscriptionUnavailable('transcription_live_unavailable'),
+      );
     }
   }
 }

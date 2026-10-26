@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-15",
+  "purpose": "isolated Android runtime/model compatibility smoke, not end-to-end qualification",
+  "deviceBaseline": "device-baseline-2026-10-15.json",
+  "userConditions": {
+    "ambientCelsiusApproximate": 25,
+    "memoryExtension": "enabled-user-reported",
+    "charging": true,
+    "networkingDisabled": false,
+    "microphoneUsed": false,
+    "appPackageOrRecordingDataChanged": false
+  },
+  "input": {
+    "path": "assets/benchmarks/audio/zh_en_mixed_v1.wav",
+    "sha256": "83440d4ccbd82dafd1a88346ab448e1dd309e408c598d665413b910cc92c40a7",
+    "durationSeconds": 45,
+    "samples": 720000,
+    "sampleRateHz": 16000,
+    "channels": 1,
+    "coverageHumanVerified": false,
+    "accuracyReferenceAvailable": false
+  },
+  "runtime": {
+    "name": "sherpa-onnx",
+    "version": "1.13.8",
+    "sourceCommit": "11afbd009a7f8c08f4bcf2fc1b265d0df4670fbf",
+    "archiveSha256": "2ff63469a71cb6009aa2e3ed5f4a670f8abdcbe4bb9ffd23776afc792a6b4f44",
+    "cApiLibrarySha256": "c85e2382e2ca12b0513826be926eaccfea896b4cbf568182e287671ba526f80d",
+    "onnxRuntimeLibrarySha256": "33847ad43bffe204699fd4a27f7f3603452a8cdaf2f9a44983a0bc31ffcf2da1",
+    "abi": "arm64-v8a",
+    "compiler": "Android NDK 28.2.13676358 aarch64-linux-android29-clang -O2 -fPIE -pie",
+    "deploymentRoot": "/data/local/tmp/loquiris-streaming-spike-20261015",
+    "sourceModification": "none; upstream C examples compiled unchanged",
+    "dataSource": "pre-existing authorized WAV, pushed to the isolated probe directory",
+    "productionBundled": false
+  },
+  "commonProbeSettings": {
+    "provider": "cpu",
+    "threads": 1,
+    "decodingMethod": "greedy_search",
+    "inputChunkSamples": 3200,
+    "inputChunkMilliseconds": 200,
+    "tailPaddingSamples": 4800,
+    "pacedRealTimeInput": false,
+    "debugLogging": true
+  },
+  "runs": [
+    {
+      "id": "zipformer-hf-int8-32",
+      "modelRevision": "e2382758de9a0219b4efe682b95af30b399db3b8",
+      "modelSource": "https://huggingface.co/csukuangfj/k2fsa-zipformer-bilingual-zh-en-t/tree/e2382758de9a0219b4efe682b95af30b399db3b8",
+      "probeSource": "c-api-examples/streaming-zipformer-c-api.c",
+      "probeSourceSha256": "47cc961de2714924f8997a75e626775625a80e13ce73cbd2354ad5735e2a254e",
+      "probeBinarySha256": "db37b859cefdec49c44b26110f3e42de64dca1b027ddff10296a8c9deccf0a6d",
+      "endpointEnabled": true,
+      "modelDecodeChunkLenMetadata": 32,
+      "modelContextTMetadata": 39,
+      "exitCode": 0,
+      "nonemptyIncrementalText": true,
+      "processWallSeconds": 5.735,
+      "processUserSeconds": 5.178967,
+      "processSystemSeconds": 0.531483,
+      "repeatProcessWallSeconds": 5.627,
+      "logPath": "build/streaming_spike/zipformer-smoke.log",
+      "logSha256": "9d6d6ae418fac58cab882abe17c10658be4387a297ad3dd8c5e84244b2daf9a2",
+      "pathAliasNote": "The unchanged example hardcodes an English-model directory name. Only its filenames were satisfied by aliases; actual inputs were the pinned bilingual encoder/decoder/joiner/tokenizer, verified on host and device. This did not evaluate the English model named by that directory."
+    },
+    {
+      "id": "paraformer-hf-unprepared",
+      "modelRevision": "2db94bce7ce81909a08fb3142c71086f489e7e16",
+      "encoderSha256": "00b5f90549fff9f0b2a20a4c2ccf1b2335a3adb533f648ee768f79b29b777ce2",
+      "tokenizerSha256": "fca8b98b28803e4235d6cd630e3666232bf55d3a34032c1cd7568c331ac213cd",
+      "probeSource": "c-api-examples/streaming-paraformer-c-api.c",
+      "probeSourceSha256": "87d8138c0dba66ae4ae474456cd389fc7d61324cb6bc8c00620dfb250231dc1f",
+      "exitCode": 255,
+      "processWallSeconds": 1.784,
+      "nonemptyIncrementalText": false,
+      "failure": "encoder metadata missing vocab_size",
+      "logPath": "build/streaming_spike/paraformer-smoke.log",
+      "logSha256": "d6449f231415a5753889c6168b1662d0a946075d71d0294726ccee2d69dba2b7",
+      "decision": "not directly compatible with this runtime; do not silently publish this conversion as the prepared candidate"
+    },
+    {
+      "id": "paraformer-published-int8",
+      "archiveSource": "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-paraformer-bilingual-zh-en.tar.bz2",
+      "archiveBytes": 1047319737,
+      "archiveSha256": "5462a1fce42693deae572af1e8c4687124b12aa85fe61ff4d3168bb5280e205f",
+      "encoderBytes": 165462184,
+      "encoderSha256": "81a70226a8934e6ed92aa1d4fc486b428b5398e2f2619ed4897b7294cab90e9a",
+      "decoderBytes": 71664561,
+      "decoderSha256": "f3cca9f77bb9d93c8fcbfb63ae617b6b1ee96818df3aa3b151c40658fe38594f",
+      "tokenizerBytes": 75756,
+      "tokenizerSha256": "59aba8873a2ed1e122c25fee421e25f283b63290efbde85c1f01a853d83cb6e6",
+      "readmeSha256": "16b56210f03531d00f5580b060ff6843461e618e5642c070a58df6f0a5c98875",
+      "probeBinarySha256": "4bdb3c0d58ab0d22357d0a5223ed79575c7672266d24903499c3b4e48afd68ef",
+      "endpointEnabled": false,
+      "exitCode": 0,
+      "nonemptyIncrementalText": true,
+      "processWallSeconds": 11.071,
+      "processUserSeconds": 10.156437,
+      "processSystemSeconds": 0.645232,
+      "logPath": "build/streaming_spike/paraformer-published-smoke.log",
+      "logSha256": "084fa4cd323605e0c9376e6ac5d123dd0a84e92d1b1050d838cc939c29dd761c",
+      "preparationEvidence": "Archive README explicitly documents adding metadata with add-model-metadata.py before renaming the encoder. The pinned HF preparation script SHA-256 is 431c14b3c3b7bae9abfa59d906c47162fe6ed56eb2a9b0e87be74cc880a5c9f3. No local weight metadata was patched for this run.",
+      "licenseDeclaration": "archive README declares Apache-2.0; independent artifact redistribution approval is still pending"
+    }
+  ],
+  "acceptance": {
+    "candidateSelectionComplete": false,
+    "task2_1Complete": false,
+    "task2_2Complete": false,
+    "liveQualified": false,
+    "limitations": [
+      "Process wall time includes loading, file read, decoding, debug display, tail padding and cleanup; it is not isolated inference time or sustained effective RTF.",
+      "The upstream examples differ in endpoint policy; do not rank candidates from these compatibility timings.",
+      "No first-voiced-sample labels, end-to-end display latency, p95 distribution, unique-audio backlog, continuously sampled RSS/PSS, battery drain, microphone capture or four-hour evidence was collected.",
+      "The user asked to reuse the prior audio. Its retained 45-second excerpt and source manifest are available; source manifest duration is 301577 ms, not 30 minutes per stratum. No human reference or verified English/mixed coverage was supplied.",
+      "Networking remained available; this is not an offline-mode acceptance test.",
+      "The GitHub asr-models tag is a mutable discovery URL. The captured archive hash pins these local bytes but does not establish a reproducible source-revision chain or production approval."
+    ]
+  }
+}

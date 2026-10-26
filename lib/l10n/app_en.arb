@@ -168,47 +168,85 @@
     "description": "Suggestion shown when local meeting search has no results."
   },
   "meetingStatusDraft": "Draft",
-  "@meetingStatusDraft": {"description": "Badge for a draft meeting."},
+  "@meetingStatusDraft": {
+    "description": "Badge for a draft meeting."
+  },
   "meetingStatusPreparing": "Preparing",
-  "@meetingStatusPreparing": {"description": "Badge for a meeting preparing to record."},
+  "@meetingStatusPreparing": {
+    "description": "Badge for a meeting preparing to record."
+  },
   "meetingStatusRecording": "Recording",
-  "@meetingStatusRecording": {"description": "Badge for an actively recording meeting."},
+  "@meetingStatusRecording": {
+    "description": "Badge for an actively recording meeting."
+  },
   "meetingStatusPaused": "Paused",
-  "@meetingStatusPaused": {"description": "Badge for a paused recording."},
+  "@meetingStatusPaused": {
+    "description": "Badge for a paused recording."
+  },
   "meetingStatusStopping": "Saving",
-  "@meetingStatusStopping": {"description": "Badge for a recording being safely finalized."},
+  "@meetingStatusStopping": {
+    "description": "Badge for a recording being safely finalized."
+  },
   "meetingStatusFinished": "Finished",
-  "@meetingStatusFinished": {"description": "Badge for a finalized meeting."},
+  "@meetingStatusFinished": {
+    "description": "Badge for a finalized meeting."
+  },
   "meetingStatusRecoverable": "Needs review",
-  "@meetingStatusRecoverable": {"description": "Badge for an interrupted meeting requiring review."},
+  "@meetingStatusRecoverable": {
+    "description": "Badge for an interrupted meeting requiring review."
+  },
   "meetingStatusFailed": "Save incomplete",
-  "@meetingStatusFailed": {"description": "Badge for a meeting whose finalization failed."},
+  "@meetingStatusFailed": {
+    "description": "Badge for a meeting whose finalization failed."
+  },
   "meetingStatusTrashed": "In trash",
-  "@meetingStatusTrashed": {"description": "Badge for a meeting in local trash."},
+  "@meetingStatusTrashed": {
+    "description": "Badge for a meeting in local trash."
+  },
   "meetingStatusDeleting": "Deleting",
-  "@meetingStatusDeleting": {"description": "Badge for a permanently deleting meeting."},
+  "@meetingStatusDeleting": {
+    "description": "Badge for a permanently deleting meeting."
+  },
   "meetingDefaultTitle": "Meeting {date} {time}",
   "@meetingDefaultTitle": {
     "description": "Localized default title created when recording starts without a title.",
     "placeholders": {
-      "date": {"type": "String", "description": "Localized full date."},
-      "time": {"type": "String", "description": "Localized time of day."}
+      "date": {
+        "type": "String",
+        "description": "Localized full date."
+      },
+      "time": {
+        "type": "String",
+        "description": "Localized time of day."
+      }
     }
   },
   "meetingMetadata": "{date} · {duration} · {size}",
   "@meetingMetadata": {
     "description": "Compact metadata line shown for one meeting.",
     "placeholders": {
-      "date": {"type": "String", "description": "Localized creation date."},
-      "duration": {"type": "String", "description": "Formatted media duration."},
-      "size": {"type": "String", "description": "Formatted committed audio size."}
+      "date": {
+        "type": "String",
+        "description": "Localized creation date."
+      },
+      "duration": {
+        "type": "String",
+        "description": "Formatted media duration."
+      },
+      "size": {
+        "type": "String",
+        "description": "Formatted committed audio size."
+      }
     }
   },
   "transcriptMatchAt": "Transcript match at {offset}",
   "@transcriptMatchAt": {
     "description": "Label identifying the media offset of a transcript search result.",
     "placeholders": {
-      "offset": {"type": "String", "description": "Formatted media-time offset."}
+      "offset": {
+        "type": "String",
+        "description": "Formatted media-time offset."
+      }
     }
   },
   "newRecordingIntro": "Choose how this meeting will be processed. Audio is always saved locally first.",
@@ -240,11 +278,17 @@
     "description": "Heading for recognition-language choices."
   },
   "languageChinese": "Chinese",
-  "@languageChinese": {"description": "Chinese recognition-language choice."},
+  "@languageChinese": {
+    "description": "Chinese recognition-language choice."
+  },
   "languageEnglish": "English",
-  "@languageEnglish": {"description": "English recognition-language choice."},
+  "@languageEnglish": {
+    "description": "English recognition-language choice."
+  },
   "languageMixed": "Chinese + English",
-  "@languageMixed": {"description": "Mixed Chinese-English recognition-language choice."},
+  "@languageMixed": {
+    "description": "Mixed Chinese-English recognition-language choice."
+  },
   "speakerCountLabel": "Expected speakers",
   "@speakerCountLabel": {
     "description": "Heading for optional two-to-six-speaker guidance."
@@ -257,7 +301,10 @@
   "@speakerCountOption": {
     "description": "A selectable expected-speaker count.",
     "placeholders": {
-      "count": {"type": "int", "description": "Expected number of speakers from two through six."}
+      "count": {
+        "type": "int",
+        "description": "Expected number of speakers from two through six."
+      }
     }
   },
   "startRecordingNowAction": "Start recording",
@@ -284,15 +331,24 @@
   "@recordingStoragePreflightFailed": {
     "description": "Measured and required local space after recording preflight is refused.",
     "placeholders": {
-      "available": {"type": "String", "description": "Formatted free-space measurement."},
-      "required": {"type": "String", "description": "Formatted required-space measurement."}
+      "available": {
+        "type": "String",
+        "description": "Formatted free-space measurement."
+      },
+      "required": {
+        "type": "String",
+        "description": "Formatted required-space measurement."
+      }
     }
   },
   "recordingStorageRequired": "At least {required} is required; available space could not be measured.",
   "@recordingStorageRequired": {
     "description": "Required local space when Android could not report free bytes.",
     "placeholders": {
-      "required": {"type": "String", "description": "Formatted required-space measurement."}
+      "required": {
+        "type": "String",
+        "description": "Formatted required-space measurement."
+      }
     }
   },
   "recordingStartOutcomeUnknown": "Android has not confirmed whether recording started. Do not start again; check the recording notification or reopen Loquiris.",
@@ -310,12 +366,20 @@
   "recordingTimerSemantic": "Recorded time {time}",
   "@recordingTimerSemantic": {
     "description": "Accessible label for the pause-aware recording timer.",
-    "placeholders": {"time": {"type": "String"}}
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "recordingSizeLabel": "Recorded audio size {size}",
   "@recordingSizeLabel": {
     "description": "Current durable recording file size.",
-    "placeholders": {"size": {"type": "String"}}
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
   },
   "recordingStatusActive": "Recording now",
   "recordingStatusPaused": "Recording paused",
@@ -342,7 +406,7 @@
   "bookmarkAddedMessage": "Bookmark saved",
   "highlightAddedMessage": "Highlight saved",
   "markerAddFailed": "Could not save that marker. Recording continues.",
-  "recordingMetadataSaveWarning": "Recording continues, but local meeting details could not be updated yet.",
+  "recordingMetadataSaveWarning": "Local meeting details could not be updated yet.",
   "recordingControlFailed": "That recording control did not complete. The saved audio is unchanged.",
   "recordingStateLoading": "Reading recorder state",
   "recordingStateUnavailable": "This meeting is not the active recording. The microphone was not started.",
@@ -360,7 +424,11 @@
   "sessionDetailSegment": "Audio segment {number}",
   "@sessionDetailSegment": {
     "description": "One committed audio segment in meeting order.",
-    "placeholders": {"number": {"type": "int"}}
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
   },
   "sessionDetailEventsTitle": "Recording timeline",
   "sessionDetailNoEvents": "No recording events",
@@ -377,8 +445,12 @@
   "@sessionDetailPlaybackPosition": {
     "description": "Accessible current and total playback time.",
     "placeholders": {
-      "position": {"type": "String"},
-      "duration": {"type": "String"}
+      "position": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "sessionDetailPause": "Pause playback",
@@ -393,7 +465,11 @@
   "sessionProcessingRunning": "Processing {percent}%",
   "@sessionProcessingRunning": {
     "description": "Progress of one local processing job.",
-    "placeholders": {"percent": {"type": "int"}}
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "sessionProcessingPaused": "Paused",
   "sessionProcessingSucceeded": "Completed",
@@ -404,7 +480,11 @@
   "transcriptionProgress": "Transcribing locally {percent}%",
   "@transcriptionProgress": {
     "description": "Durably persisted post-session transcription progress.",
-    "placeholders": {"percent": {"type": "int"}}
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "transcriptionDelayed": "Transcription is delayed. Your recording is safe and processing will resume locally.",
   "transcriptionIncomplete": "The transcript is incomplete. Your recording is safe and you can try again.",
@@ -533,7 +613,9 @@
   "@exportSucceeded": {
     "description": "Status after a local export completes.",
     "placeholders": {
-      "fileName": {"type": "String"}
+      "fileName": {
+        "type": "String"
+      }
     }
   },
   "exportSegmentsFallbackWarning": "Continuous audio was unavailable, so the package contains recoverable segments.",
@@ -549,6 +631,14 @@
     "description": "Status after the user dismisses the Android destination picker."
   },
   "exportFailed": "Export could not be completed. The original meeting is unchanged.",
+  "exportTranscriptSelectionRequired": "Choose a transcript version before exporting text or subtitles.",
+  "@exportTranscriptSelectionRequired": {
+    "description": "Explains that text-based export needs an explicit current transcript, not an automatic refined result."
+  },
+  "exportTranscriptChanged": "The selected transcript changed while preparing export. Try again.",
+  "@exportTranscriptChanged": {
+    "description": "Retryable failure when separate export reads disagree on the selected version or corrections."
+  },
   "@exportFailed": {
     "description": "Generic local export failure message."
   },
@@ -568,15 +658,21 @@
   "@restoredCopyTitle": {
     "description": "Meeting title marker applied when restore keeps a conflicting local meeting and imports the backup as a new copy.",
     "placeholders": {
-      "title": {"type": "String"}
+      "title": {
+        "type": "String"
+      }
     }
   },
   "transcriptEditorSegmentTime": "{start}–{end}",
   "@transcriptEditorSegmentTime": {
     "description": "Pause-free media range for one transcript segment.",
     "placeholders": {
-      "start": {"type": "String"},
-      "end": {"type": "String"}
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
     }
   },
   "storageApplicationAndModels": "Application and models",
@@ -606,7 +702,11 @@
   "storageApplicationModelsDetail": "Includes {size} of bundled model files. Bundled models cannot be removed individually in this release; other private support data is grouped here.",
   "@storageApplicationModelsDetail": {
     "description": "Explains that the model detail is already included in the application category.",
-    "placeholders": {"size": {"type": "String"}}
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
   },
   "storageActiveMeetingsDetail": "Committed audio for meetings outside Trash.",
   "storageRebuildableCacheDetail": "Temporary data Loquiris can recreate when needed.",
@@ -624,8 +724,12 @@
   "@rebuildableCacheCleared": {
     "description": "Success after explicit allowlisted cache cleanup.",
     "placeholders": {
-      "size": {"type": "String"},
-      "count": {"type": "int"}
+      "size": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
     }
   },
   "rebuildableCacheNothingCleared": "No allowlisted rebuildable cache needed clearing.",
@@ -633,7 +737,11 @@
   "rebuildableCacheCleanupPartiallyFailed": "Cleanup stopped after clearing {size}. Try again. Meeting data is unchanged.",
   "@rebuildableCacheCleanupPartiallyFailed": {
     "description": "Retryable cleanup failure after some derived bytes were already removed.",
-    "placeholders": {"size": {"type": "String"}}
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
   },
   "benchmarkIntro": "Run a short offline check to see which local processing mode this device can sustain.",
   "@benchmarkIntro": {
@@ -735,7 +843,11 @@
   "benchmarkProgressPercent": "{percent}% complete",
   "@benchmarkProgressPercent": {
     "description": "Visible normalized progress for the short performance benchmark.",
-    "placeholders": {"percent": {"type": "int"}}
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "benchmarkCancelAction": "Cancel performance check",
   "benchmarkCancelledHeading": "Check cancelled",
@@ -758,19 +870,31 @@
   "benchmarkRtfMetric": "Real-time factor: {value}×",
   "@benchmarkRtfMetric": {
     "description": "Measured processing-to-audio time ratio for one benchmark mode.",
-    "placeholders": {"value": {"type": "num"}}
+    "placeholders": {
+      "value": {
+        "type": "num"
+      }
+    }
   },
   "benchmarkLatencyMetric": "First text latency: {milliseconds} ms",
   "@benchmarkLatencyMetric": {
     "description": "Measured time until the first non-empty local transcript text.",
-    "placeholders": {"milliseconds": {"type": "int"}}
+    "placeholders": {
+      "milliseconds": {
+        "type": "int"
+      }
+    }
   },
   "benchmarkModeStatusSemantic": "{mode}: {status}",
   "@benchmarkModeStatusSemantic": {
     "description": "Screen-reader label combining a benchmark mode and its evidence status.",
     "placeholders": {
-      "mode": {"type": "String"},
-      "status": {"type": "String"}
+      "mode": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
     }
   },
   "benchmarkRecommendationBalanced": "This device sustained the balanced live-processing thresholds in the short check.",
@@ -789,7 +913,11 @@
   "benchmarkExportSucceeded": "Saved {fileName}.",
   "@benchmarkExportSucceeded": {
     "description": "Confirms a benchmark report export using only the destination-provided display filename.",
-    "placeholders": {"fileName": {"type": "String"}}
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
   },
   "benchmarkExportCancelled": "Export cancelled. No file was saved.",
   "benchmarkExportFailed": "Report could not be exported. Try again.",
@@ -801,21 +929,277 @@
   "liveTranscriptStableSegment": "Stable. {text}",
   "@liveTranscriptStableSegment": {
     "description": "Screen-reader label for a stable live transcript segment.",
-    "placeholders": {"text": {"type": "String"}}
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
   },
   "liveTranscriptDraftSegment": "Draft. {text}",
   "@liveTranscriptDraftSegment": {
     "description": "Screen-reader label for a replaceable live transcript segment.",
-    "placeholders": {"text": {"type": "String"}}
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
   },
   "liveTranscriptBacklog": "The live draft is about {seconds} seconds behind.",
   "@liveTranscriptBacklog": {
     "description": "Visible live-transcription backlog rounded up to whole seconds.",
-    "placeholders": {"seconds": {"type": "int"}}
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
   },
   "liveTranscriptIncomplete": "This live draft may be incomplete.",
+  "liveTranscriptDiscontinuity": "An audio interval is missing from this draft. Later live text can continue.",
+  "@liveTranscriptDiscontinuity": {
+    "description": "Explains incomplete live coverage without falsely claiming the live engine stopped."
+  },
   "liveTranscriptThermalFallback": "Live transcription paused because this device is too warm.",
   "liveTranscriptModelFallback": "The local model could not start live transcription.",
   "liveTranscriptGenericFallback": "Live transcription stopped safely.",
-  "liveTranscriptPostSessionFallback": "A complete transcript will run after recording."
+  "liveTranscriptPostSessionFallback": "A complete transcript will run after recording.",
+  "transcriptVersionsTitle": "Transcript versions",
+  "@transcriptVersionsTitle": {
+    "description": "Title and navigation label for retained transcript versions."
+  },
+  "transcriptVersionsHelp": "Choose which version to read, search, play back, or export. Other versions and their human corrections are kept separately.",
+  "@transcriptVersionsHelp": {
+    "description": "Explains explicit current selection and preservation of historical corrections."
+  },
+  "transcriptVersionsLoading": "Loading transcript versions…",
+  "@transcriptVersionsLoading": {
+    "description": "Accessible local version-list loading state."
+  },
+  "transcriptVersionsLoadFailed": "Transcript versions could not be read. Try again.",
+  "@transcriptVersionsLoadFailed": {
+    "description": "Privacy-safe local version-list read failure."
+  },
+  "transcriptVersionsEmpty": "No transcript versions have been saved yet.",
+  "@transcriptVersionsEmpty": {
+    "description": "Explicit empty retained-version list."
+  },
+  "transcriptVersionSelectionFailed": "The version could not be changed. Your current transcript is unchanged. Try again.",
+  "@transcriptVersionSelectionFailed": {
+    "description": "Selection transaction failure without exposing diagnostics."
+  },
+  "transcriptRefinementReady": "A refined version is available. It will not replace your current transcript automatically.",
+  "@transcriptRefinementReady": {
+    "description": "Neutral availability notice for any unselected refinement, including retained history; never claims the user's selection history."
+  },
+  "transcriptVersionRole": "{role, select, liveDraft{Live draft} refinement{Refined transcript} unverified{Unverified version} other{Saved transcript}}",
+  "@transcriptVersionRole": {
+    "description": "Explicit paired role; legacy output is never inferred to be refined.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "transcriptVersionIdentity": "{role} · {date} {time}",
+  "@transcriptVersionIdentity": {
+    "description": "Version heading using a localized role and local creation date/time.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "date": {
+        "type": "DateTime",
+        "format": "yMMMd"
+      },
+      "time": {
+        "type": "DateTime",
+        "format": "Hms"
+      }
+    }
+  },
+  "transcriptVersionCoverage": "{coverage, select, complete{Complete coverage} incomplete{Incomplete coverage} other{Coverage not recorded}}",
+  "@transcriptVersionCoverage": {
+    "description": "Coverage is independent of inference success; legacy coverage is unknown.",
+    "placeholders": {
+      "coverage": {
+        "type": "String"
+      }
+    }
+  },
+  "transcriptVersionProvenance": "Model: {model} ({version})\nRuntime: {engine} {engineVersion}\nBundle SHA-256: {hash}",
+  "@transcriptVersionProvenance": {
+    "description": "Readable immutable run provenance, excluding paths and decoding diagnostics.",
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "version": {
+        "type": "String"
+      },
+      "engine": {
+        "type": "String"
+      },
+      "engineVersion": {
+        "type": "String"
+      },
+      "hash": {
+        "type": "String"
+      }
+    }
+  },
+  "transcriptVersionUnverified": "Version provenance could not be verified. Selection is unavailable.",
+  "@transcriptVersionUnverified": {
+    "description": "Fail-closed action state for invalid processing metadata."
+  },
+  "transcriptVersionNotReady": "This version is not ready to select.",
+  "@transcriptVersionNotReady": {
+    "description": "A running, queued, or unsuccessful refinement is not selectable."
+  },
+  "transcriptVersionCurrent": "Current version",
+  "@transcriptVersionCurrent": {
+    "description": "Durably selected version, never an optimistic pending selection."
+  },
+  "transcriptVersionUse": "Use this version",
+  "@transcriptVersionUse": {
+    "description": "Explicit current-version selection button."
+  },
+  "transcriptVersionUseSemantic": "Use {version}",
+  "@transcriptVersionUseSemantic": {
+    "description": "Unique accessible selection action for its version heading.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "transcriptVersionSelecting": "Switching version…",
+  "@transcriptVersionSelecting": {
+    "description": "Disabled selection action while local commit is pending."
+  },
+  "recordingOnlyChoice": "Recording only",
+  "@recordingOnlyChoice": {
+    "description": "Per-meeting capture-only choice, without inference."
+  },
+  "recordingOnlyChoiceDescription": "Save the original audio without running transcription for this meeting.",
+  "@recordingOnlyChoiceDescription": {
+    "description": "Capture-only choice explanation."
+  },
+  "twoPassChoice": "Live draft + refinement",
+  "@twoPassChoice": {
+    "description": "Separate streaming and complete-pass processing choice."
+  },
+  "twoPassUnavailable": "Unavailable until a streaming model pair passes the required checks. Choose post-session transcription or recording only.",
+  "@twoPassUnavailable": {
+    "description": "Disabled live choice explanation; no production approval is implied."
+  },
+  "recordingProcessingUnavailable": "The transcription configuration could not be saved. Try again, or choose recording only. Recording has not started.",
+  "@recordingProcessingUnavailable": {
+    "description": "Configuration preflight failed before native capture."
+  },
+  "refinementResumeAction": "Resume refinement",
+  "@refinementResumeAction": {
+    "description": "Explicit recovery action for a validated paused refinement job."
+  },
+  "refinementResuming": "Resuming refinement…",
+  "@refinementResuming": {
+    "description": "Disabled recovery action while the resume request is pending."
+  },
+  "refinementPausedMessage": "{reasonCode, select, refinement_thermal_severe{Refinement is paused while this device cools down. Your recording is safe.} refinement_battery_low{Refinement is paused because the battery is low. Charge this device before resuming.} refinement_memory_pressure{Refinement is paused because memory is low. Close other apps before resuming.} refinement_power_save{Refinement is paused while battery saver is on. Turn it off before resuming.} refinement_recording_active{Refinement is paused to prioritize recording. Resume after recording stops.} refinement_resources_unavailable{Refinement is paused because device resources could not be checked. Try resuming later.} other{Refinement is paused. Your recording is safe. You can try resuming later.}}",
+  "@refinementPausedMessage": {
+    "description": "Content-free pause explanation. Unknown internal codes must use the generic branch, never be interpolated.",
+    "placeholders": {
+      "reasonCode": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteTitle": "Remote transcription",
+  "remoteExplanation": "Audio stays on this phone. Choosing remote transcription uploads a copy to your configured server. The server reports its retention policy and expiry; local transcripts and edits remain.",
+  "remoteEndpoint": "Server address",
+  "remoteToken": "Server access token",
+  "remoteConfigure": "Save connection",
+  "remoteStart": "Start transcription",
+  "remoteCancel": "Cancel remote task",
+  "remoteEdit": "Edit this version",
+  "remoteSave": "Save correction",
+  "remoteExportText": "Export text",
+  "remoteExportJson": "Export JSON",
+  "remoteExportSubtitles": "Export original subtitles",
+  "remoteEmpty": "Remote results will appear here after recording finishes.",
+  "remoteInputInvalid": "Enter a valid HTTPS origin or private LAN HTTP IP, and an access token of at least 32 characters.",
+  "remoteVersionSource": "Model: {model} · Revision: {revision}",
+  "@remoteVersionSource": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "revision": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteFailure": "{code, select, remote_authentication{Server credentials were rejected. Configure the connection again.} remote_credentials_missing{Local credentials are unavailable. Configure the connection again.} remote_transport{Network unavailable. Check the connection and retry.} remote_quota{Server storage quota exceeded.} remote_expired{The server copy expired. Start a new transcription from local audio.} remote_model_failed{Server inference failed. Check the server before starting a new run.} remote_submission_pending{Recovering the submitted job identity.} remote_restore_requires_action{Restored work requires an explicit new request and connection setup.} remote_audio_unavailable{Recording audio is unavailable.} remote_audio_changed{Recording audio differs from the queued request.} other{Remote task needs attention: {code}}}",
+  "@remoteFailure": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteTaskProgress": "{done} / {total} bytes uploaded",
+  "@remoteTaskProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "remoteState": "{state, select, waitingSetup{Configure a server} waitingAudio{Waiting for recording to finish} uploading{Uploading} submitting{Submitting} waitingNetwork{Waiting to retry network} queued{Queued on server} running{Transcribing} completed{Saved on phone} failed{Failed — create a new run to retry} cancelled{Cancelled} restored{Restored — new authorization required} expired{Remote result expired} other{Waiting}}",
+  "@remoteState": {
+    "placeholders": {
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "remotePostSessionDescription": "Record reliably on this phone, then upload for server transcription. Works without a local model.",
+  "remoteRecordingNote": "Recording works offline. Remote transcription waits for a configured server and network access.",
+  "remoteRetention": "Server retention: {seconds} seconds",
+  "@remoteRetention": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "remoteExpires": "Server copy expires: {deadline}",
+  "@remoteExpires": {
+    "placeholders": {
+      "deadline": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteModelPageNote": "Remote transcription runs on your server and requires no phone model installation. This page tests local phone inference only; existing local transcripts remain readable.",
+  "remoteRestart": "Transcribe again",
+  "remoteServerSettings": "Transcription server",
+  "remoteAutomaticRecognition": "Language is detected automatically. Transcription starts after recording ends.",
+  "remoteLanExplanation": "Use a private LAN address such as http://192.168.1.20:18000. HTTP sends audio and the access token without encryption; use it only on your trusted network.",
+  "remoteConnectionSaved": "Server connection saved",
+  "remoteChangeConnection": "Change connection",
+  "remoteOpenSettings": "Configure server",
+  "remoteResultTitle": "Transcript",
+  "remoteExport": "Export",
+  "remoteRecordingDetails": "Recording details",
+  "remoteVersionNumber": "Transcript {number}",
+  "@remoteVersionNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "remoteNoSpeech": "No speech detected."
 }

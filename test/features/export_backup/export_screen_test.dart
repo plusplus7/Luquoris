@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:loquiris/app.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/export_backup/presentation/export_screen.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
+import 'package:loquiris/routing/app_router.dart';
+import 'package:loquiris/routing/routes.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
 
@@ -13,6 +16,50 @@ import '../../support/fakes/fake_services.dart';
 import '../../support/harness.dart';
 
 void main() {
+  for (final entry in {
+    'export_transcript_selection_required':
+        'Choose a transcript version before exporting text or subtitles.',
+    'export_transcript_changed':
+        'The selected transcript changed while preparing export. Try again.',
+  }.entries) {
+    testWidgets('version export recovery explains ${entry.key}', (
+      tester,
+    ) async {
+      tester.useDevice(TestDevice.compact);
+      final exports = FakeExportService()
+        ..result = Err(ExportUnavailable(entry.key));
+      await tester.pumpLoquirisApp(
+        overrides: [exportServiceProvider.overrideWithValue(exports)],
+      );
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(LoquirisApp)),
+      );
+      container.read(appRouterProvider).go(AppRoutes.export('meeting-1'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('export-confirm')),
+        300,
+      );
+      await tester.tap(find.byKey(const Key('export-confirm')));
+      await tester.pumpAndSettle();
+      expect(find.text(entry.value), findsOneWidget);
+      expect(find.textContaining(entry.key), findsNothing);
+      if (entry.key == 'export_transcript_selection_required') {
+        final versions = find.byKey(
+          const Key('export-choose-transcript-version'),
+        );
+        await tester.ensureVisible(versions);
+        await tester.pump();
+        await tester.tap(versions);
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('transcript-versions:meeting-1')),
+          findsOneWidget,
+        );
+      }
+    });
+  }
+
   testWidgets('user explicitly selects one of six local export formats', (
     tester,
   ) async {

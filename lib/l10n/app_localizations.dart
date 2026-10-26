@@ -761,7 +761,7 @@ abstract class AppLocalizations {
   /// No description provided for @recordingMetadataSaveWarning.
   ///
   /// In en, this message translates to:
-  /// **'Recording continues, but local meeting details could not be updated yet.'**
+  /// **'Local meeting details could not be updated yet.'**
   String get recordingMetadataSaveWarning;
 
   /// No description provided for @recordingControlFailed.
@@ -1418,6 +1418,18 @@ abstract class AppLocalizations {
   /// **'Export could not be completed. The original meeting is unchanged.'**
   String get exportFailed;
 
+  /// Explains that text-based export needs an explicit current transcript, not an automatic refined result.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a transcript version before exporting text or subtitles.'**
+  String get exportTranscriptSelectionRequired;
+
+  /// Retryable failure when separate export reads disagree on the selected version or corrections.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected transcript changed while preparing export. Try again.'**
+  String get exportTranscriptChanged;
+
   /// Warning when a document provider refuses cleanup of an incomplete export.
   ///
   /// In en, this message translates to:
@@ -2018,6 +2030,12 @@ abstract class AppLocalizations {
   /// **'This live draft may be incomplete.'**
   String get liveTranscriptIncomplete;
 
+  /// Explains incomplete live coverage without falsely claiming the live engine stopped.
+  ///
+  /// In en, this message translates to:
+  /// **'An audio interval is missing from this draft. Later live text can continue.'**
+  String get liveTranscriptDiscontinuity;
+
   /// No description provided for @liveTranscriptThermalFallback.
   ///
   /// In en, this message translates to:
@@ -2041,6 +2059,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A complete transcript will run after recording.'**
   String get liveTranscriptPostSessionFallback;
+
+  /// Title and navigation label for retained transcript versions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcript versions'**
+  String get transcriptVersionsTitle;
+
+  /// Explains explicit current selection and preservation of historical corrections.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which version to read, search, play back, or export. Other versions and their human corrections are kept separately.'**
+  String get transcriptVersionsHelp;
+
+  /// Accessible local version-list loading state.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading transcript versions…'**
+  String get transcriptVersionsLoading;
+
+  /// Privacy-safe local version-list read failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcript versions could not be read. Try again.'**
+  String get transcriptVersionsLoadFailed;
+
+  /// Explicit empty retained-version list.
+  ///
+  /// In en, this message translates to:
+  /// **'No transcript versions have been saved yet.'**
+  String get transcriptVersionsEmpty;
+
+  /// Selection transaction failure without exposing diagnostics.
+  ///
+  /// In en, this message translates to:
+  /// **'The version could not be changed. Your current transcript is unchanged. Try again.'**
+  String get transcriptVersionSelectionFailed;
+
+  /// Neutral availability notice for any unselected refinement, including retained history; never claims the user's selection history.
+  ///
+  /// In en, this message translates to:
+  /// **'A refined version is available. It will not replace your current transcript automatically.'**
+  String get transcriptRefinementReady;
+
+  /// Explicit paired role; legacy output is never inferred to be refined.
+  ///
+  /// In en, this message translates to:
+  /// **'{role, select, liveDraft{Live draft} refinement{Refined transcript} unverified{Unverified version} other{Saved transcript}}'**
+  String transcriptVersionRole(String role);
+
+  /// Version heading using a localized role and local creation date/time.
+  ///
+  /// In en, this message translates to:
+  /// **'{role} · {date} {time}'**
+  String transcriptVersionIdentity(String role, DateTime date, DateTime time);
+
+  /// Coverage is independent of inference success; legacy coverage is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'{coverage, select, complete{Complete coverage} incomplete{Incomplete coverage} other{Coverage not recorded}}'**
+  String transcriptVersionCoverage(String coverage);
+
+  /// Readable immutable run provenance, excluding paths and decoding diagnostics.
+  ///
+  /// In en, this message translates to:
+  /// **'Model: {model} ({version})\nRuntime: {engine} {engineVersion}\nBundle SHA-256: {hash}'**
+  String transcriptVersionProvenance(
+    String model,
+    String version,
+    String engine,
+    String engineVersion,
+    String hash,
+  );
+
+  /// Fail-closed action state for invalid processing metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Version provenance could not be verified. Selection is unavailable.'**
+  String get transcriptVersionUnverified;
+
+  /// A running, queued, or unsuccessful refinement is not selectable.
+  ///
+  /// In en, this message translates to:
+  /// **'This version is not ready to select.'**
+  String get transcriptVersionNotReady;
+
+  /// Durably selected version, never an optimistic pending selection.
+  ///
+  /// In en, this message translates to:
+  /// **'Current version'**
+  String get transcriptVersionCurrent;
+
+  /// Explicit current-version selection button.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this version'**
+  String get transcriptVersionUse;
+
+  /// Unique accessible selection action for its version heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Use {version}'**
+  String transcriptVersionUseSemantic(String version);
+
+  /// Disabled selection action while local commit is pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Switching version…'**
+  String get transcriptVersionSelecting;
+
+  /// Per-meeting capture-only choice, without inference.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording only'**
+  String get recordingOnlyChoice;
+
+  /// Capture-only choice explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the original audio without running transcription for this meeting.'**
+  String get recordingOnlyChoiceDescription;
+
+  /// Separate streaming and complete-pass processing choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Live draft + refinement'**
+  String get twoPassChoice;
+
+  /// Disabled live choice explanation; no production approval is implied.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable until a streaming model pair passes the required checks. Choose post-session transcription or recording only.'**
+  String get twoPassUnavailable;
+
+  /// Configuration preflight failed before native capture.
+  ///
+  /// In en, this message translates to:
+  /// **'The transcription configuration could not be saved. Try again, or choose recording only. Recording has not started.'**
+  String get recordingProcessingUnavailable;
+
+  /// Explicit recovery action for a validated paused refinement job.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume refinement'**
+  String get refinementResumeAction;
+
+  /// Disabled recovery action while the resume request is pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Resuming refinement…'**
+  String get refinementResuming;
+
+  /// Content-free pause explanation. Unknown internal codes must use the generic branch, never be interpolated.
+  ///
+  /// In en, this message translates to:
+  /// **'{reasonCode, select, refinement_thermal_severe{Refinement is paused while this device cools down. Your recording is safe.} refinement_battery_low{Refinement is paused because the battery is low. Charge this device before resuming.} refinement_memory_pressure{Refinement is paused because memory is low. Close other apps before resuming.} refinement_power_save{Refinement is paused while battery saver is on. Turn it off before resuming.} refinement_recording_active{Refinement is paused to prioritize recording. Resume after recording stops.} refinement_resources_unavailable{Refinement is paused because device resources could not be checked. Try resuming later.} other{Refinement is paused. Your recording is safe. You can try resuming later.}}'**
+  String refinementPausedMessage(String reasonCode);
+
+  /// No description provided for @remoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote transcription'**
+  String get remoteTitle;
+
+  /// No description provided for @remoteExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio stays on this phone. Choosing remote transcription uploads a copy to your configured server. The server reports its retention policy and expiry; local transcripts and edits remain.'**
+  String get remoteExplanation;
+
+  /// No description provided for @remoteEndpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Server address'**
+  String get remoteEndpoint;
+
+  /// No description provided for @remoteToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Server access token'**
+  String get remoteToken;
+
+  /// No description provided for @remoteConfigure.
+  ///
+  /// In en, this message translates to:
+  /// **'Save connection'**
+  String get remoteConfigure;
+
+  /// No description provided for @remoteStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start transcription'**
+  String get remoteStart;
+
+  /// No description provided for @remoteCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel remote task'**
+  String get remoteCancel;
+
+  /// No description provided for @remoteEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit this version'**
+  String get remoteEdit;
+
+  /// No description provided for @remoteSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save correction'**
+  String get remoteSave;
+
+  /// No description provided for @remoteExportText.
+  ///
+  /// In en, this message translates to:
+  /// **'Export text'**
+  String get remoteExportText;
+
+  /// No description provided for @remoteExportJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Export JSON'**
+  String get remoteExportJson;
+
+  /// No description provided for @remoteExportSubtitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Export original subtitles'**
+  String get remoteExportSubtitles;
+
+  /// No description provided for @remoteEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote results will appear here after recording finishes.'**
+  String get remoteEmpty;
+
+  /// No description provided for @remoteInputInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid HTTPS origin or private LAN HTTP IP, and an access token of at least 32 characters.'**
+  String get remoteInputInvalid;
+
+  /// No description provided for @remoteVersionSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Model: {model} · Revision: {revision}'**
+  String remoteVersionSource(String model, String revision);
+
+  /// No description provided for @remoteFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'{code, select, remote_authentication{Server credentials were rejected. Configure the connection again.} remote_credentials_missing{Local credentials are unavailable. Configure the connection again.} remote_transport{Network unavailable. Check the connection and retry.} remote_quota{Server storage quota exceeded.} remote_expired{The server copy expired. Start a new transcription from local audio.} remote_model_failed{Server inference failed. Check the server before starting a new run.} remote_submission_pending{Recovering the submitted job identity.} remote_restore_requires_action{Restored work requires an explicit new request and connection setup.} remote_audio_unavailable{Recording audio is unavailable.} remote_audio_changed{Recording audio differs from the queued request.} other{Remote task needs attention: {code}}}'**
+  String remoteFailure(String code);
+
+  /// No description provided for @remoteTaskProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} / {total} bytes uploaded'**
+  String remoteTaskProgress(int done, int total);
+
+  /// No description provided for @remoteState.
+  ///
+  /// In en, this message translates to:
+  /// **'{state, select, waitingSetup{Configure a server} waitingAudio{Waiting for recording to finish} uploading{Uploading} submitting{Submitting} waitingNetwork{Waiting to retry network} queued{Queued on server} running{Transcribing} completed{Saved on phone} failed{Failed — create a new run to retry} cancelled{Cancelled} restored{Restored — new authorization required} expired{Remote result expired} other{Waiting}}'**
+  String remoteState(String state);
+
+  /// No description provided for @remotePostSessionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Record reliably on this phone, then upload for server transcription. Works without a local model.'**
+  String get remotePostSessionDescription;
+
+  /// No description provided for @remoteRecordingNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording works offline. Remote transcription waits for a configured server and network access.'**
+  String get remoteRecordingNote;
+
+  /// No description provided for @remoteRetention.
+  ///
+  /// In en, this message translates to:
+  /// **'Server retention: {seconds} seconds'**
+  String remoteRetention(int seconds);
+
+  /// No description provided for @remoteExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Server copy expires: {deadline}'**
+  String remoteExpires(String deadline);
+
+  /// No description provided for @remoteModelPageNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote transcription runs on your server and requires no phone model installation. This page tests local phone inference only; existing local transcripts remain readable.'**
+  String get remoteModelPageNote;
+
+  /// No description provided for @remoteRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcribe again'**
+  String get remoteRestart;
+
+  /// No description provided for @remoteServerSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription server'**
+  String get remoteServerSettings;
+
+  /// No description provided for @remoteAutomaticRecognition.
+  ///
+  /// In en, this message translates to:
+  /// **'Language is detected automatically. Transcription starts after recording ends.'**
+  String get remoteAutomaticRecognition;
+
+  /// No description provided for @remoteLanExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a private LAN address such as http://192.168.1.20:18000. HTTP sends audio and the access token without encryption; use it only on your trusted network.'**
+  String get remoteLanExplanation;
+
+  /// No description provided for @remoteConnectionSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Server connection saved'**
+  String get remoteConnectionSaved;
+
+  /// No description provided for @remoteChangeConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Change connection'**
+  String get remoteChangeConnection;
+
+  /// No description provided for @remoteOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure server'**
+  String get remoteOpenSettings;
+
+  /// No description provided for @remoteResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcript'**
+  String get remoteResultTitle;
+
+  /// No description provided for @remoteExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get remoteExport;
+
+  /// No description provided for @remoteRecordingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording details'**
+  String get remoteRecordingDetails;
+
+  /// No description provided for @remoteVersionNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcript {number}'**
+  String remoteVersionNumber(int number);
+
+  /// No description provided for @remoteNoSpeech.
+  ///
+  /// In en, this message translates to:
+  /// **'No speech detected.'**
+  String get remoteNoSpeech;
 }
 
 class _AppLocalizationsDelegate

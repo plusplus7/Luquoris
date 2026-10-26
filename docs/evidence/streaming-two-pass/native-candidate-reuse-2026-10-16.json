@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-16",
+  "purpose": "user-requested reuse of previous audio for isolated compatibility regression, not qualification",
+  "previousEvidence": "native-candidate-smoke-2026-10-15.json",
+  "input": {
+    "path": "assets/benchmarks/audio/zh_en_mixed_v1.wav",
+    "sha256": "83440d4ccbd82dafd1a88346ab448e1dd309e408c598d665413b910cc92c40a7",
+    "durationSeconds": 45,
+    "sampleRateHz": 16000,
+    "samples": 720000,
+    "hostAndBothDeviceInputsVerified": true,
+    "humanReferenceAvailable": false,
+    "languageCoverageHumanVerified": false
+  },
+  "device": {
+    "serial": "j75tmvsovouchmlj",
+    "model": "M2104K10AC",
+    "device": "chopin",
+    "firmwareIncremental": "V14.0.8.0.TKPCNXM",
+    "postProbeBatteryLevelPercent": 100,
+    "postProbeAcPowered": true,
+    "postProbeBatteryTemperatureCelsius": 32.6,
+    "ambientTemperatureMeasured": false
+  },
+  "runtime": {
+    "name": "sherpa-onnx",
+    "version": "1.13.8",
+    "cApiLibrarySha256": "c85e2382e2ca12b0513826be926eaccfea896b4cbf568182e287671ba526f80d",
+    "onnxRuntimeLibrarySha256": "33847ad43bffe204699fd4a27f7f3603452a8cdaf2f9a44983a0bc31ffcf2da1",
+    "deploymentRoot": "/data/local/tmp/loquiris-streaming-spike-20261015",
+    "probeSourceOrBinaryModified": false,
+    "productionBundled": false
+  },
+  "runs": [
+    {
+      "id": "zipformer-hf-int8-32",
+      "probeBinarySha256": "db37b859cefdec49c44b26110f3e42de64dca1b027ddff10296a8c9deccf0a6d",
+      "encoderSha256": "db6f51551762e40e549166fe041ea3e45464370b595e9ad23f06478ec3794fbb",
+      "decoderSha256": "4b618d383af304cfae281dbf0a53e8bf442c2f0502256cd5694bd6567ebdd834",
+      "joinerSha256": "bdda356d6f9b8c2d7cee9ee0e26075fa537490f7fd06520be408d287073667b9",
+      "tokenizerSha256": "a8e0e4ec53810e433789b54a5c0134a7eaa2ffca595a6334d54c00da858841d3",
+      "endpointEnabled": true,
+      "exitCode": 0,
+      "nonemptyIncrementalText": true,
+      "processWallSeconds": 6.121281,
+      "processUserSeconds": 5.368170,
+      "processSystemSeconds": 0.583149,
+      "logPath": "build/streaming_spike/zipformer-reuse-2026-10-16.log",
+      "logSha256": "e6358f8b2f03042838536aed7b459e0a7c63aaeb3eaa36d1bb97bee5cc7e23db"
+    },
+    {
+      "id": "paraformer-published-int8",
+      "workingDirectory": "/data/local/tmp/loquiris-streaming-spike-20261015/paraformer-published",
+      "probeBinarySha256": "4bdb3c0d58ab0d22357d0a5223ed79575c7672266d24903499c3b4e48afd68ef",
+      "encoderSha256": "81a70226a8934e6ed92aa1d4fc486b428b5398e2f2619ed4897b7294cab90e9a",
+      "decoderSha256": "f3cca9f77bb9d93c8fcbfb63ae617b6b1ee96818df3aa3b151c40658fe38594f",
+      "tokenizerSha256": "59aba8873a2ed1e122c25fee421e25f283b63290efbde85c1f01a853d83cb6e6",
+      "endpointEnabled": false,
+      "exitCode": 0,
+      "nonemptyIncrementalText": true,
+      "processWallSeconds": 11.914982,
+      "processUserSeconds": 10.812920,
+      "processSystemSeconds": 0.832069,
+      "logPath": "build/streaming_spike/paraformer-published-reuse-2026-10-16.log",
+      "logSha256": "de512a40d805cda87d7c30ee88f1dd8d7c00903d7eb349574f8e79cc8b94ebd5"
+    }
+  ],
+  "scope": {
+    "microphoneStarted": false,
+    "appInstalledOrRecordingDataModified": false,
+    "deviceSettingsChanged": false,
+    "networkingDisabledVerified": false,
+    "candidateRankedOrApproved": false,
+    "accuracyScored": false,
+    "liveQualified": false,
+    "limitations": [
+      "Reuse is sufficient for experimental development and smoke/performance checks; missing qualification corpus does not prohibit independent development.",
+      "Unchanged upstream examples still differ in endpoint policy and feed the file without real-time pacing, so these timings are not a fair model ranking.",
+      "Whole-process wall times include loading, file input, decoding, debug printing, padding and cleanup; they are not sustained speech-bearing inference RTF or first-text/display latency.",
+      "Machine text, including generated English-looking tokens, does not prove actual English or within-utterance switching in the audio.",
+      "No human reference, accuracy score, p95 latency, continuously sampled memory, backlog, battery drain, microphone/Flutter delivery or four-hour evidence was produced.",
+      "The prepared Paraformer package was selected by its explicit working directory and hashes, not the older incompatible HF directory left intact beside it."
+    ]
+  }
+}

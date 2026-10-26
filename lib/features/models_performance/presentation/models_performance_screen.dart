@@ -7,6 +7,7 @@ import 'package:loquiris/features/models_performance/domain/performance_benchmar
 import 'package:loquiris/features/models_performance/domain/performance_policy.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/models_performance/presentation/models_performance_controller.dart';
+import 'package:loquiris/features/remote_transcription/application/remote_feature.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
 import 'package:loquiris/theme/loquiris_tokens.dart';
 
@@ -70,6 +71,10 @@ final class ModelsPerformanceScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (ref.watch(remoteTranscriptionEnabledProvider)) ...[
+                    Text(l10n.remoteModelPageNote),
+                    SizedBox(height: spacing.section),
+                  ],
                   Text(l10n.benchmarkIntro),
                   SizedBox(height: spacing.section),
                   const _BenchmarkDisclosure(),

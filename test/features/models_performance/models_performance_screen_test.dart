@@ -10,6 +10,7 @@ import 'package:loquiris/features/models_performance/application/performance_ben
 import 'package:loquiris/features/models_performance/domain/performance_benchmark.dart';
 import 'package:loquiris/features/models_performance/domain/processing_entities.dart';
 import 'package:loquiris/features/models_performance/presentation/models_performance_screen.dart';
+import 'package:loquiris/features/remote_transcription/application/remote_feature.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
@@ -18,6 +19,21 @@ import 'package:loquiris/theme/app_theme.dart';
 import '../../support/fakes/fake_performance_benchmark_runner.dart';
 
 void main() {
+  testWidgets('remote mode explains that phone models are optional', (
+    tester,
+  ) async {
+    final runner = FakePerformanceBenchmarkRunner(
+      availability: const BenchmarkUnavailable(
+        'benchmark_runtime_not_installed',
+      ),
+    );
+    await tester.pumpWidget(_app(runner, remoteEnabled: true));
+    await tester.pump();
+    expect(
+      find.textContaining('Remote transcription runs on your server'),
+      findsOneWidget,
+    );
+  });
   testWidgets('renders the unavailable state without a fake start action', (
     tester,
   ) async {
@@ -469,8 +485,10 @@ Widget _app(
   FakePerformanceBenchmarkRunner runner, {
   Locale locale = const Locale('en'),
   BenchmarkReportExporter? exporter,
+  bool remoteEnabled = false,
 }) => ProviderScope(
   overrides: [
+    remoteTranscriptionEnabledProvider.overrideWithValue(remoteEnabled),
     performanceBenchmarkRunnerProvider.overrideWithValue(runner),
     if (exporter != null)
       benchmarkReportExporterProvider.overrideWithValue(exporter),

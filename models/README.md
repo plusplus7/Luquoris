@@ -64,3 +64,46 @@ The expected byte count is `59707625` and the expected SHA-256 is
 Do not replace the pinned revision with `main`, `latest`, or an unreviewed
 mirror. The generated asset is a build input; runtime downloading remains
 prohibited.
+
+## Experimental larger recognition model
+
+For Mandarin and mixed Mandarin/English recordings, the debug-only candidate
+is multilingual `Whisper small-q5_1` (244M parameters, 190,085,487 bytes).
+It uses the same offline `whisper.cpp` engine and the pinned revision above.
+The exact SHA-256 is
+`ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb`.
+Upstream model weights are MIT-licensed; this does not constitute production
+acceptance under `MODEL_ACCEPTANCE.md`.
+
+```sh
+hf download ggerganov/whisper.cpp ggml-small-q5_1.bin \
+  --revision f281eb45af861ab5e5297d23694b7d46e090c02c \
+  --local-dir models/local/whisper-small-q5_1
+dart run tool/import_models.dart --experimental-small
+flutter build apk --debug --dart-define=LOQUIRIS_EXPERIMENTAL_SMALL=true
+```
+
+The explicit experimental catalog includes both models for paired testing.
+Dart and Android select small with the same build flag. The native adapter
+continues to reject requests for the wrong model, and inference provenance
+records small's own identifier, revision, and checksum. Original recordings
+and existing transcripts are retained; record a new meeting to try the model.
+
+Run `WhisperModelComparisonInstrumentedTest` against that debug build to save
+paired output and timing for the same authorized 45-second fixture. The report
+is `files/device-validation/whisper-small-comparison.json` in the debug app's
+private storage. It is not an accuracy acceptance corpus or a CER/WER score.
+Larger models may be slower, and live drafts can still fall back to the complete
+post-session pass.
+
+Return to the approved base build with:
+
+```sh
+dart run tool/import_models.dart
+flutter build apk --debug
+```
+
+Default imports never scan the experimental catalog. Release and profile builds
+reject the experimental flag or weights. Both build modes use the shared
+`models/transcription/` asset directory; private materialized model files remain
+separate by model identifier.

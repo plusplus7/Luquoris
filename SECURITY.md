@@ -10,7 +10,7 @@ Do not attach private meetings, audio, transcripts, names, device identifiers, m
 
 ## Security invariants
 
-- Release builds contain no Android network permissions.
+- Remote transcription is authenticated and explicitly selected; HTTPS uses normal trust validation, while HTTP is restricted to private IPv4/127.0.0.1 on a trusted LAN and transmits tokens/audio without transport encryption; redirects are rejected; originals remain local, credentials stay in Android Keystore-encrypted no-backup storage, and restored tasks cannot auto-upload.
 - Canonical audio remains in app-private storage until explicit export.
 - Optional AI failures cannot delete or block canonical recordings.
 - Model and backup inputs are verified before use.

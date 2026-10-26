@@ -126,33 +126,36 @@ final class RuntimeModelManager implements ModelManager {
   Future<Result<ModelDescriptor, ModelFailure>> _verifyManifest(
     BundledModelManifest manifest,
   ) async {
-    Result<ModelArtifact, ModelArtifactSourceFailure> opened;
-    try {
-      opened = await _artifactSource.open(manifest.artifactPath);
-    } on Object {
-      return _unavailable('model_artifact_unreadable');
-    }
-    if (opened case Err(:final failure)) {
-      return _unavailable(
-        switch (failure.reason) {
-          ModelArtifactSourceFailureReason.missing => 'model_artifact_missing',
-          ModelArtifactSourceFailureReason.unreadable =>
-            'model_artifact_unreadable',
-        },
-      );
-    }
-    final artifact =
-        (opened as Ok<ModelArtifact, ModelArtifactSourceFailure>).value;
-    try {
-      final hash = await _artifactHasher.hash(artifact.bytes);
-      if (hash.bytes != manifest.bytes) {
-        return _unavailable('model_bytes_mismatch');
+    for (final file in manifest.artifacts) {
+      Result<ModelArtifact, ModelArtifactSourceFailure> opened;
+      try {
+        opened = await _artifactSource.open(file.path);
+      } on Object {
+        return _unavailable('model_artifact_unreadable');
       }
-      if (hash.sha256 != manifest.sha256) {
-        return _unavailable('model_sha256_mismatch');
+      if (opened case Err(:final failure)) {
+        return _unavailable(
+          switch (failure.reason) {
+            ModelArtifactSourceFailureReason.missing =>
+              'model_artifact_missing',
+            ModelArtifactSourceFailureReason.unreadable =>
+              'model_artifact_unreadable',
+          },
+        );
       }
-    } on Object {
-      return _unavailable('model_artifact_unreadable');
+      final artifact =
+          (opened as Ok<ModelArtifact, ModelArtifactSourceFailure>).value;
+      try {
+        final hash = await _artifactHasher.hash(artifact.bytes);
+        if (hash.bytes != file.bytes) {
+          return _unavailable('model_bytes_mismatch');
+        }
+        if (hash.sha256 != file.sha256) {
+          return _unavailable('model_sha256_mismatch');
+        }
+      } on Object {
+        return _unavailable('model_artifact_unreadable');
+      }
     }
     return Ok<ModelDescriptor, ModelFailure>(_descriptor(manifest));
   }

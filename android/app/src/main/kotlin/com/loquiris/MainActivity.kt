@@ -13,9 +13,11 @@ import com.loquiris.performance.PerformanceMetricsChannelContract
 import com.loquiris.performance.PerformanceMetricsChannelController
 import com.loquiris.performance.PerformanceMetricsReader
 import com.loquiris.recording.RecordingChannelContract
+import com.loquiris.recording.AppPrivateRecordingStorage
 import com.loquiris.recording.RecordingChannelController
 import com.loquiris.recording.RecordingChannelMethodDispatcher
 import com.loquiris.recording.RecordingPermissionChannelController
+import com.loquiris.recording.RecordingProcessLiveness
 import com.loquiris.recording.SessionPlaybackChannelContract
 import com.loquiris.recording.SessionPlaybackChannelController
 import com.loquiris.recording.SessionPlaybackChannelMethodDispatcher
@@ -23,12 +25,23 @@ import com.loquiris.storage.StorageMetricsChannelContract
 import com.loquiris.storage.StorageMetricsChannelController
 import com.loquiris.transcription.TranscriptionChannelContract
 import com.loquiris.transcription.TranscriptionChannelController
+import com.loquiris.transcription.RefinementAudioChannelContract
+import com.loquiris.transcription.RefinementAudioChannelController
+import com.loquiris.transcription.RefinementAudioInventoryReader
+import com.loquiris.transcription.RefinementExecutionChannelContract
+import com.loquiris.transcription.RefinementExecutionChannelController
+import com.loquiris.transcription.RefinementPostSessionWorker
+import com.loquiris.transcription.AndroidRefinementResourceGuard
+import com.loquiris.transcription.WhisperModelStore
+import com.loquiris.transcription.AndroidAacPcmDecoder
+import com.loquiris.transcription.JniWhisperNativeApi
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.util.concurrent.Executors
 import java.util.concurrent.Executor
+import java.io.File
 
 class MainActivity : FlutterActivity() {
     private val recoveryExecutor = Executors.newSingleThreadExecutor()
@@ -43,10 +56,20 @@ class MainActivity : FlutterActivity() {
     private var exportController: ExportChannelController? = null
     private var recordingPermissionController: RecordingPermissionChannelController? = null
     private var transcriptionController: TranscriptionChannelController? = null
+    private var refinementExecutionController: RefinementExecutionChannelController? = null
     private var transcriptionEventSink: EventChannel.EventSink? = null
+    private var streamingDebugBridge: AutoCloseable? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        com.loquiris.remote.RemoteRuntime.install(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
+        if (BuildConfig.DEBUG && BuildConfig.LOQUIRIS_STREAMING_NATIVE_SPIKE) {
+            streamingDebugBridge = runCatching {
+                Class.forName("com.loquiris.transcription.StreamingDebugBridge")
+                    .getConstructor(android.content.Context::class.java, io.flutter.plugin.common.BinaryMessenger::class.java)
+                    .newInstance(applicationContext, flutterEngine.dartExecutor.binaryMessenger) as AutoCloseable
+            }.getOrNull() // Missing debug delegate remains unavailable, never a startup failure.
+        }
         val controller = RecordingChannelController(this)
         val dispatcher =
             RecordingChannelMethodDispatcher(
@@ -141,6 +164,47 @@ class MainActivity : FlutterActivity() {
         ).setMethodCallHandler { call, result ->
             performanceMetrics.handle(call.method, call.arguments, result::success)
         }
+        val refinementAudioReader = RefinementAudioInventoryReader(
+            recordingsRoot = File(applicationContext.filesDir, "recordings"),
+            sessionDirectoryFor = { meetingId -> AppPrivateRecordingStorage.sessionDirectory(applicationContext, meetingId) },
+            isRecordingActive = RecordingProcessLiveness::hasActiveSession,
+        )
+        val refinementAudio = RefinementAudioChannelController(
+            executor = transcriptionExecutor,
+            replyExecutor = Executor { command -> runOnUiThread(command) },
+            inspect = refinementAudioReader::read,
+        )
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            RefinementAudioChannelContract.channelName,
+        ).setMethodCallHandler { call, result ->
+            refinementAudio.handle(call.method, call.arguments, result::success)
+        }
+        val refinementResources = AndroidRefinementResourceGuard(applicationContext)
+        val refinementWorker = RefinementPostSessionWorker(
+            inspect = { meetingId, hash -> refinementAudioReader.read(meetingId, hash) },
+            modelProvider = { spec -> WhisperModelStore(applicationContext, spec) },
+            decoder = AndroidAacPcmDecoder(),
+            native = JniWhisperNativeApi,
+            isRecordingActive = RecordingProcessLiveness::hasActiveSession,
+            onRecordingStarted = RecordingProcessLiveness::observeStarts,
+            snapshotDirectory = File(applicationContext.cacheDir, "refinement-audio-v1"),
+            resourcePauseReason = refinementResources::pauseReason,
+            onResourcesPaused = refinementResources::observe,
+        )
+        val refinementExecution = RefinementExecutionChannelController(
+            contract = RefinementExecutionChannelContract(BuildConfig.DEBUG && BuildConfig.LOQUIRIS_EXPERIMENTAL_SMALL),
+            executor = transcriptionExecutor,
+            replyExecutor = Executor { command -> runOnUiThread(command) },
+            worker = { request, cancellation -> refinementWorker.transcribe(request, cancellation) },
+        )
+        refinementExecutionController = refinementExecution
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            RefinementExecutionChannelContract.channelName,
+        ).setMethodCallHandler { call, result ->
+            refinementExecution.handle(call.method, call.arguments, result::success)
+        }
         val transcription =
             TranscriptionChannelController(
                 context = this,
@@ -206,6 +270,8 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onDestroy() {
+        streamingDebugBridge?.close()
+        streamingDebugBridge = null
         recordingPermissionController?.close()
         recordingPermissionController = null
         exportController?.close()
@@ -222,6 +288,8 @@ class MainActivity : FlutterActivity() {
         performanceMetricsExecutor.shutdown()
         transcriptionController?.close()
         transcriptionController = null
+        refinementExecutionController?.close()
+        refinementExecutionController = null
         transcriptionEventSink?.endOfStream()
         transcriptionEventSink = null
         transcriptionExecutor.shutdown()

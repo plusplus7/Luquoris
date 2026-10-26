@@ -21,6 +21,9 @@ Result<BundledModelManifest, InvalidModelManifest> _tryParseModelManifest(
 ) {
   if (candidate is! Map<String, Object?>) return _invalidShape();
   final declaredSchemaVersion = candidate['schemaVersion'];
+  if (declaredSchemaVersion is int && declaredSchemaVersion == 2) {
+    return _tryParseModelBundleManifest(candidate);
+  }
   if (declaredSchemaVersion is int && declaredSchemaVersion != 1) {
     return _failure(
       'schemaVersion',

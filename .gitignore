@@ -11,6 +11,7 @@ coverage/
 
 # Android local and generated state
 android/.gradle/
+android/.kotlin/
 android/local.properties
 android/app/debug/
 android/app/profile/
@@ -28,3 +29,17 @@ android/app/release/
 key.properties
 models/local/
 evidence/private/
+
+# Machine-local device-test bridge and transient status
+CodexBridge.command
+.codex-bridge-*
+.codex-bridge.*
+
+# Remote transcription local state
+server/.venv/
+server/.pytest_cache/
+server/.ruff_cache/
+server/.env
+server/data/
+server/models/
+server/**/__pycache__/

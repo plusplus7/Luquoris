@@ -4,6 +4,7 @@ import 'package:loquiris/features/models_performance/domain/processing_entities.
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
 import 'package:loquiris/features/speakers/domain/speaker_entities.dart';
 import 'package:loquiris/features/transcript/domain/transcript_entities.dart';
+import 'package:loquiris/features/transcript/domain/transcript_processing_info.dart';
 import 'package:meta/meta.dart';
 
 /// Recoverable failures from local analysis persistence.
@@ -140,6 +141,18 @@ abstract interface class TranscriptRepository {
   Future<Result<List<TranscriptVersion>, AnalysisRepositoryFailure>>
   listVersions(String meetingId);
 
+  /// Watches committed versions, corrections, provenance, and current selection.
+  Stream<Result<List<TranscriptVersion>, AnalysisRepositoryFailure>>
+  watchVersions(String meetingId);
+
+  /// Selects an unchanged closed run after atomically revalidating its provenance.
+  @useResult
+  Future<Result<void, AnalysisRepositoryFailure>> selectReadableVersion(
+    TranscriptRun expectedRun,
+    TranscriptProcessingInfo? expectedProcessing, {
+    required int selectedAtUtcMs,
+  });
+
   /// Loads the selected stable transcript and its current correction context.
   @useResult
   Future<Result<TranscriptEditorDocument, AnalysisRepositoryFailure>>
@@ -179,12 +192,12 @@ abstract interface class TranscriptionJobRepository {
     String meetingId,
   );
 
-  /// Lists queued, running, or resumably paused transcription work.
+  /// Lists recoverable legacy work, excluding explicit paired-role metadata.
   @useResult
   Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
   listRecoverable();
 
-  /// Atomically marks the queued job and run as active.
+  /// Claims legacy work; paired roles require their explicit processing writer.
   @useResult
   Future<Result<ProcessingJob, AnalysisRepositoryFailure>> start(
     String jobId, {
@@ -200,7 +213,7 @@ abstract interface class TranscriptionJobRepository {
     required int storedAtUtcMs,
   });
 
-  /// Converts process-orphaned running work into resumably paused work.
+  /// Recovers orphaned legacy work without mutating any explicit paired role.
   @useResult
   Future<Result<List<ProcessingJob>, AnalysisRepositoryFailure>>
   recoverOrphanedRunning({required int recoveredAtUtcMs});
@@ -223,7 +236,7 @@ abstract interface class TranscriptionJobRepository {
     required int failedAtUtcMs,
   });
 
-  /// Requeues failed work while retaining its safe checkpoint.
+  /// Requeues failed legacy work while retaining its safe checkpoint.
   @useResult
   Future<Result<ProcessingJob, AnalysisRepositoryFailure>> retry(
     String jobId, {

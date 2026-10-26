@@ -1,17 +1,29 @@
+import 'dart:async';
+
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loquiris/app.dart';
+import 'package:loquiris/core/domain/app_relative_path.dart';
 import 'package:loquiris/core/result.dart';
 import 'package:loquiris/features/models_performance/domain/model_manifest.dart';
+import 'package:loquiris/features/recording/application/recording_inventory_synchronizer.dart';
 import 'package:loquiris/features/recording/presentation/active_recording_controller.dart';
+import 'package:loquiris/features/recording/presentation/recording_controller.dart';
 import 'package:loquiris/features/sessions/domain/session_entities.dart';
+import 'package:loquiris/features/transcript/application/live_transcript_session_starter.dart';
+import 'package:loquiris/features/transcript/application/streaming_live_transcript_adapter.dart';
 import 'package:loquiris/features/transcript/application/transcription_coordinator.dart';
+import 'package:loquiris/features/transcript/presentation/live_transcript_controller.dart';
 import 'package:loquiris/routing/app_router.dart';
+import 'package:loquiris/services/meeting_processing_selection_repository.dart';
 import 'package:loquiris/services/service_contracts.dart';
 import 'package:loquiris/services/service_providers.dart';
+import 'package:loquiris/services/streaming_transcription_engine.dart';
 
+import '../../../support/fake_streaming_transcription_engine.dart';
+import '../../../support/fakes/fake_meeting_processing_selection_repository.dart';
 import '../../../support/fakes/fake_services.dart';
 import '../../../support/harness.dart';
 
@@ -31,6 +43,353 @@ void main() {
       maximumReadGap: Duration(milliseconds: 22),
       timestampRegressions: 1,
     ),
+  );
+
+  for (final scenario in [
+    (device: TestDevice.compact, scale: 1.0),
+    (device: TestDevice.smallLandscape, scale: 1.0),
+    (device: TestDevice.compact, scale: 2.0),
+  ]) {
+    testWidgets(
+      'growing live text preserves the pause hit target @ '
+      '${scenario.device.name} x${scenario.scale}',
+      (tester) async {
+        tester.useDevice(scenario.device);
+        final capture = FakeAudioCaptureService()
+          ..currentResult = const Ok(recording)
+          ..pauseResult = const Ok(
+            AudioCaptureSnapshot(
+              sessionId: 'meeting-1',
+              state: AudioCaptureState.pausedByUser,
+              elapsed: Duration(hours: 1, minutes: 2, seconds: 3),
+              bytesWritten: 1536 * 1024,
+              revision: 9,
+            ),
+          );
+        final repository = FakeSessionRepository()
+          ..savedMeetings.add(_recordingMeeting);
+        final engine = _UiStreamingEngine();
+        final adapter = StreamingLiveTranscriptAdapter(engine);
+        const owner = StreamingOwner(
+          meetingId: 'meeting-1',
+          runId: 'stream-ui',
+          epoch: 1,
+        );
+        addTearDown(() async {
+          await tester.pumpWidget(const SizedBox.shrink());
+          await capture.dispose();
+        });
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              audioCaptureServiceProvider.overrideWithValue(capture),
+              sessionRepositoryProvider.overrideWithValue(repository),
+              liveTranscriptSessionStarterProvider.overrideWithValue(
+                (_) => adapter.open(
+                  const StreamingStartRequest(
+                    owner: owner,
+                    modelId: 'explicit-ui-fixture',
+                    bundleSha256:
+                        '0000000000000000000000000000000000000000000000000000000000000000',
+                    parameterVersion: 1,
+                  ),
+                ),
+              ),
+            ],
+            child: Builder(
+              builder: (context) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(scenario.scale),
+                ),
+                child: const LoquirisApp(),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        final context = tester.element(find.byType(LoquirisApp));
+        final container = ProviderScope.containerOf(context);
+        container.read(appRouterProvider).go('/recordings/meeting-1');
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pump(const Duration(milliseconds: 400));
+        engine.native.deliver(
+          StreamingUtterance(
+            owner: owner,
+            sequence: 0,
+            utteranceId: 'u1',
+            start: Duration.zero,
+            end: const Duration(seconds: 1),
+            rawText: 'Short draft',
+            status: StreamingUtteranceStatus.provisional,
+          ),
+        );
+        await tester.pump();
+        final pause = find.byKey(const Key('active-recording-pause'));
+        await tester.ensureVisible(pause);
+        await tester.pump();
+        final original = tester.getRect(pause);
+        expect(original.height, greaterThanOrEqualTo(48));
+        expect(pause.hitTestable(), findsOneWidget);
+        engine.native.deliver(
+          StreamingUtterance(
+            owner: owner,
+            sequence: 1,
+            utteranceId: 'u1',
+            start: Duration.zero,
+            end: const Duration(seconds: 2),
+            rawText: List.filled(40, 'A growing live hypothesis.').join('\n'),
+            status: StreamingUtteranceStatus.provisional,
+          ),
+        );
+        await tester.pump();
+        expect(
+          tester.getRect(pause).top,
+          moreOrLessEquals(original.top, epsilon: .5),
+          reason: 'A live text update must not move a critical control.',
+        );
+        expect(pause.hitTestable(), findsOneWidget);
+        await tester.tapAt(original.center);
+        await tester.pump();
+        expect(
+          container
+              .read(recordingControllerProvider)
+              .requireValue
+              .snapshot
+              ?.state,
+          AudioCaptureState.pausedByUser,
+        );
+      },
+    );
+  }
+
+  testWidgets(
+    'finalized navigation keeps the last endpoint drain alive until ACK',
+    (tester) async {
+      tester.useDevice(TestDevice.compact);
+      final capture = FakeAudioCaptureService()
+        ..currentResult = const Ok(recording);
+      final repository = FakeSessionRepository()
+        ..savedMeetings.add(_recordingMeeting);
+      final source = StreamController<TranscriptionEvent>();
+      final ack = Completer<Result<void, TranscriptionFailure>>();
+      final inventory = _DelayedRecordingInventory();
+      var finishes = 0;
+      var cancellations = 0;
+      addTearDown(capture.dispose);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            audioCaptureServiceProvider.overrideWithValue(capture),
+            sessionRepositoryProvider.overrideWithValue(repository),
+            recordingInventorySynchronizerProvider.overrideWithValue(inventory),
+            liveTranscriptSessionStarterProvider.overrideWithValue(
+              (meetingId) async => Ok(
+                LiveTranscriptionSession(
+                  meetingId: meetingId,
+                  runId: 'endpoint',
+                  events: source.stream,
+                  finish: () async {
+                    finishes++;
+                    final result = await ack.future;
+                    unawaited(source.close());
+                    return result;
+                  },
+                  release: () async {
+                    cancellations++;
+                    return const Ok(null);
+                  },
+                ),
+              ),
+            ),
+          ],
+          child: const LoquirisApp(),
+        ),
+      );
+      await tester.pump();
+      final context = tester.element(find.byType(LoquirisApp));
+      final container = ProviderScope.containerOf(context);
+      container.read(appRouterProvider).go('/recordings/meeting-1');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump(const Duration(milliseconds: 400));
+      capture.emitSnapshot(
+        const AudioCaptureSnapshot(
+          sessionId: 'meeting-1',
+          state: AudioCaptureState.finalized,
+          elapsed: Duration(seconds: 2),
+          bytesWritten: 4096,
+          revision: 9,
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(finishes, 1);
+      expect(cancellations, 0);
+      expect(
+        find.byKey(const ValueKey<String>('session-detail:meeting-1')),
+        findsNothing,
+      );
+      inventory.completion.complete(const Ok(null));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump();
+      expect(finishes, 1);
+      expect(
+        find.byKey(const ValueKey<String>('session-detail:meeting-1')),
+        findsOneWidget,
+      );
+      source.add(
+        const TranscriptionDraftUpdated(
+          runId: 'endpoint',
+          chunk: TranscriptChunk(
+            segmentId: 'u1',
+            start: Duration.zero,
+            end: Duration(seconds: 2),
+            rawText: 'Last endpoint',
+            displayText: 'Last endpoint',
+            stability: TranscriptStability.stable,
+          ),
+          backlog: Duration.zero,
+        ),
+      );
+      await tester.pump();
+      expect(
+        container
+            .read(liveTranscriptControllerProvider('meeting-1'))
+            .requireValue
+            .chunks
+            .single
+            .rawText,
+        'Last endpoint',
+      );
+      ack.complete(const Ok(null));
+      await tester.pump();
+      await tester.pump();
+      expect(cancellations, 0);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets(
+    'streaming drafts, finals and gaps reach the real recording screen',
+    (tester) async {
+      tester.useDevice(TestDevice.compact);
+      final capture = FakeAudioCaptureService()
+        ..currentResult = const Ok(recording);
+      final repository = FakeSessionRepository()
+        ..savedMeetings.add(_recordingMeeting);
+      final engine = _UiStreamingEngine();
+      final adapter = StreamingLiveTranscriptAdapter(engine);
+      addTearDown(capture.dispose);
+      const owner = StreamingOwner(
+        meetingId: 'meeting-1',
+        runId: 'stream-ui',
+        epoch: 1,
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            audioCaptureServiceProvider.overrideWithValue(capture),
+            sessionRepositoryProvider.overrideWithValue(repository),
+            liveTranscriptSessionStarterProvider.overrideWithValue(
+              (_) => adapter.open(
+                const StreamingStartRequest(
+                  owner: owner,
+                  modelId: 'explicit-ui-fixture',
+                  bundleSha256:
+                      '0000000000000000000000000000000000000000000000000000000000000000',
+                  parameterVersion: 1,
+                ),
+              ),
+            ),
+          ],
+          child: const LoquirisApp(),
+        ),
+      );
+      await tester.pump();
+      final context = tester.element(find.byType(LoquirisApp));
+      ProviderScope.containerOf(
+        context,
+      ).read(appRouterProvider).go('/recordings/meeting-1');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      engine.native.deliver(
+        StreamingUtterance(
+          owner: owner,
+          sequence: 0,
+          utteranceId: 'u1',
+          start: Duration.zero,
+          end: const Duration(seconds: 1),
+          rawText: '项目 offline draft',
+          status: StreamingUtteranceStatus.provisional,
+        ),
+      );
+      await tester.pump();
+      expect(find.bySemanticsLabel('Draft. 项目 offline draft'), findsOneWidget);
+      engine.native.deliver(
+        StreamingUtterance(
+          owner: owner,
+          sequence: 1,
+          utteranceId: 'u1',
+          start: Duration.zero,
+          end: const Duration(seconds: 1),
+          rawText: '项目 offline final',
+          status: StreamingUtteranceStatus.finalized,
+        ),
+      );
+      await tester.pump();
+      expect(find.text('项目 offline draft'), findsNothing);
+      expect(find.bySemanticsLabel('Stable. 项目 offline final'), findsOneWidget);
+      engine.native.deliver(
+        const StreamingGap(
+          owner: owner,
+          sequence: 2,
+          captureEpoch: 1,
+          start: Duration(seconds: 1),
+          end: Duration(seconds: 2),
+          reason: StreamingGapReason.discontinuity,
+        ),
+      );
+      await tester.pump();
+      expect(find.textContaining('may be incomplete'), findsOneWidget);
+      expect(find.text('Live transcription stopped safely.'), findsNothing);
+      engine.native.deliver(
+        StreamingUtterance(
+          owner: owner,
+          sequence: 3,
+          utteranceId: 'u2',
+          captureEpoch: 1,
+          start: const Duration(seconds: 2),
+          end: const Duration(seconds: 3),
+          rawText: 'Text after the gap',
+          status: StreamingUtteranceStatus.provisional,
+        ),
+      );
+      await tester.pump();
+      expect(
+        find.bySemanticsLabel('Draft. Text after the gap'),
+        findsOneWidget,
+      );
+      expect(find.text('项目 offline final'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('live-transcript-panel')),
+          matching: find.byType(TextField),
+        ),
+        findsNothing,
+      );
+      final pause = find.byKey(const Key('active-recording-pause'));
+      await tester.ensureVisible(pause);
+      await tester.pump();
+      expect(tester.getSize(pause).height, greaterThanOrEqualTo(48));
+      await tester.tap(pause);
+      await tester.pump();
+      expect(capture.pauseCalls, 1);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+      expect(engine.releases, 1);
+    },
   );
 
   testWidgets('shows authoritative status, timer, size, and input activity', (
@@ -200,6 +559,150 @@ void main() {
     expect(capture.stopCalls, 1);
   });
 
+  for (final inventoryFails in [false, true]) {
+    testWidgets(
+      'finalized detail waits for audio inventory '
+      '${inventoryFails ? 'and surfaces failure' : 'then opens playable audio'}',
+      (tester) async {
+        tester.useDevice(TestDevice.compact);
+        final capture = FakeAudioCaptureService()
+          ..currentResult = const Ok(recording);
+        final repository = FakeSessionRepository()
+          ..savedMeetings.add(_recordingMeeting);
+        final inventory = _DelayedRecordingInventory();
+        final playback = FakeSessionPlaybackService()
+          ..loadResult = const Ok(
+            SessionPlaybackSnapshot(
+              sessionId: 'meeting-1',
+              state: SessionPlaybackState.ready,
+              position: Duration.zero,
+              duration: Duration(seconds: 12),
+            ),
+          );
+        addTearDown(capture.dispose);
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              audioCaptureServiceProvider.overrideWithValue(capture),
+              sessionRepositoryProvider.overrideWithValue(repository),
+              recordingInventorySynchronizerProvider.overrideWithValue(
+                inventory,
+              ),
+              sessionPlaybackServiceProvider.overrideWithValue(playback),
+            ],
+            child: const LoquirisApp(),
+          ),
+        );
+        await tester.pump();
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(LoquirisApp)),
+        );
+        container.read(appRouterProvider).go('/recordings/meeting-1');
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pump(const Duration(milliseconds: 400));
+
+        capture.emitSnapshot(
+          const AudioCaptureSnapshot(
+            sessionId: 'meeting-1',
+            state: AudioCaptureState.finalized,
+            elapsed: Duration(seconds: 12),
+            bytesWritten: 4096,
+            revision: 9,
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
+
+        expect(
+          find.byKey(const ValueKey<String>('active-recording:meeting-1')),
+          findsOneWidget,
+          reason: 'Native finalization is not yet a committed Dart inventory.',
+        );
+        expect(
+          find.byKey(const ValueKey<String>('session-detail:meeting-1')),
+          findsNothing,
+        );
+        expect(playback.loadCalls, isEmpty);
+
+        repository.detailResult = Ok(
+          SessionDetail(
+            meeting: _recordingMeeting.copyWith(
+              lifecycle: MeetingLifecycle.finalized,
+              mediaDuration: const Duration(seconds: 12),
+            ),
+            segments: [
+              AudioSegment(
+                id: 'committed-segment',
+                meetingId: 'meeting-1',
+                sequence: 0,
+                relativePath:
+                    (AppRelativePath.tryParse(
+                              'recordings/key/segment-00000.adts',
+                            )
+                            as Ok<AppRelativePath, InvalidAppRelativePath>)
+                        .value,
+                mediaStart: Duration.zero,
+                mediaDuration: const Duration(seconds: 12),
+                committedBytes: 4096,
+                state: AudioSegmentState.committed,
+              ),
+            ],
+            events: const [],
+            bookmarks: const [],
+            processingJobs: const [],
+            recoveryDiagnostics: const [],
+          ),
+        );
+        inventory.completion.complete(
+          inventoryFails
+              ? const Err(SessionRepositoryUnavailable('inventory_failed'))
+              : const Ok(null),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pump();
+
+        if (inventoryFails) {
+          expect(
+            find.byKey(const Key('active-recording-retry-persistence')),
+            findsOneWidget,
+          );
+          expect(
+            find.text(
+              'Local meeting details could not be updated yet.',
+            ),
+            findsOneWidget,
+          );
+          expect(playback.loadCalls, isEmpty);
+          inventory.completion = Completer();
+          await tester.ensureVisible(
+            find.byKey(const Key('active-recording-retry-persistence')),
+          );
+          await tester.pump();
+          await tester.tap(
+            find.byKey(const Key('active-recording-retry-persistence')),
+          );
+          await tester.pump();
+          expect(playback.loadCalls, isEmpty);
+          inventory.completion.complete(const Ok(null));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 400));
+          await tester.pump();
+        }
+        expect(
+          find.byKey(const Key('session-detail-segment:committed-segment')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('session-detail-play')), findsOneWidget);
+        expect(playback.loadCalls, ['meeting-1']);
+        expect(capture.startRequests, isEmpty);
+        expect(capture.stopCalls, 0);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+  }
+
   testWidgets('successful stop opens the finalized meeting detail', (
     tester,
   ) async {
@@ -327,6 +830,9 @@ void main() {
             audioCaptureServiceProvider.overrideWithValue(capture),
             sessionRepositoryProvider.overrideWithValue(repository),
             transcriptionJobRepositoryProvider.overrideWithValue(jobs),
+            meetingProcessingSelectionRepositoryProvider.overrideWithValue(
+              FakeMeetingProcessingSelectionRepository(),
+            ),
             transcriptionEngineProvider.overrideWithValue(engine),
             transcriptionModelManifestProvider.overrideWithValue(_manifest()),
           ],
@@ -367,6 +873,30 @@ void main() {
       );
     },
   );
+}
+
+final class _DelayedRecordingInventory
+    implements RecordingInventorySynchronizer {
+  Completer<Result<void, SessionRepositoryFailure>> completion = Completer();
+
+  @override
+  Future<Result<void, SessionRepositoryFailure>> synchronize({
+    String? finalizedMeetingId,
+  }) => completion.future;
+}
+
+final class _UiStreamingEngine implements StreamingTranscriptionEngine {
+  late FakeStreamingSession native;
+  int releases = 0;
+  @override
+  Future<Result<StreamingSession, StreamingFailure>> open(
+    StreamingStartRequest request,
+  ) async {
+    native = FakeStreamingSession(request.owner, () {
+      releases++;
+    });
+    return Ok(native);
+  }
 }
 
 const _recordingMeeting = Meeting(

@@ -5,7 +5,7 @@ import 'package:path/path.dart' as path;
 
 import 'model_import/model_importer.dart';
 
-const _usage = 'Usage: dart run tool/import_models.dart';
+const _usage = 'Usage: dart run tool/import_models.dart [--experimental-small]';
 
 /// Runs the deterministic offline model import command.
 ///
@@ -20,7 +20,9 @@ Future<int> runModelImportCommand(
 }) async {
   final output = writeOutput ?? (line) => stdout.writeln(line);
   final error = writeError ?? (line) => stderr.writeln(line);
-  if (arguments.isNotEmpty) {
+  final experimentalSmall =
+      arguments.length == 1 && arguments.single == '--experimental-small';
+  if (arguments.isNotEmpty && !experimentalSmall) {
     error(_usage);
     return 64;
   }
@@ -30,7 +32,9 @@ Future<int> runModelImportCommand(
     ModelImportRequest(
       projectRoot: root,
       manifestDirectory: Directory(
-        path.join(root.path, 'models', 'manifests'),
+        experimentalSmall
+            ? path.join(root.path, 'models', 'manifests', 'experimental-small')
+            : path.join(root.path, 'models', 'manifests'),
       ),
       artifactDirectory: Directory(path.join(root.path, 'models', 'local')),
       outputDirectory: Directory(

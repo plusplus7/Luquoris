@@ -135,6 +135,9 @@ int _roundedUpSeconds(Duration duration) =>
     (duration.inMilliseconds / Duration.millisecondsPerSecond).ceil();
 
 String _degradationMessage(AppLocalizations l10n, String reason) {
+  if (reason == 'transcription_live_discontinuity') {
+    return l10n.liveTranscriptDiscontinuity;
+  }
   if (reason == 'transcription_live_thermal') {
     return l10n.liveTranscriptThermalFallback;
   }

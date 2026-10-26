@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loquiris/features/export_backup/presentation/export_controller.dart';
 import 'package:loquiris/l10n/app_localizations.dart';
+import 'package:loquiris/routing/routes.dart';
 import 'package:loquiris/services/service_contracts.dart';
+import 'package:loquiris/theme/loquiris_tokens.dart';
 
 /// Explicit local export surface for one saved meeting.
 final class ExportScreen extends ConsumerWidget {
@@ -141,11 +144,40 @@ final class ExportScreen extends ConsumerWidget {
                     'export_completion_persistence_failed' ||
                     'export_failure_persistence_failed' =>
                       l10n.exportPersistenceWarning,
+                    'export_transcript_selection_required' =>
+                      l10n.exportTranscriptSelectionRequired,
+                    'export_transcript_changed' => l10n.exportTranscriptChanged,
                     _ => l10n.exportFailed,
                   },
                 ),
               ),
             const SizedBox(height: 12),
+            if (state.failureCode == 'export_transcript_selection_required')
+              Semantics(
+                container: true,
+                button: true,
+                enabled: true,
+                focusable: true,
+                label: l10n.transcriptVersionsTitle,
+                sortKey: const OrdinalSortKey(19),
+                excludeSemantics: true,
+                onTap: () =>
+                    context.push<void>(AppRoutes.transcriptVersions(meetingId)),
+                child: OutlinedButton(
+                  key: const Key('export-choose-transcript-version'),
+                  onPressed: () => context.push<void>(
+                    AppRoutes.transcriptVersions(meetingId),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                    padding: EdgeInsetsDirectional.symmetric(
+                      horizontal: LoquirisSpacing.of(context).section,
+                      vertical: LoquirisSpacing.of(context).related,
+                    ),
+                  ),
+                  child: Text(l10n.transcriptVersionsTitle),
+                ),
+              ),
             Semantics(
               button: true,
               label: l10n.exportConfirm,

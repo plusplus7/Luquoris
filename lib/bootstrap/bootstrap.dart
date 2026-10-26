@@ -13,7 +13,10 @@ import 'package:loquiris/data/files/private_meeting_audio_store.dart';
 import 'package:loquiris/data/repositories/drift_analysis_repositories.dart';
 import 'package:loquiris/data/repositories/drift_backup_record_repository.dart';
 import 'package:loquiris/data/repositories/drift_export_record_repository.dart';
+import 'package:loquiris/data/repositories/drift_meeting_processing_selection_repository.dart';
+import 'package:loquiris/data/repositories/drift_remote_transcription_repository.dart';
 import 'package:loquiris/data/repositories/drift_session_repository.dart';
+import 'package:loquiris/data/repositories/drift_transcript_processing_repository.dart';
 import 'package:loquiris/features/export_backup/application/backup_service_provider.dart';
 import 'package:loquiris/features/export_backup/application/drift_backup_snapshot_planner.dart';
 import 'package:loquiris/features/export_backup/application/local_backup_service.dart';
@@ -28,18 +31,31 @@ import 'package:loquiris/features/models_performance/application/performance_ben
 import 'package:loquiris/features/models_performance/application/runtime_model_manager.dart';
 import 'package:loquiris/features/models_performance/domain/model_manifest.dart';
 import 'package:loquiris/features/recording/application/recording_inventory_synchronizer.dart';
+import 'package:loquiris/features/remote_transcription/application/remote_feature.dart';
+import 'package:loquiris/features/remote_transcription/application/remote_meeting_controller.dart';
 import 'package:loquiris/features/transcript/application/transcription_coordinator.dart';
+import 'package:loquiris/features/transcript/application/transcription_parameters.dart';
 import 'package:loquiris/native/method_channel_backup_gateway.dart';
 import 'package:loquiris/native/method_channel_export_destination_gateway.dart';
 import 'package:loquiris/native/method_channel_recording_control_gateway.dart';
+import 'package:loquiris/native/method_channel_refinement_audio_service.dart';
+import 'package:loquiris/native/method_channel_refinement_execution_service.dart';
+import 'package:loquiris/native/method_channel_remote_transcription_service.dart';
 import 'package:loquiris/native/method_channel_session_playback_service.dart';
 import 'package:loquiris/native/method_channel_storage_metrics_service.dart';
 import 'package:loquiris/native/method_channel_thermal_and_performance_monitor.dart';
 import 'package:loquiris/native/method_channel_transcription_engine.dart';
 import 'package:loquiris/native/native_audio_capture_service.dart';
 import 'package:loquiris/native/recording_recovery_gateway.dart';
+import 'package:loquiris/services/meeting_processing_selection_repository.dart';
+import 'package:loquiris/services/refinement_audio_inventory_service.dart';
+import 'package:loquiris/services/refinement_execution_service.dart';
+import 'package:loquiris/services/remote_transcription_repository.dart';
+import 'package:loquiris/services/remote_transcription_service.dart';
 import 'package:loquiris/services/service_providers.dart';
+import 'package:loquiris/services/transcript_processing_repository.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 /// App-wide work that must react to process lifecycle transitions.
 abstract interface class AppLifecycleActions {
@@ -154,7 +170,7 @@ Future<AppDependencies> bootstrap({
     }
   }
   final transcriptionManifest = registeredManifests
-      .where((manifest) => manifest.id == 'whisper-base-q5_1')
+      .where((manifest) => manifest.id == transcriptionModelId)
       .firstOrNull;
   final modelManager = RuntimeModelManager(
     manifests: registeredManifests,
@@ -212,6 +228,20 @@ Future<AppDependencies> bootstrap({
     diagnosticLogSink: diagnosticLogSink,
     lifecycleActions: const _NoopAppLifecycleActions(),
     overrides: [
+      remoteTranscriptionEnabledProvider.overrideWithValue(true),
+      remoteExportGatewayProvider.overrideWithValue(exportDestinationGateway),
+      remoteTranscriptionServiceProvider.overrideWithValue(
+        const MethodChannelRemoteTranscriptionService(),
+      ),
+      remoteTranscriptionRepositoryProvider.overrideWith(
+        (ref) => DriftRemoteTranscriptionRepository(
+          ref.watch(_applicationDatabaseProvider),
+          service: ref.watch(remoteTranscriptionServiceProvider),
+          newId: const Uuid().v4,
+          nowUtcMs: () =>
+              ref.read(clockProvider).now().toUtc().millisecondsSinceEpoch,
+        ),
+      ),
       thermalAndPerformanceMonitorProvider.overrideWith(
         (ref) => const MethodChannelThermalAndPerformanceMonitor(),
       ),
@@ -259,6 +289,24 @@ Future<AppDependencies> bootstrap({
           ref.watch(_applicationDatabaseProvider),
           diagnosticSink: diagnosticLogSink,
         ),
+      ),
+      meetingProcessingSelectionRepositoryProvider.overrideWith(
+        (ref) => DriftMeetingProcessingSelectionRepository(
+          ref.watch(_applicationDatabaseProvider),
+          diagnosticSink: diagnosticLogSink,
+        ),
+      ),
+      transcriptProcessingRepositoryProvider.overrideWith(
+        (ref) => DriftTranscriptProcessingRepository(
+          ref.watch(_applicationDatabaseProvider),
+          diagnosticSink: diagnosticLogSink,
+        ),
+      ),
+      refinementAudioInventoryServiceProvider.overrideWithValue(
+        const MethodChannelRefinementAudioService(),
+      ),
+      refinementExecutionServiceProvider.overrideWithValue(
+        const MethodChannelRefinementExecutionService(),
       ),
       modelRepositoryProvider.overrideWithValue(modelRepository),
       modelManagerProvider.overrideWithValue(modelManager),
